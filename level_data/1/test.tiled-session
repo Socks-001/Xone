@@ -1,0 +1,46 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "test.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "fileStates": {
+        "test.tmx": {
+            "scale": 3,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 129,
+                "y": 117.83333333333334
+            }
+        },
+        "test_tileset.tsx": {
+            "scaleInDock": 3,
+            "scaleInEditor": 1
+        }
+    },
+    "last.exportedFilePath": "C:/Users/soconnor/Desktop/Dungeon_Crawler/level_data/1",
+    "last.imagePath": "C:/Users/soconnor/Desktop/Dungeon_Crawler/graphics/Working",
+    "map.height": 8,
+    "map.lastUsedExportFilter": "CSV files (*.csv)",
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 64,
+    "map.tileWidth": 64,
+    "map.width": 8,
+    "openFiles": [
+        "test.tmx",
+        "test_tileset.tsx"
+    ],
+    "project": "test.tiled-project",
+    "recentFiles": [
+        "test_tileset.tsx",
+        "test.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    }
+}
