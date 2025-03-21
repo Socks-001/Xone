@@ -8,16 +8,10 @@ from controls import Controls
 
 class Game:
     def __init__(self):
-        # Create a smaller surface for the original resolution
+        # Initializing screen and surface 
+        self.screen = pygame.display.get_surface()
         self.game_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
         
-        # General Setup
-        self.clock = pygame.time.Clock()
-        self.scale_factor_list = [1, 2, 4, 6]
-        self.scale_factor_index = 0
-        self.scale_factor = self.scale_factor_list[self.scale_factor_index]
-        self.screen = pygame.display.set_mode((SCREEN_WIDTH * self.scale_factor, SCREEN_HEIGHT * self.scale_factor))
-
         # Initialize Sprite Groups
         self.visible_sprites = pygame.sprite.Group()
         self.obstacle_sprites = pygame.sprite.Group()
@@ -26,15 +20,11 @@ class Game:
         self.player = None
         self.lvl = 1
         self.running = False
-        self.cycle = 0
-        self.time = 0
-        self.menu_running = 1
-
+        self.menu_running = True
+        
         # Initialize controls
-        self.controls = Controls()
-
-        # Initialize menu
-        self.menu = Menu(self, SCREEN_WIDTH, SCREEN_HEIGHT, self.controls)
+        self.controls = Controls(self.menu_running)
+        self.menu = Menu(self.menu_running, SCREEN_WIDTH, SCREEN_HEIGHT)
         
     def create_map(self):
         # Create level counter
@@ -70,29 +60,27 @@ class Game:
                                 Tile((x, y), [self.visible_sprites], 'entities', surf)
 
     def create_player(self, pos):
-        self.player = Player(pos, [self.visible_sprites], self.obstacle_sprites, self.controls, self.menu)
+        self.player = Player(pos, [self.visible_sprites], self.obstacle_sprites, self.controls)
 
     def run(self):
         print('Starting game...')
         running = True
         while running:
-            events = pygame.event.get()  # Get all events from the queue
-            for event in events:
+            for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    print('Quitting game...')
                     running = False
                 else:
                     self.controls.handle_event(event)
-
             self.game_surface.fill(BG_COLOR)
-            self.visible_sprites.update()
-            self.visible_sprites.draw(self.game_surface)
 
             if self.menu.running:
-                self.menu.update()
-                self.menu.draw(self.game_surface)
+                self.menu.update(self.controls,self.game_surface)
+
+            else:
+                self.visible_sprites.update()
+                self.visible_sprites.draw(self.game_surface)
+
             
             self.screen.blit(self.game_surface, (0, 0))
             pygame.display.flip()
-            self.clock.tick(FPS)
             pygame.event.pump()

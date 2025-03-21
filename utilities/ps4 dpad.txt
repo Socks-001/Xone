@@ -1,4 +1,15 @@
-11 up 
-12 down
-13 Left
-14 right 
+ps4 controller inputs
+
+up = 11
+down = 12
+left = 13
+right = 14
+
+square = 2
+triangle = 3
+circle = 1
+x = 0
+
+l = 9
+r = 10
+
