@@ -31,3 +31,5 @@ class MainLoop:
 if __name__ == '__main__':
     main_game = MainLoop()
     main_game.run()
+
+    #cool
