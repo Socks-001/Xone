@@ -22,10 +22,10 @@ class Controls:
             if self.joystick:
                 self.controller_found = True
                 print("Joystick found")
-                self.dpad_up = 11
-                self.dpad_down = 12
-                self.dpad_left = 13
-                self.dpad_right = 14
+                self.dpad_up = self.joystick.get_button(11)
+                self.dpad_down = self.joystick.get_button(12)
+                self.dpad_left = self.joystick.get_button(13)
+                self.dpad_right = self.joystick.get_button(14)
                 self.x = self.joystick.get_button(0)  # Example button, change as needed
                 self.square = self.joystick.get_button(2)
                 self.triangle = self.joystick.get_button(3)
@@ -40,20 +40,22 @@ class Controls:
         if keys[pygame.K_UP] or self.dpad_up == True:
             self.direction.y = -1
             self.menu_navigation_y = 1
-            print("up")
+            print(f'up , {self.direction.y}')
         elif keys[pygame.K_DOWN] or self.dpad_down == True:
             self.direction.y = 1
             self.menu_navigation_y = -1
-            print("down")
+            print(f'down , {self.direction.y}')
         else:
             self.direction.y = 0
             self.menu_navigation_y = 0
         if keys[pygame.K_LEFT] or self.dpad_left:
             self.direction.x = -1
             self.menu_navigation_x = 1
+            print(f'left , {self.direction.x}')
         elif keys[pygame.K_RIGHT] or self.dpad_right:
             self.direction.x = 1
             self.menu_navigation_x = -1
+            print(f'right , {self.direction.x}')
         else:
             self.direction.x = 0
             self.menu_navigation_x = 0

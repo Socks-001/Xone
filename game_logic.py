@@ -1,6 +1,6 @@
 import pygame
 from utilities import import_csv_layout, import_folder
-from settings import SCREEN_WIDTH, SCREEN_HEIGHT, TILESIZE, BG_COLOR, FPS
+from settings import SCREEN_WIDTH, SCREEN_HEIGHT, TILESIZE, BG_COLOR
 from tile import Tile
 from player import Player
 from menu import Menu
@@ -28,8 +28,8 @@ class Game:
         # Initialize player and level
         self.player = None
         self.lvl = 1
-        self.running = False
-        self.menu_running = True
+        self.game_running = {'game_running': True}
+        self.menu_running = {'menu_running': True}
         
         # Initialize controls
         self.controls = Controls(self.menu_running)
@@ -70,24 +70,23 @@ class Game:
                                 Tile((x, y), [self.visible_sprites], 'entities', surf)
 
     def create_player(self, pos):
-        self.player = Player(pos, [self.visible_sprites], self.obstacle_sprites, self.controls, self.menu)
+        self.player = Player(pos, [self.visible_sprites], self.obstacle_sprites, self.controls, self.menu_running)
         print(f'Player created at {pos}')
 
     def run(self):
         print('Starting game...')
-        running = True
         self.create_map()
-        while running:
+        while self.game_running['game_running']:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    running = False
+                    self.game_running = False
                     quit(self)
                 else:
                     self.controls.handle_event(event)
                    
             self.game_surface.fill(BG_COLOR)
 
-            if self.menu.running:
+            if self.menu_running['menu_running']:
                 self.menu.update(self.controls,self.game_surface)
 
             else:
@@ -98,7 +97,6 @@ class Game:
                 self.game_surface = pygame.transform.scale(self.game_surface, (self.screen.get_width(), self.screen.get_height()))
                 self.shared_flags['reload_surface']= False
                 print(f'shared flags = {self.shared_flags}')
-
             
             self.screen.blit(self.game_surface, (0, 0))
             pygame.display.flip()

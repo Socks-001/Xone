@@ -50,7 +50,7 @@ class Menu:
             surface.blit(text_surface, rect.topleft)
 
     def start_game(self):
-        self.running = 0
+        self.running['menu_running'] = False
 
     def reload_menu(self):
         self.selection = 0  # reset option to first option
