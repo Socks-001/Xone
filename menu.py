@@ -1,11 +1,12 @@
 import pygame
-from settings import UI_FONT, UI_FONT_SIZE, UI_BG_COLOR, UI_BORDER_COLOR, TEXT_COLOR
+from settings import UI_FONT, UI_FONT_SIZE, UI_BG_COLOR, UI_BORDER_COLOR, TEXT_COLOR, HOME_MENU, SETTINGS_MENU, PAUSE_MENU
 
 class Menu:
     def __init__(self, menu_running, screen, scale_factor_list, scale_factor_index, scale_factor, shared_flags, quit):
         self.font = pygame.font.Font(UI_FONT, UI_FONT_SIZE)
-        self.home_menu = ["Start Game", "Options", "Quit"]
-        self.settings_menu = ["Volume", "Scale", "Fullscreen", "Back"]
+        self.home_menu = HOME_MENU
+        self.settings_menu = SETTINGS_MENU
+        self.pause_menu = PAUSE_MENU
         
         self.running = menu_running
         self.can_move = True  # Allow movement by default
@@ -43,8 +44,8 @@ class Menu:
         overlay.fill((0, 0, 0, 128))  # Black with 50% opacity
         surface.blit(overlay, (0, 0))
         for index, option in enumerate(self.options):
-            text_surface = self.font.render(option, True, TEXT_COLOR)
-            rect = text_surface.get_rect(center=(surface.get_width() // 2, 100 + index * 25))
+            text_surface = self.font.render(option, False, TEXT_COLOR)
+            rect = text_surface.get_rect(center=(surface.get_width() // 2, surface.get_height() // 2.5 + index * 20))
             if index == self.selection:
                 pygame.draw.rect(surface, UI_BORDER_COLOR, rect.inflate(20, 10), 2)
             surface.blit(text_surface, rect.topleft)
@@ -57,7 +58,7 @@ class Menu:
         self.options = self.options_list[self.options_selection]
 
     def input(self, controls):
-        if self.running == 1:
+        if self.running['menu_running']:
             if self.can_move:  # Check if the menu can move
                 if controls.menu_navigation_y == 1:
                     self.selection = (self.selection + (controls.menu_navigation_y * -1)) % len(self.options)

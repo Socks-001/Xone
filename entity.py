@@ -7,7 +7,7 @@ class Entity(pygame.sprite.Sprite):
         self.sprite_type = sprite_type
         self.image = pygame.Surface((TILESIZE, TILESIZE))
         self.rect = self.image.get_rect(topleft=pos)
-        self.hitbox = self.rect.inflate(0, -10)
+        self.hitbox = pygame.FRect(self.rect.inflate(0, -10))
         self.direction = pygame.math.Vector2()
         self.obstacle_sprites = obstacle_sprites
         self.vulnerable = True
