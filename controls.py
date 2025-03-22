@@ -11,7 +11,8 @@ class Controls:
         self.coolingdown = False
         self.direction = pygame.math.Vector2()
         self.shoot_direction = pygame.math.Vector2()
-        self.menu_navigation = pygame.math.Vector2()
+        self.menu_navigation_y = 0
+        self.menu_navigation_x = 0
         self.menu_running = menu_running
         self.menu_select = 0  # Initialize menu selection state
 
@@ -36,22 +37,26 @@ class Controls:
 
     def handle_event(self, event):
         keys = pygame.key.get_pressed()  # Get the current state of all keys
-        if keys[pygame.K_UP] or self.dpad_up:
+        if keys[pygame.K_UP] or self.dpad_up == True:
             self.direction.y = -1
-            self.menu_navigation.y = 1
-        elif keys[pygame.K_DOWN] or self.dpad_down:
+            self.menu_navigation_y = 1
+            print("up")
+        elif keys[pygame.K_DOWN] or self.dpad_down == True:
             self.direction.y = 1
-            self.menu_navigation.y = -1
+            self.menu_navigation_y = -1
+            print("down")
         else:
             self.direction.y = 0
-            self.menu_navigation.y = 0
+            self.menu_navigation_y = 0
         if keys[pygame.K_LEFT] or self.dpad_left:
             self.direction.x = -1
+            self.menu_navigation_x = 1
         elif keys[pygame.K_RIGHT] or self.dpad_right:
             self.direction.x = 1
+            self.menu_navigation_x = -1
         else:
             self.direction.x = 0
-            self.menu_navigation.x = 0
+            self.menu_navigation_x = 0
         if keys[pygame.K_w]:
             self.shoot_direction.y = -1
         elif keys[pygame.K_s]:
@@ -66,11 +71,16 @@ class Controls:
             self.shoot_direction.x = 0
         if keys[pygame.K_RETURN] or self.x:  # Example action for accessing the menu
             self.menu_select = 1
+            print (f'menu_select = {self.menu_select}')
+        if keys[pygame.K_ESCAPE]:
+            if self.menu_running == False:
+                self.menu_running = True
             
         elif event.type == pygame.KEYUP:
-            if  keys[pygame.K_UP] or keys[pygame.K_DOWN]:
-                self.menu_navigation.y = 0
-            if keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]:
-                self.menu_navigation.x = 0 # Example action for accessing the menu
+            if  keys[pygame.K_UP] or keys[pygame.K_DOWN] or not self.dpad_up or not self.dpad_down:
+                self.menu_navigation_y = 0
+            if keys[pygame.K_LEFT] or keys[pygame.K_RIGHT] or not self.dpad_left or not self.dpad_right:
+                self.menu_navigation_x = 0 # Example action for accessing the menu
             if keys[pygame.K_RETURN] or self.x:  # Example action for accessing the menu
                 self.menu_select = 0
+                print (f'menu_select = {self.menu_select}')

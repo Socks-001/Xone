@@ -17,10 +17,8 @@ class MainLoop:
         avg_fps = pygame.Clock.get_fps
         pygame.display.set_caption(f'DC{avg_fps}')
         
-        
-        self.game = Game()
+        self.game = Game(self.screen, self.scale_factor_list, self.scale_factor_index, self.scale_factor)
         print("Game initialized.")
-
 
     def run(self):
         while True: 

@@ -6,11 +6,20 @@ from player import Player
 from menu import Menu
 from controls import Controls
 
+def quit(self):
+    print("Quitting game...")
+    pygame.quit()
+    exit()
+
 class Game:
-    def __init__(self):
+    def __init__(self, screen, scale_factor_list, scale_factor_index, scale_factor):
         # Initializing screen and surface 
-        self.screen = pygame.display.get_surface()
-        self.game_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.screen = screen
+        self.scale_factor_list = scale_factor_list
+        self.scale_factor_index = scale_factor_index    
+        self.scale_factor = scale_factor
+        self.game_surface = pygame.Surface((SCREEN_WIDTH *  self.scale_factor , SCREEN_HEIGHT * self.scale_factor))
+        self.shared_flags = {'reload_surface': False}
         
         # Initialize Sprite Groups
         self.visible_sprites = pygame.sprite.Group()
@@ -24,8 +33,9 @@ class Game:
         
         # Initialize controls
         self.controls = Controls(self.menu_running)
-        self.menu = Menu(self.menu_running, SCREEN_WIDTH, SCREEN_HEIGHT)
-        
+        self.menu = Menu(self.menu_running, self.screen, self.scale_factor_list, self.scale_factor_index, self.scale_factor, self.shared_flags, quit)
+    
+    
     def create_map(self):
         # Create level counter
         layouts = {
@@ -60,25 +70,34 @@ class Game:
                                 Tile((x, y), [self.visible_sprites], 'entities', surf)
 
     def create_player(self, pos):
-        self.player = Player(pos, [self.visible_sprites], self.obstacle_sprites, self.controls)
+        self.player = Player(pos, [self.visible_sprites], self.obstacle_sprites, self.controls, self.menu)
+        print(f'Player created at {pos}')
 
     def run(self):
         print('Starting game...')
         running = True
+        self.create_map()
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                    quit(self)
                 else:
                     self.controls.handle_event(event)
+                   
             self.game_surface.fill(BG_COLOR)
 
             if self.menu.running:
                 self.menu.update(self.controls,self.game_surface)
 
             else:
-                self.visible_sprites.update()
                 self.visible_sprites.draw(self.game_surface)
+                self.visible_sprites.update()
+            
+            if self.shared_flags['reload_surface']:
+                self.game_surface = pygame.transform.scale(self.game_surface, (self.screen.get_width(), self.screen.get_height()))
+                self.shared_flags['reload_surface']= False
+                print(f'shared flags = {self.shared_flags}')
 
             
             self.screen.blit(self.game_surface, (0, 0))
