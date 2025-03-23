@@ -1,5 +1,5 @@
 import pygame
-from utilities import import_csv_layout, import_folder
+from utilities import import_csv_layout, import_folder 
 from settings import SCREEN_WIDTH, SCREEN_HEIGHT, TILESIZE, BG_COLOR
 from tile import Tile
 from player import Player

@@ -1,5 +1,5 @@
 import pygame
-from settings import UI_FONT, UI_FONT_SIZE, UI_BG_COLOR, UI_BORDER_COLOR, TEXT_COLOR, HOME_MENU, SETTINGS_MENU, PAUSE_MENU
+from settings import *
 
 class Menu:
     def __init__(self, menu_running, screen, scale_factor_list, scale_factor_index, scale_factor, shared_flags, quit):

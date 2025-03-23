@@ -1,6 +1,6 @@
 import pygame, sys
 from game_logic import Game
-from settings import SCREEN_WIDTH, SCREEN_HEIGHT, FPS
+from settings import SCREEN_WIDTH, SCREEN_HEIGHT, FPS, SCALE_FACTOR, SCALE_FACTOR_LIST, SCALE_FACTOR_INDEX
 
 class MainLoop:
     def __init__(self):

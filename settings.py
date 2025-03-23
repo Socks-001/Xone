@@ -1,55 +1,41 @@
+# Game Settings Data
 
+config = {
+    'screen': {
 SCREEN_WIDTH = 240 # 16x32    
 SCREEN_HEIGHT = 240 # 16x28
 FPS = 60
 TILESIZE = 16
-DEBUGLINEWIDTH = 10
-DEBUGLINECOLOR = (200, 30, 10)
+SCALE_FACTOR_LIST = [1, 2, 4, 6]
+SCALE_FACTOR_INDEX = 0
+SCALE_FACTOR = SCALE_FACTOR_LIST[SCALE_FACTOR_INDEX]
 FPS = 60
-# ui 
-'''
-BAR_HEIGHT = 10 
-HEALTH_BAR_WIDTH = 100
-ENERGY_BAR_WIDTH = 140
-ITEM_BOX_SIZE = 20
-'''
-UI_FONT = 'graphics/font/joystix monospace.otf'
-UI_FONT_SIZE = 12
+},
 
-# general colors
+'ui': {
+    'font': 'graphics/font/joystix monospace.otf',
+    'font_size': 12,
+    'colors': {
+        'bg': '#6dc286',
+        'water': '#71ddee',
+        'ui_bg': '#7ee4ff',
+        'ui_border': '#4bb2cd',
+        'text': '#fffde4',
+        'health': '#dd5929',
+        'energy': 'blue',
+        'ui_border_active': 'gold'
+        'DEBUG_LINE_WIDTH' = 10
+        'DEBUG_LINE_COLOR' = (200, 30, 10)
+                }
+},
 
-BG_COLOR = '#6dc286'
-WATER_COLOR = '#71ddee'
-UI_BG_COLOR = '#7ee4ff'
-UI_BORDER_COLOR = '#4bb2cd'
-TEXT_COLOR = '#fffde4'
+'menu': {
+    'home': ['Start Game', 'Options', 'Quit'],
+    'settings': ['Volume', 'Scale', 'Fullscreen', 'Back'],
+    'pause': ['Resume', 'Options', 'Quit']
+},
 
-# ui colors
-HEALTH_COLOR = '#dd5929'
-ENERGY_COLOR = 'blue'
-UI_BORDER_COLOR_ACTIVE = 'gold'
+}
 
-# weapons 
-WEAPON_DATA = {
-	'fireball': {'cooldown': 450, 'damage' : 3, 'projectile_speed' : 3, 'graphic':'graphics/player/weapons/fireball.png'},
-    'blue_fireball': {'cooldown': 200, 'damage' : 1, 'projectile_speed' : 3, 'graphic':'graphics/player/weapons/blue_fireball.png'}
-			  } 
 
-# items
-ITEM_DATA = {
-	'health potion': {'strength': 5, 'cooldown': 6, 'units' : 1, 'graphic':'graphics/player/items/health_potion.png'},
-    'slime': {'strength': 2, 'cooldown': 6, 'units' : 2, 'graphic':'graphics/player/items/slime.png'}
-			} 
-
-# enemy
-ENEMY_DATA = {
-    'skele' : {'health' : 8, 'exp' : 2, 'damage' : 0.5, 'attack_type' : 'contact', 'attack_sound' : None, 'speed' : 2, 'resistance' : 5, 'attack_radius' : 60, 'notice_radius': 100, 'action_type' : 'melee'},
-    'goblin' : {'health' :6, 'exp' : 10, 'damage' : 5, 'attack_type' : 'contact', 'attack_sound' : None, 'speed' : 1.5, 'resistance' : 10, 'attack_radius' : 60, 'notice_radius': 100, 'action_type' : 'zone'},
-    'knight' : {'health' :10, 'exp' : 5, 'damage' : 1, 'attack_type' : 'contact', 'attack_sound' : None, 'speed' : 1, 'resistance' : 5, 'attack_radius' : 60, 'notice_radius': 60, 'action_type' : 'turret'}
-    	}
-
-# Menus
-
-HOME_MENU = ["Start Game", "Options", "Quit"]
-SETTINGS_MENU = ["Volume", "Scale", "Fullscreen", "Back"]
-PAUSE_MENU = ["Resume", "Options", "Quit"]
+#pprint for easier readability

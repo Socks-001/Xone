@@ -44,3 +44,15 @@ def counter (element):
         amount += 1
 
     return amount  
+
+def search_dict(d, key):
+    """Recursively search for a key in a nested dictionary."""
+    if isinstance(d, dict):  # If d is a dictionary
+        for k, v in d.items():
+            if k == key:
+                return v
+            elif isinstance(v, dict):  # If the value is another dictionary, search it
+                result = search_dict(v, key)
+                if result is not None:
+                    return result
+    return None  # Return None if key isn't found
