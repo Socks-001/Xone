@@ -1,31 +1,42 @@
 import pygame
-from settings import *
+from settings import config
+from utilities import search_dict, quit
 
 class Menu:
-    def __init__(self, menu_running, screen, scale_factor_list, scale_factor_index, scale_factor, shared_flags, quit):
-        self.font = pygame.font.Font(UI_FONT, UI_FONT_SIZE)
-        self.home_menu = HOME_MENU
-        self.settings_menu = SETTINGS_MENU
-        self.pause_menu = PAUSE_MENU
+    def __init__(self):
         
-        self.running = menu_running
-        self.can_move = True  # Allow movement by default
+        #Import search util
+        self.search_dict = search_dict
+
+        # UI 
+        self.font = pygame.font.Font(self.search_dict(config,'UI_FONT')), (self.search_dict(config,'UI_FONT_SIZE'))
+        self.text_color = search_dict('TEXT_COLOR')
+        self.home_menu = self.search_dict('HOME_MENU')
+        self.settings_menu = self.search_dict(config,'SETTINGS_MENU')
+        self.pause_menu = self.search_dict(config,'PAUSE_MENU')
+        
+        # Menu running and Cooldown
+        self.running = self.search_dict(config,'menu_running')
+        self.can_move = search_dict('can_move')  # Allow movement by default
         self.can_select = True  # Allow selection by default
         self.can_move_time = None
         self.selection_cooldown_time = None
-        self.screen_width = screen.get_width()
-        self.screen_height = screen.get_height()
-        self.screen = screen 
-        self.scale_factor_list = scale_factor_list
-        self.scale_factor_index = scale_factor_index
-        self.scale_factor = scale_factor
         self.options_list = [self.home_menu, self.settings_menu]  # List of menus
-        self.options_selection = 0  # Initialize selected option for the current menu
-        self.selection = 0
+        self.options_selection = self.search_dict(config,'options_selection')  # Initialize selected option for the current menu
+        self.selection = self.search_dict(config,'selection')
         self.options = self.options_list[self.options_selection]  # Select the current menu options
-        self.cooldown = 300  # Cooldown time in milliseconds
+        self.cooldown = self.search_dict(config,'COOLDOWN')  # Cooldown time in milliseconds
         self.quit = quit
-        self.shared_flags = shared_flags
+
+        # Screen
+        self.screen_width = search_dict(config,'SCREEN_Width')
+        self.screen_height = self.screen_width = search_dict(config,'SCREEN_HEIGHT')
+        self.screen = search_dict('screen') 
+        self.scale_factor_list = self.screen_width = search_dict(config,'SCALE_FACTOR_LIST')
+        self.scale_factor_index = self.screen_width = search_dict(config,'SCALE_FACTOR_INDEX')
+        self.scale_factor = search_dict('scale_factor')
+
+        
        
 
     def selection_cooldown(self):
@@ -44,7 +55,7 @@ class Menu:
         overlay.fill((0, 0, 0, 128))  # Black with 50% opacity
         surface.blit(overlay, (0, 0))
         for index, option in enumerate(self.options):
-            text_surface = self.font.render(option, False, TEXT_COLOR)
+            text_surface = self.font.render(option, False,self.text_color)
             rect = text_surface.get_rect(center=(surface.get_width() // 2, surface.get_height() // 2.5 + index * 20))
             if index == self.selection:
                 pygame.draw.rect(surface, UI_BORDER_COLOR, rect.inflate(20, 10), 2)
@@ -91,10 +102,7 @@ class Menu:
                     self.scale_factor_index = (self.scale_factor_index + 1) % len(self.scale_factor_list)
                     self.scale_factor = self.scale_factor_list[self.scale_factor_index]
                     self.screen = pygame.display.set_mode((self.screen_width * self.scale_factor, self.screen_height * self.scale_factor), pygame.RESIZABLE) 
-                    self.shared_flags['reload_surface'] = True
                     
-                    print(f'shared flags = {self.shared_flags}')
-
                 elif self.selection == 2:
                     if self.screen.get_flags() & pygame.FULLSCREEN:
                         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))

@@ -1,8 +1,8 @@
 import pygame
-from settings import TILESIZE
-
+from settings import config
+from utilities import search_dict
 class Tile(pygame.sprite.Sprite):
-    def __init__(self, pos, groups, sprite_type, surface = pygame.Surface((TILESIZE,TILESIZE))):
+    def __init__(self, pos, groups, sprite_type, surface = pygame.Surface((search_dict('TILESIZE'),search_dict('TILESIZE')))):
         super().__init__(groups)
         
         self.sprite_type = sprite_type

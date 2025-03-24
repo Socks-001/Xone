@@ -1,30 +1,30 @@
 import pygame, sys
 from game_logic import Game
-from settings import SCREEN_WIDTH, SCREEN_HEIGHT, FPS, SCALE_FACTOR, SCALE_FACTOR_LIST, SCALE_FACTOR_INDEX
+from settings import config
+from utilities import search_dict
+from screen_init import initialize_screen
 
 class MainLoop:
     def __init__(self):
         print("Initializing Pygame...")
         pygame.init()
-        self.scale_factor_list = [1, 2, 4, 6]
-        self.scale_factor_index = 0
-        self.scale_factor = self.scale_factor_list[self.scale_factor_index]
-        self.screen = pygame.display.set_mode((SCREEN_WIDTH * self.scale_factor, SCREEN_HEIGHT * self.scale_factor), pygame.RESIZABLE)
-        self.FPS = FPS
+        self.screen = search_dict(config,'SCREEN') 
+        self.fps = search_dict('FPS')
+        
 
         # Set Caption
         self.clock = pygame.time.Clock()
-        avg_fps = pygame.Clock.get_fps
-        pygame.display.set_caption(f'DC{avg_fps}')
+        AVG_FPS = pygame.Clock.get_fps
+        pygame.display.set_caption(f'DC{AVG_FPS}')
         
-        self.game = Game(self.screen, self.scale_factor_list, self.scale_factor_index, self.scale_factor)
+        self.game = Game(self)
         print("Game initialized.")
 
     def run(self):
         while True: 
             print("Starting main loop...")
             self.game.run()
-            self.clock.tick(FPS)
+            self.clock.tick(self.fps)
 
 if __name__ == '__main__':
     main_game = MainLoop()

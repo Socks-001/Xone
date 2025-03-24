@@ -1,4 +1,5 @@
 import pygame
+from utilities import search_dict
 
 class Controls:
     def __init__(self, menu_running):
@@ -22,14 +23,14 @@ class Controls:
             if self.joystick:
                 self.controller_found = True
                 print("Joystick found")
-                self.dpad_up = self.joystick.get_button(11)
-                self.dpad_down = self.joystick.get_button(12)
-                self.dpad_left = self.joystick.get_button(13)
-                self.dpad_right = self.joystick.get_button(14)
-                self.x = self.joystick.get_button(0)  # Example button, change as needed
-                self.square = self.joystick.get_button(2)
-                self.triangle = self.joystick.get_button(3)
-                self.circle = self.joystick.get_button(1)  
+                self.dpad_up = search_dict('dpad_up')
+                self.dpad_down = search_dict('dpad_down')
+                self.dpad_left = search_dict('dpad_left')
+                self.dpad_right = search_dict('dpad_right')
+                self.x = search_dict('x')  
+                self.square = search_dict('square')
+                self.triangle = search_dict('triangle')
+                self.circle = search_dict('circle')
             else:
                 print("No joystick found")
         except pygame.error as e:

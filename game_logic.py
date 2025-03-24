@@ -1,25 +1,20 @@
 import pygame
-from utilities import import_csv_layout, import_folder 
-from settings import SCREEN_WIDTH, SCREEN_HEIGHT, TILESIZE, BG_COLOR
+from utilities import import_csv_layout, import_folder, search_dict
+from settings import config
 from tile import Tile
 from player import Player
 from menu import Menu
 from controls import Controls
 
-def quit(self):
-    print("Quitting game...")
-    pygame.quit()
-    exit()
+
 
 class Game:
-    def __init__(self, screen, scale_factor_list, scale_factor_index, scale_factor):
+    def __init__(self):
         # Initializing screen and surface 
-        self.screen = screen
-        self.scale_factor_list = scale_factor_list
-        self.scale_factor_index = scale_factor_index    
-        self.scale_factor = scale_factor
-        self.game_surface = pygame.Surface((SCREEN_WIDTH *  self.scale_factor , SCREEN_HEIGHT * self.scale_factor))
-        self.shared_flags = {'reload_surface': False}
+        self.screen = search_dict('screen')
+        self.game_surface = search_dict(config('game_surface'))
+        self.bg_color = search_dict('BG_COLOR')
+        self.tilesize = search_dict('TILESIZE')
         
         # Initialize Sprite Groups
         self.visible_sprites = pygame.sprite.Group()
@@ -27,14 +22,16 @@ class Game:
 
         # Initialize player and level
         self.player = None
-        self.lvl = 1
-        self.game_running = {'game_running': True}
-        self.menu_running = {'menu_running': True}
-        
+        self.lvl = search_dict('lvl_number')
+        self.game_running = search_dict('game_running')
+        self.menu_running = search_dict('menu_running')
+
+
         # Initialize controls
         self.controls = Controls(self.menu_running)
-        self.menu = Menu(self.menu_running, self.screen, self.scale_factor_list, self.scale_factor_index, self.scale_factor, self.shared_flags, quit)
-    
+        self.menu = Menu(self.menu_running, quit)
+
+        self.create_map()
     
     def create_map(self):
         # Create level counter
@@ -53,8 +50,8 @@ class Game:
             for row_index, row in enumerate(layout):
                 for col_index, col in enumerate(row):
                     if col != "-1":
-                        x = col_index * TILESIZE
-                        y = row_index * TILESIZE
+                        x = col_index * self.tilesize
+                        y = row_index * self.tilesize
 
                         if style == 'floor':
                             surf = graphics['floor'][int(col)]
@@ -75,7 +72,7 @@ class Game:
 
     def run(self):
         print('Starting game...')
-        self.create_map()
+        
         while self.game_running['game_running']:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -84,19 +81,14 @@ class Game:
                 else:
                     self.controls.handle_event(event)
                    
-            self.game_surface.fill(BG_COLOR)
+            self.game_surface.fill(self.bg_color)
 
-            if self.menu_running['menu_running']:
+            if self.menu_running:
                 self.menu.update(self.controls,self.game_surface)
 
             else:
                 self.visible_sprites.draw(self.game_surface)
                 self.visible_sprites.update()
-            
-            if self.shared_flags['reload_surface']:
-                self.game_surface = pygame.transform.scale(self.game_surface, (self.screen.get_width(), self.screen.get_height()))
-                self.shared_flags['reload_surface']= False
-                print(f'shared flags = {self.shared_flags}')
             
             self.screen.blit(self.game_surface, (0, 0))
             pygame.display.flip()

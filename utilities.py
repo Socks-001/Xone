@@ -45,6 +45,11 @@ def counter (element):
 
     return amount  
 
+def quit(self):
+    print("Quitting game...")
+    pygame.quit()
+    exit()
+
 def search_dict(d, key):
     """Recursively search for a key in a nested dictionary."""
     if isinstance(d, dict):  # If d is a dictionary
