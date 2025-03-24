@@ -1,11 +1,12 @@
 import pygame
-from settings import TILESIZE
+from settings import config
+from utilities import search_dict
 
 class Entity(pygame.sprite.Sprite):
     def __init__(self, pos, groups, sprite_type, obstacle_sprites):
         super().__init__(groups)
         self.sprite_type = sprite_type
-        self.image = pygame.Surface((TILESIZE, TILESIZE))
+        self.image = pygame.Surface((search_dict('TILESIZE'),search_dict('TILESIZE')))
         self.rect = self.image.get_rect(topleft=pos)
         self.hitbox = pygame.FRect(self.rect.inflate(0, -10))
         self.direction = pygame.math.Vector2()
@@ -23,3 +24,6 @@ class Entity(pygame.sprite.Sprite):
         self.hitbox.y += self.direction.y * speed
         #self.collision('vertical')
         self.rect.center = self.hitbox.center
+
+        #Treasure of the Rudras SNES Art
+        #Shadownrun SNES

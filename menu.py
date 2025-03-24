@@ -10,14 +10,14 @@ class Menu:
 
         # UI 
         self.font = pygame.font.Font(self.search_dict(config,'UI_FONT')), (self.search_dict(config,'UI_FONT_SIZE'))
-        self.text_color = search_dict('TEXT_COLOR')
-        self.home_menu = self.search_dict('HOME_MENU')
+        self.text_color = search_dict(config,'TEXT_COLOR')
+        self.home_menu = self.search_dict(config,'HOME_MENU')
         self.settings_menu = self.search_dict(config,'SETTINGS_MENU')
         self.pause_menu = self.search_dict(config,'PAUSE_MENU')
         
         # Menu running and Cooldown
         self.running = self.search_dict(config,'menu_running')
-        self.can_move = search_dict('can_move')  # Allow movement by default
+        self.can_move = search_dict(config,'can_move')  # Allow movement by default
         self.can_select = True  # Allow selection by default
         self.can_move_time = None
         self.selection_cooldown_time = None
@@ -31,7 +31,7 @@ class Menu:
         # Screen
         self.screen_width = search_dict(config,'SCREEN_Width')
         self.screen_height = self.screen_width = search_dict(config,'SCREEN_HEIGHT')
-        self.screen = search_dict('screen') 
+        self.screen = search_dict(config,'screen') 
         self.scale_factor_list = self.screen_width = search_dict(config,'SCALE_FACTOR_LIST')
         self.scale_factor_index = self.screen_width = search_dict(config,'SCALE_FACTOR_INDEX')
         self.scale_factor = search_dict('scale_factor')

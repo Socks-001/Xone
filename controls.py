@@ -1,10 +1,11 @@
 import pygame
 from utilities import search_dict
+from settings import config, add_joystick_buttons
 
 class Controls:
-    def __init__(self, menu_running):
+    def __init__(self):
         pygame.joystick.init()
-        self.controller_found = None
+        self.controller_found = search_dict(config,'controller_found')
         self.joystick = None
         self.dpad_input_player1 = (0, 0)
         self.button_input_player1 = 0
@@ -12,25 +13,26 @@ class Controls:
         self.coolingdown = False
         self.direction = pygame.math.Vector2()
         self.shoot_direction = pygame.math.Vector2()
-        self.menu_navigation_y = 0
-        self.menu_navigation_x = 0
-        self.menu_running = menu_running
+        self.menu_navigation = pygame.math.Vector2()
+        self.menu_running = search_dict(config,'menu_running')
         self.menu_select = 0  # Initialize menu selection state
+
 
         # Initialize joysticks
         try:
             self.joystick = pygame.joystick.Joystick(0)  # Initialize the first joystick
             if self.joystick:
                 self.controller_found = True
+                add_joystick_buttons(self.joystick)
                 print("Joystick found")
-                self.dpad_up = search_dict('dpad_up')
-                self.dpad_down = search_dict('dpad_down')
-                self.dpad_left = search_dict('dpad_left')
-                self.dpad_right = search_dict('dpad_right')
-                self.x = search_dict('x')  
-                self.square = search_dict('square')
-                self.triangle = search_dict('triangle')
-                self.circle = search_dict('circle')
+                self.dpad_up = search_dict(config,'dpad_up')
+                self.dpad_down = search_dict(config,'dpad_down')
+                self.dpad_left = search_dict(config,'dpad_left')
+                self.dpad_right = search_dict(config,'dpad_right')
+                self.x = search_dict(config,'x')  
+                self.square = search_dict(config,'square')
+                self.triangle = search_dict(config,'triangle')
+                self.circle = search_dict(config,'circle')
             else:
                 print("No joystick found")
         except pygame.error as e:

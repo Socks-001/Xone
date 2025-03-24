@@ -1,6 +1,5 @@
 # Game Settings Data
 import pygame
-from utilities import search_dict
 
 config = {
     'screen': {
@@ -51,19 +50,32 @@ config = {
     'selection_cooldown_time' : None
     },
 
-    'controls':{
-        'dpad_up' : joystick.get_button(11),
-        'dpad_down' : joystick.get_button(12),
-        'dpad_left' : joystick.get_button(13),
-        'dpad_right' : joystick.get_button(14),
-        'x' : joystick.get_button(0),  
-        'square' : joystick.get_button(2),
-        'triangle' : joystick.get_button(3),
-        'circle' : joystick.get_button(1),  
+    'controls' : {
+        'controller_found' : False
+    }
+     
 
     }
-}
 
 
+def add_joystick_buttons(joystick):
+    """ Adds joystick button mappings to config['controls'] """
+    config['controls'] = {
+        
+        'dpad_up': joystick.get_button(11),
+        'dpad_down': joystick.get_button(12),
+        'dpad_left': joystick.get_button(13),
+        'dpad_right': joystick.get_button(14),
+        'x': joystick.get_button(0),
+        'square': joystick.get_button(2),
+        'triangle': joystick.get_button(3),
+        'circle': joystick.get_button(1),
+    }
+    print(f"{config['controls']}")
+
+# Directly use the values from the config dictionary
+scale_factor = config['screen']['SCALE_FACTOR_LIST'][config['screen']['SCALE_FACTOR_INDEX']]
+game_surface = pygame.Surface((config['screen']['SCREEN_WIDTH'] * scale_factor, config['screen']['SCREEN_HEIGHT'] * scale_factor))
+config['screen']['game_surface'] = game_surface
 
 #pprint for easier readability

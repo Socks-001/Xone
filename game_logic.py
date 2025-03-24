@@ -11,10 +11,10 @@ from controls import Controls
 class Game:
     def __init__(self):
         # Initializing screen and surface 
-        self.screen = search_dict('screen')
-        self.game_surface = search_dict(config('game_surface'))
-        self.bg_color = search_dict('BG_COLOR')
-        self.tilesize = search_dict('TILESIZE')
+        self.screen = search_dict(config,'screen')
+        self.game_surface = search_dict(config,'game_surface')
+        self.bg_color = search_dict(config,'BG_COLOR')
+        self.tilesize = search_dict(config,'TILESIZE')
         
         # Initialize Sprite Groups
         self.visible_sprites = pygame.sprite.Group()
@@ -22,14 +22,14 @@ class Game:
 
         # Initialize player and level
         self.player = None
-        self.lvl = search_dict('lvl_number')
-        self.game_running = search_dict('game_running')
-        self.menu_running = search_dict('menu_running')
+        self.lvl = search_dict(config,'lvl_number')
+        self.game_running = search_dict(config,'game_running')
+        self.menu_running = search_dict(config,'menu_running')
 
 
         # Initialize controls
-        self.controls = Controls(self.menu_running)
-        self.menu = Menu(self.menu_running, quit)
+        self.controls = Controls()
+        self.menu = Menu()
 
         self.create_map()
     
