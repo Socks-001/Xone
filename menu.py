@@ -34,7 +34,7 @@ class Menu:
         self.screen = search_dict(config,'screen') 
         self.scale_factor_list = self.screen_width = search_dict(config,'SCALE_FACTOR_LIST')
         self.scale_factor_index = self.screen_width = search_dict(config,'SCALE_FACTOR_INDEX')
-        self.scale_factor = search_dict('scale_factor')
+        self.scale_factor = search_dict(config,'scale_factor')
 
         
        

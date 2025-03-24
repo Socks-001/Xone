@@ -9,15 +9,15 @@ class MainLoop:
         print("Initializing Pygame...")
         pygame.init()
         scale_factor = search_dict(config,'SCALE_FACTOR_LIST')[search_dict(config,'SCALE_FACTOR_INDEX')]
-        screen = pygame.display.set_mode((search_dict(config,'SCREEN_WIDTH') * scale_factor, search_dict(config,'SCREEN_HEIGHT') * scale_factor), pygame.RESIZABLE)
-        self.screen = search_dict(config,'SCREEN') 
+        self.screen = pygame.display.set_mode((search_dict(config,'SCREEN_WIDTH') * scale_factor, search_dict(config,'SCREEN_HEIGHT') * scale_factor), pygame.RESIZABLE)
+        config['screen']['screen'] = self.screen 
         self.fps = search_dict(config,'FPS')
         
 
         # Set Caption
-        self.clock = pygame.time.Clock()
-        AVG_FPS = pygame.Clock.get_fps
-        pygame.display.set_caption(f'DC{AVG_FPS}')
+        '''self.clock = pygame.time.Clock()
+        DISPLAY_FPS = pygame.Clock.get_fps()
+        pygame.display.set_caption(f'DC{DISPLAY_FPS}')'''
         
         self.game = Game()
         print("Game initialized.")

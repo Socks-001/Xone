@@ -9,8 +9,8 @@ config = {
         'TILESIZE': 16,
         'SCALE_FACTOR_LIST': [1, 2, 4, 6],
         'SCALE_FACTOR_INDEX': 0,
-        'SCALE_FACTOR': 1,  # Will be updated dynamically
-        'menu_running': True,
+        'SCALE_FACTOR': 1,
+        'screen' : None
     },
 
     'ui': {
@@ -36,18 +36,19 @@ config = {
         'pause': ['Resume', 'Options', 'Quit'], 
         'options_selection': 0,
         'selection': 0,
-        'COOLDOWN' : 300
+        'COOLDOWN' : 300,
+        'menu_running': True,
+        'can_move': True,
+        'can_select' : True, 
+        'can_move_time' : None,
+        'selection_cooldown_time' : None
     },
 
     'lvl': {
     'lvl_number' : (1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
     "lvl_index" : 0,
     'game_running': False,
-    'menu_running': True,
-    'can_move': True,
-    'can_select' : True, 
-    'can_move_time' : None,
-    'selection_cooldown_time' : None
+    'menu_running': True
     },
 
     'controls' : {
