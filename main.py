@@ -11,6 +11,7 @@ class MainLoop:
         scale_factor = search_dict(config,'SCALE_FACTOR_LIST')[search_dict(config,'SCALE_FACTOR_INDEX')]
         self.screen = pygame.display.set_mode((search_dict(config,'SCREEN_WIDTH') * scale_factor, search_dict(config,'SCREEN_HEIGHT') * scale_factor), pygame.RESIZABLE)
         config['screen']['screen'] = self.screen 
+        self.clock = pygame.time.Clock()
         self.fps = search_dict(config,'FPS')
         
 

@@ -22,7 +22,7 @@ class Game:
 
         # Initialize player and level
         self.player = None
-        self.lvl = search_dict(config,'lvl_number')
+        self.lvl = 1
         self.game_running = search_dict(config,'game_running')
         self.menu_running = search_dict(config,'menu_running')
 
@@ -73,7 +73,7 @@ class Game:
     def run(self):
         print('Starting game...')
         
-        while self.game_running['game_running']:
+        while self.game_running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.game_running = False

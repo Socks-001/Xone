@@ -14,9 +14,10 @@ class Menu:
         self.home_menu = self.search_dict(config,'HOME_MENU')
         self.settings_menu = self.search_dict(config,'SETTINGS_MENU')
         self.pause_menu = self.search_dict(config,'PAUSE_MENU')
+        self.UI_BORDER_COLOR = search_dict(config, 'UI_BORDER_COLOR')
         
         # Menu running and Cooldown
-        self.running = self.search_dict(config,'menu_running')
+        self.running = search_dict(config,'menu_running')
         self.can_move = search_dict(config,'can_move')  # Allow movement by default
         self.can_select = True  # Allow selection by default
         self.can_move_time = None
@@ -29,12 +30,12 @@ class Menu:
         self.quit = quit
 
         # Screen
-        self.screen_width = search_dict(config,'SCREEN_Width')
-        self.screen_height = self.screen_width = search_dict(config,'SCREEN_HEIGHT')
-        self.screen = search_dict(config,'screen') 
-        self.scale_factor_list = self.screen_width = search_dict(config,'SCALE_FACTOR_LIST')
-        self.scale_factor_index = self.screen_width = search_dict(config,'SCALE_FACTOR_INDEX')
-        self.scale_factor = search_dict(config,'scale_factor')
+        self.screen_width = search_dict(config,'SCREEN_WIDTH')
+        self.screen_height = search_dict(config,'SCREEN_HEIGHT')
+        self.screen = pygame.display.get_surface() 
+        self.scale_factor_list = search_dict(config,'SCALE_FACTOR_LIST')
+        self.scale_factor_index = search_dict(config,'SCALE_FACTOR_INDEX')
+        self.scale_factor = search_dict(config,'SCALE_FACTOR')
 
         
        
@@ -58,18 +59,18 @@ class Menu:
             text_surface = self.font.render(option, False,self.text_color)
             rect = text_surface.get_rect(center=(surface.get_width() // 2, surface.get_height() // 2.5 + index * 20))
             if index == self.selection:
-                pygame.draw.rect(surface, UI_BORDER_COLOR, rect.inflate(20, 10), 2)
+                pygame.draw.rect(surface, self.UI_BORDER_COLOR, rect.inflate(20, 10), 2)
             surface.blit(text_surface, rect.topleft)
 
     def start_game(self):
-        self.running['menu_running'] = False
+        self.running= False
 
     def reload_menu(self):
         self.selection = 0  # reset option to first option
         self.options = self.options_list[self.options_selection]
 
     def input(self, controls):
-        if self.running['menu_running']:
+        if self.running:
             if self.can_move:  # Check if the menu can move
                 if controls.menu_navigation_y == 1:
                     self.selection = (self.selection + (controls.menu_navigation_y * -1)) % len(self.options)

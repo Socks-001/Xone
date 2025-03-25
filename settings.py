@@ -10,7 +10,8 @@ config = {
         'SCALE_FACTOR_LIST': [1, 2, 4, 6],
         'SCALE_FACTOR_INDEX': 0,
         'SCALE_FACTOR': 1,
-        'screen' : None
+        'screen' : None,
+        'clock' : pygame.time.Clock()
     },
 
     'ui': {
@@ -19,12 +20,12 @@ config = {
         'colors': {
             'bg': '#6dc286',
             'water': '#71ddee',
-            'ui_bg': '#7ee4ff',
-            'ui_border': '#4bb2cd',
+            'UI_BG': '#7ee4ff',
+            'UI_BORDER_COLOR': '#4bb2cd',
             'text': '#fffde4',
             'health': '#dd5929',
             'energy': 'blue',
-            'ui_border_active': 'gold',
+            'UI_BORDER_ACTIVE': 'gold',
             'DEBUG_LINE_WIDTH': 10,
             'DEBUG_LINE_COLOR': (200, 30, 10)
         }
@@ -45,8 +46,6 @@ config = {
     },
 
     'lvl': {
-    'lvl_number' : (1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-    "lvl_index" : 0,
     'game_running': False,
     'menu_running': True
     },

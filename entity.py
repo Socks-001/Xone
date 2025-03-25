@@ -6,7 +6,8 @@ class Entity(pygame.sprite.Sprite):
     def __init__(self, pos, groups, sprite_type, obstacle_sprites):
         super().__init__(groups)
         self.sprite_type = sprite_type
-        self.image = pygame.Surface((search_dict('TILESIZE'),search_dict('TILESIZE')))
+        tile_size = search_dict(config, 'TILESIZE') 
+        self.image = pygame.Surface((tile_size, tile_size))
         self.rect = self.image.get_rect(topleft=pos)
         self.hitbox = pygame.FRect(self.rect.inflate(0, -10))
         self.direction = pygame.math.Vector2()
