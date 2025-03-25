@@ -4,16 +4,13 @@ from utilities import search_dict, quit
 
 class Menu:
     def __init__(self):
-        
-        #Import search util
-        self.search_dict = search_dict
 
         # UI 
-        self.font = pygame.font.Font(self.search_dict(config,'UI_FONT')), (self.search_dict(config,'UI_FONT_SIZE'))
+        self.font = pygame.font.Font(search_dict(config,'FONT'), (search_dict(config,'FONT_SIZE')))
         self.text_color = search_dict(config,'TEXT_COLOR')
-        self.home_menu = self.search_dict(config,'HOME_MENU')
-        self.settings_menu = self.search_dict(config,'SETTINGS_MENU')
-        self.pause_menu = self.search_dict(config,'PAUSE_MENU')
+        self.home_menu = search_dict(config,'HOME_MENU')
+        self.settings_menu = search_dict(config,'SETTINGS_MENU')
+        self.pause_menu = search_dict(config,'PAUSE_MENU')
         self.UI_BORDER_COLOR = search_dict(config, 'UI_BORDER_COLOR')
         
         # Menu running and Cooldown
@@ -23,10 +20,10 @@ class Menu:
         self.can_move_time = None
         self.selection_cooldown_time = None
         self.options_list = [self.home_menu, self.settings_menu]  # List of menus
-        self.options_selection = self.search_dict(config,'options_selection')  # Initialize selected option for the current menu
-        self.selection = self.search_dict(config,'selection')
+        self.options_selection = search_dict(config,'options_selection')  # Initialize selected option for the current menu
+        self.selection = search_dict(config,'selection')
         self.options = self.options_list[self.options_selection]  # Select the current menu options
-        self.cooldown = self.search_dict(config,'COOLDOWN')  # Cooldown time in milliseconds
+        self.cooldown = search_dict(config,'COOLDOWN')  # Cooldown time in milliseconds
         self.quit = quit
 
         # Screen
@@ -36,6 +33,7 @@ class Menu:
         self.scale_factor_list = search_dict(config,'SCALE_FACTOR_LIST')
         self.scale_factor_index = search_dict(config,'SCALE_FACTOR_INDEX')
         self.scale_factor = search_dict(config,'SCALE_FACTOR')
+        self.create_map = search_dict(config,'create_map')
 
         
        
@@ -63,7 +61,10 @@ class Menu:
             surface.blit(text_surface, rect.topleft)
 
     def start_game(self):
+        self.create_map(self)
         self.running= False
+        
+
 
     def reload_menu(self):
         self.selection = 0  # reset option to first option

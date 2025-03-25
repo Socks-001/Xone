@@ -11,20 +11,19 @@ config = {
         'SCALE_FACTOR_INDEX': 0,
         'SCALE_FACTOR': 1,
         'screen' : None,
-        'clock' : pygame.time.Clock()
     },
 
     'ui': {
-        'font': 'graphics/font/joystix monospace.otf',
-        'font_size': 12,
+        'FONT': 'graphics/font/joystix monospace.otf',
+        'FONT_SIZE': 12,
         'colors': {
-            'bg': '#6dc286',
-            'water': '#71ddee',
+            'BG_COLOR': '#6dc286',
+            'WATER_COLOR': '#71ddee',
             'UI_BG': '#7ee4ff',
             'UI_BORDER_COLOR': '#4bb2cd',
-            'text': '#fffde4',
-            'health': '#dd5929',
-            'energy': 'blue',
+            'TEXT_COLOR': '#fffde4',
+            'HEALTH_COLOR': '#dd5929',
+            'ENERGY_COLOR': 'blue',
             'UI_BORDER_ACTIVE': 'gold',
             'DEBUG_LINE_WIDTH': 10,
             'DEBUG_LINE_COLOR': (200, 30, 10)
@@ -32,9 +31,9 @@ config = {
     },
 
     'menu': {
-        'home': ['Start Game', 'Options', 'Quit'],
-        'settings': ['Volume', 'Scale', 'Fullscreen', 'Back'],
-        'pause': ['Resume', 'Options', 'Quit'], 
+        'HOME_MENU': ['Start Game', 'Options', 'Quit'],
+        'SETTINGS_MENU': ['Volume', 'Scale', 'Fullscreen', 'Back'],
+        'PAUSE_MENU': ['Resume', 'Options', 'Quit'], 
         'options_selection': 0,
         'selection': 0,
         'COOLDOWN' : 300,
@@ -46,12 +45,14 @@ config = {
     },
 
     'lvl': {
-    'game_running': False,
-    'menu_running': True
+    'game_running': True,
+    'menu_running': True,
+    'create_map' : None
     },
 
     'controls' : {
-        'controller_found' : False
+        'controller_found' : False,
+        'controller_type' : None
     }
      
 

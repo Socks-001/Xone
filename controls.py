@@ -40,11 +40,11 @@ class Controls:
 
     def handle_event(self, event):
         keys = pygame.key.get_pressed()  # Get the current state of all keys
-        if keys[pygame.K_UP] or self.dpad_up == True:
+        if keys[pygame.K_UP] or self.dpad_up:
             self.direction.y = -1
             self.menu_navigation_y = 1
             print(f'up , {self.direction.y}')
-        elif keys[pygame.K_DOWN] or self.dpad_down == True:
+        elif keys[pygame.K_DOWN] or self.dpad_down:
             self.direction.y = 1
             self.menu_navigation_y = -1
             print(f'down , {self.direction.y}')
@@ -78,7 +78,7 @@ class Controls:
             self.menu_select = 1
             print (f'menu_select = {self.menu_select}')
         if keys[pygame.K_ESCAPE]:
-            if self.menu_running == False:
+            if not self.menu_running:
                 self.menu_running = True
             
         elif event.type == pygame.KEYUP:

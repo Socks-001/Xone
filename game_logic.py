@@ -11,7 +11,7 @@ from controls import Controls
 class Game:
     def __init__(self):
         # Initializing screen and surface 
-        self.screen = search_dict(config,'screen')
+        self.screen = pygame.display.get_surface()
         self.game_surface = search_dict(config,'game_surface')
         self.bg_color = search_dict(config,'BG_COLOR')
         self.tilesize = search_dict(config,'TILESIZE')
@@ -31,7 +31,7 @@ class Game:
         self.controls = Controls()
         self.menu = Menu()
 
-        self.create_map()
+        
     
     def create_map(self):
         # Create level counter
@@ -70,6 +70,8 @@ class Game:
         self.player = Player(pos, [self.visible_sprites], self.obstacle_sprites, self.controls, self.menu_running)
         print(f'Player created at {pos}')
 
+    config['lvl']['create_map'] = create_map
+    
     def run(self):
         print('Starting game...')
         
