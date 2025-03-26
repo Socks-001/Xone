@@ -8,8 +8,8 @@ config = {
         'FPS': 60,
         'TILESIZE': 16,
         'SCALE_FACTOR_LIST': [1, 2, 4, 6],
-        'SCALE_FACTOR_INDEX': 0,
-        'SCALE_FACTOR': 1,
+        'scale_factor_index': 0,
+        'scale_surface' : False,
         'screen' : None,
     },
 
@@ -47,6 +47,7 @@ config = {
     'lvl': {
     'game_running': True,
     'menu_running': True,
+    'lvl_running' : True,
     'create_map' : None
     },
 
@@ -75,8 +76,7 @@ def add_joystick_buttons(joystick):
     print(f"{config['controls']}")
 
 # Directly use the values from the config dictionary
-scale_factor = config['screen']['SCALE_FACTOR_LIST'][config['screen']['SCALE_FACTOR_INDEX']]
-game_surface = pygame.Surface((config['screen']['SCREEN_WIDTH'] * scale_factor, config['screen']['SCREEN_HEIGHT'] * scale_factor))
-config['screen']['game_surface'] = game_surface
+#scale_factor = config['screen']['SCALE_FACTOR_LIST'][config['screen']['SCALE_FACTOR_INDEX']]
+#config['screen']['game_surface'] = game_surface
 
 #pprint for easier readability

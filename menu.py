@@ -14,7 +14,7 @@ class Menu:
         self.UI_BORDER_COLOR = search_dict(config, 'UI_BORDER_COLOR')
         
         # Menu running and Cooldown
-        self.running = search_dict(config,'menu_running')
+        self.menu_running = search_dict(config,'menu_running')
         self.can_move = search_dict(config,'can_move')  # Allow movement by default
         self.can_select = True  # Allow selection by default
         self.can_move_time = None
@@ -27,13 +27,15 @@ class Menu:
         self.quit = quit
 
         # Screen
-        self.screen_width = search_dict(config,'SCREEN_WIDTH')
+        self.scale_surface = search_dict(config,'scale_surface')
+        '''self.screen_width = search_dict(config,'SCREEN_WIDTH')
         self.screen_height = search_dict(config,'SCREEN_HEIGHT')
         self.screen = pygame.display.get_surface() 
         self.scale_factor_list = search_dict(config,'SCALE_FACTOR_LIST')
         self.scale_factor_index = search_dict(config,'SCALE_FACTOR_INDEX')
-        self.scale_factor = search_dict(config,'SCALE_FACTOR')
+        self.scale_factor = search_dict(config,'SCALE_FACTOR')'''
         self.create_map = search_dict(config,'create_map')
+        print (f'menu running = {self.menu_running}')
 
         
        
@@ -61,17 +63,15 @@ class Menu:
             surface.blit(text_surface, rect.topleft)
 
     def start_game(self):
-        self.create_map(self)
-        self.running= False
+        self.menu_running= False
+        print (f'menu running = {self.menu_running}')
         
-
-
     def reload_menu(self):
         self.selection = 0  # reset option to first option
         self.options = self.options_list[self.options_selection]
 
     def input(self, controls):
-        if self.running:
+        if self.menu_running:
             if self.can_move:  # Check if the menu can move
                 if controls.menu_navigation_y == 1:
                     self.selection = (self.selection + (controls.menu_navigation_y * -1)) % len(self.options)
@@ -101,9 +101,8 @@ class Menu:
 
                 elif self.selection == 1: 
                     # Handle scale setting
-                    self.scale_factor_index = (self.scale_factor_index + 1) % len(self.scale_factor_list)
-                    self.scale_factor = self.scale_factor_list[self.scale_factor_index]
-                    self.screen = pygame.display.set_mode((self.screen_width * self.scale_factor, self.screen_height * self.scale_factor), pygame.RESIZABLE) 
+                    self.scale_surface = True
+                    self.scale_surface = False
                     
                 elif self.selection == 2:
                     if self.screen.get_flags() & pygame.FULLSCREEN:
@@ -115,8 +114,6 @@ class Menu:
                     self.options_selection = 0  # Set selection to "home menu"
                     self.selection = 0
                     self.options = self.options_list[self.options_selection]
-        
-
 
     def update(self, controls, game_surface):
         self.input(controls)

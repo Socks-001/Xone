@@ -26,7 +26,6 @@ class Game:
         self.game_running = search_dict(config,'game_running')
         self.menu_running = search_dict(config,'menu_running')
 
-
         # Initialize controls
         self.controls = Controls()
         self.menu = Menu()
@@ -67,31 +66,5 @@ class Game:
                                 Tile((x, y), [self.visible_sprites], 'entities', surf)
 
     def create_player(self, pos):
-        self.player = Player(pos, [self.visible_sprites], self.obstacle_sprites, self.controls, self.menu_running)
+        self.player = Player(pos, [self.visible_sprites], self.obstacle_sprites, self.controls)
         print(f'Player created at {pos}')
-
-    config['lvl']['create_map'] = create_map
-    
-    def run(self):
-        print('Starting game...')
-        
-        while self.game_running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.game_running = False
-                    quit(self)
-                else:
-                    self.controls.handle_event(event)
-                   
-            self.game_surface.fill(self.bg_color)
-
-            if self.menu_running:
-                self.menu.update(self.controls,self.game_surface)
-
-            else:
-                self.visible_sprites.draw(self.game_surface)
-                self.visible_sprites.update()
-            
-            self.screen.blit(self.game_surface, (0, 0))
-            pygame.display.flip()
-            pygame.event.pump()
