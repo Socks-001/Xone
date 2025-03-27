@@ -11,27 +11,25 @@ from controls import Controls
 class Game:
     def __init__(self):
         # Initializing screen and surface 
-        self.screen = pygame.display.get_surface()
-        self.game_surface = search_dict(config,'game_surface')
+        self.screen = config['screen']['screen']
         self.bg_color = search_dict(config,'BG_COLOR')
         self.tilesize = search_dict(config,'TILESIZE')
         
         # Initialize Sprite Groups
         self.visible_sprites = pygame.sprite.Group()
         self.obstacle_sprites = pygame.sprite.Group()
+        config['lvl']['visible_sprites'] = self.visible_sprites = pygame.sprite.Group()
+        config['lvl']['obstacle_sprites'] = self.obstacle_sprites = pygame.sprite.Group()
+
 
         # Initialize player and level
         self.player = None
-        self.lvl = 1
-        self.game_running = search_dict(config,'game_running')
-        self.menu_running = search_dict(config,'menu_running')
+        self.lvl = config['lvl']['lvl_index']
 
         # Initialize controls
         self.controls = Controls()
-        self.menu = Menu()
-
+        config['controls']['controls'] = self.controls
         
-    
     def create_map(self):
         # Create level counter
         layouts = {
@@ -64,7 +62,12 @@ class Game:
                             else:
                                 surf = graphics['entities'][int(col)]
                                 Tile((x, y), [self.visible_sprites], 'entities', surf)
+        config['lvl']['visible_sprites'] = self.visible_sprites
+        config['lvl']['obstacle_sprites'] = self.obstacle_sprites
 
     def create_player(self, pos):
-        self.player = Player(pos, [self.visible_sprites], self.obstacle_sprites, self.controls)
+        self.player = Player(pos, [self.visible_sprites], self.obstacle_sprites)
         print(f'Player created at {pos}')
+        config['lvl']['visible_sprites'] = self.visible_sprites
+        config['lvl']['obstacle_sprites'] = self.obstacle_sprites
+    

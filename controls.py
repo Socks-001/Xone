@@ -5,36 +5,39 @@ from settings import config, add_joystick_buttons
 class Controls:
     def __init__(self):
         pygame.joystick.init()
-        self.controller_found = search_dict(config,'controller_found')
-        self.joystick = None
+        self.joystick_1 = None
         self.dpad_input_player1 = (0, 0)
         self.button_input_player1 = 0
-        #self.button_input_player1 = 0
         self.coolingdown = False
         self.direction = pygame.math.Vector2()
         self.shoot_direction = pygame.math.Vector2()
         self.menu_navigation = pygame.math.Vector2()
-        self.menu_running = search_dict(config,'menu_running')
         self.menu_select = 0  # Initialize menu selection state
-
 
         # Initialize joysticks
         try:
-            self.joystick = pygame.joystick.Joystick(0)  # Initialize the first joystick
-            if self.joystick:
+            joystick_count = pygame.joystick.get_count()
+
+            if joystick_count > 0:
                 self.controller_found = True
-                add_joystick_buttons(self.joystick)
-                print("Joystick found")
-                self.dpad_up = search_dict(config,'dpad_up')
-                self.dpad_down = search_dict(config,'dpad_down')
-                self.dpad_left = search_dict(config,'dpad_left')
-                self.dpad_right = search_dict(config,'dpad_right')
-                self.x = search_dict(config,'x')  
-                self.square = search_dict(config,'square')
-                self.triangle = search_dict(config,'triangle')
-                self.circle = search_dict(config,'circle')
-            else:
-                print("No joystick found")
+                for i in range(joystick_count):
+                    joystick = pygame.joystick.Joystick(i)
+                    joystick.init()
+                    print(f"Joystick {i} found: {joystick.get_name()}")
+                else:
+                    print("No joystick found")
+                if pygame.joystick.Joystick(0):
+                    self.joystick_1 = pygame.joystick.Joystick(0)
+                    add_joystick_buttons(self.joystick_1)
+                    print("Joystick found")
+                    self.dpad_up = search_dict(config,'dpad_up')
+                    self.dpad_down = search_dict(config,'dpad_down')
+                    self.dpad_left = search_dict(config,'dpad_left')
+                    self.dpad_right = search_dict(config,'dpad_right')
+                    self.x = search_dict(config,'x')  
+                    self.square = search_dict(config,'square')
+                    self.triangle = search_dict(config,'triangle')
+                    self.circle = search_dict(config,'circle')
         except pygame.error as e:
             print(f"Joystick initialization failed: {e}")
 
@@ -78,8 +81,8 @@ class Controls:
             self.menu_select = 1
             print (f'menu_select = {self.menu_select}')
         if keys[pygame.K_ESCAPE]:
-            if not self.menu_running:
-                self.menu_running = True
+            if not config['menu']['menu_running']:
+                config['menu']['menu_running'] = True
             
         elif event.type == pygame.KEYUP:
             if  keys[pygame.K_UP] or keys[pygame.K_DOWN] or not self.dpad_up or not self.dpad_down:

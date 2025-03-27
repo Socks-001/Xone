@@ -9,8 +9,10 @@ config = {
         'TILESIZE': 16,
         'SCALE_FACTOR_LIST': [1, 2, 4, 6],
         'scale_factor_index': 0,
-        'scale_surface' : False,
+        'scale_factor' : None,
+        'scale_surface_trigger' : False,
         'screen' : None,
+        'fullscreen_trigger' : False
     },
 
     'ui': {
@@ -34,26 +36,25 @@ config = {
         'HOME_MENU': ['Start Game', 'Options', 'Quit'],
         'SETTINGS_MENU': ['Volume', 'Scale', 'Fullscreen', 'Back'],
         'PAUSE_MENU': ['Resume', 'Options', 'Quit'], 
-        'options_selection': 0,
-        'selection': 0,
-        'COOLDOWN' : 300,
         'menu_running': True,
-        'can_move': True,
-        'can_select' : True, 
-        'can_move_time' : None,
-        'selection_cooldown_time' : None
+        'selection_cooldown_time' : None,
+        'menu' : None,
+        'menu_running': True
     },
 
     'lvl': {
-    'game_running': True,
-    'menu_running': True,
-    'lvl_running' : True,
-    'create_map' : None
+        'game' : None,
+        'game_running': True,
+        'lvl_running' : True,
+        'visible_sprites' : None,
+        'obstacle_sprites' : None,
+        'lvl_index' : 1
     },
 
     'controls' : {
         'controller_found' : False,
-        'controller_type' : None
+        'controller_type' : None,
+        'controlls' : None
     }
      
 
