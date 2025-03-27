@@ -12,16 +12,14 @@ class MainLoop:
         
         # Display 
         self.bg_color = search_dict(config,'BG_COLOR')
-        self.scale_factor_index = config['screen']['scale_factor_index']
-        self.scale_factor_list = config['screen']['SCALE_FACTOR_LIST']
+        self.scale_factor_index = 0
+        self.scale_factor_list = [1, 2, 4, 6]
         self.scale_factor = self.scale_factor_list[self.scale_factor_index] 
-        config['menu']['scale_factor'] = self.scale_factor
-        print (f'scale_factor = {self.scale_factor}')
+        print (f'scale factor index = {self.scale_factor_index}, scale factor = {self.scale_factor}')
         self.screen_width = search_dict(config,'SCREEN_WIDTH')
         self.screen_height = search_dict(config,'SCREEN_HEIGHT')
-        self.screen = pygame.display.set_mode((self.screen_width * self.scale_factor, self.screen_height * self.scale_factor), pygame.RESIZABLE)
+        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         self.game_surface = pygame.Surface((self.screen_width, self.screen_height))
-        self.fullscreen_trigger = config['screen']['fullscreen_trigger']
         
         # Update settings dictionary
         config['screen']['screen'] = self.screen 
@@ -33,15 +31,49 @@ class MainLoop:
         pygame.display.set_caption('DC')
         
         # Game
-        self.game = Game()
+        self.controls = Controls()
+        self.game = Game(self.controls)
         print("Game initialized.")
         config['lvl']['game'] = self.game
-        self.controls = Controls()
-        config['controls']['controls'] = self.controls
+        
+        
 
         # Menu
         self.menu = Menu()
         config['menu']['menu'] = self.menu
+    
+    '''def handle_scaling(self):
+        if config['screen']['scale_surface_trigger']:
+            print('Scaling...')
+            self.scale_factor_index = (self.scale_factor_index + 1) % len(self.scale_factor_list)
+            self.scale_factor = self.scale_factor_list[self.scale_factor_index]  # Update scale_factor based on the index
+            print(f'scale factor index = {self.scale_factor_index}, scale factor = {self.scale_factor}')
+            self.screen = pygame.display.set_mode(((self.screen_width * self.scale_factor), (self.screen_height * self.scale_factor)), pygame.SCALED)
+            scaled_surface = pygame.transform.scale(self.game_surface, self.screen.get_size())
+            config['screen']['game_surface'] = scaled_surface
+            config['screen']['scale_surface_trigger'] = False'''
+            
+
+    def handle_fullscreen(self):
+        if config['screen']['fullscreen_trigger']:
+            display_info = pygame.display.Info()
+            display_width = display_info.current_w
+            display_height = display_info.current_h
+                
+            if pygame.display.get_surface().get_flags() & pygame.FULLSCREEN:
+                # If the game is in fullscreen mode, toggle back to windowed mode
+                print("Exiting fullscreen...")
+                self.screen = pygame.display.set_mode((self.screen_width * self.scale_factor, self.screen_height * self.scale_factor), pygame.SCALED)
+                self.game_surface = pygame.Surface((self.screen_width, self.screen_height))  # Reset the game surface to original size
+            else:
+                # Set the game window to fullscreen
+                print("Entering fullscreen...")
+                self.screen = pygame.display.set_mode((display_width, display_height), pygame.FULLSCREEN | pygame.SCALED)
+                scaled_surface = pygame.transform.scale(self.game_surface, (display_width, display_height))
+                config['screen']['game_surface'] = scaled_surface
+                self.game_surface = config['screen']['game_surface']
+        
+        config['screen']['fullscreen_trigger'] = False
 
     def run(self):
         while True: 
@@ -66,24 +98,10 @@ class MainLoop:
                     self.obstacle_sprites = config['lvl']['obstacle_sprites']
                     self.game.visible_sprites.draw(self.game_surface)
                     self.game.visible_sprites.update()
-                
-                if config['screen']['scale_surface_trigger']:
-                    print('scaling')
-                    config['screen']['scale_factor'] = (self.scale_factor + 1) % len(self.scale_factor_list)
-                    self.scale_factor = config['screen']['scale_factor']
-                    self.screen = pygame.display.set_mode((self.screen_width * self.scale_factor, self.screen_height * self.scale_factor), pygame.RESIZABLE)
-                    scaled_surface = pygame.transform.scale(self.game_surface, self.screen.get_size())
-                    # Update the reference in config
-                    config['screen']['game_surface'] = scaled_surface
-                    self.game_surface = config['screen']['game_surface']
-                    config['screen']['scale_surface_trigger'] = False   
-                    
-                if config['screen']['fullscreen_trigger']:
-                    if self.screen.get_flags() & pygame.FULLSCREEN:
-                        config['screen']['screen'] = pygame.display.set_mode(self.screen_width, self.screen_height)
-                    else:
-                        config['screen']['screen'] = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.FULLSCREEN)
-                    config['screen']['fullscreen_trigger'] = False
+
+                # Handle scaling and fullscreen changes
+                #self.handle_scaling()
+                self.handle_fullscreen()
 
                 self.screen.blit(self.game_surface, (0, 0))
                 pygame.display.flip()

@@ -7,9 +7,6 @@ config = {
         'SCREEN_HEIGHT': 240,
         'FPS': 60,
         'TILESIZE': 16,
-        'SCALE_FACTOR_LIST': [1, 2, 4, 6],
-        'scale_factor_index': 0,
-        'scale_factor' : None,
         'scale_surface_trigger' : False,
         'screen' : None,
         'fullscreen_trigger' : False

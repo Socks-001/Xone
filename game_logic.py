@@ -3,13 +3,9 @@ from utilities import import_csv_layout, import_folder, search_dict
 from settings import config
 from tile import Tile
 from player import Player
-from menu import Menu
-from controls import Controls
-
-
 
 class Game:
-    def __init__(self):
+    def __init__(self, controls):
         # Initializing screen and surface 
         self.screen = config['screen']['screen']
         self.bg_color = search_dict(config,'BG_COLOR')
@@ -27,8 +23,8 @@ class Game:
         self.lvl = config['lvl']['lvl_index']
 
         # Initialize controls
-        self.controls = Controls()
-        config['controls']['controls'] = self.controls
+        self.controls = controls
+        
         
     def create_map(self):
         # Create level counter
@@ -58,15 +54,15 @@ class Game:
                             Tile((x, y), [self.visible_sprites, self.obstacle_sprites], 'wall', surf)
                         elif style == 'entities':
                             if col == '19':
-                                self.create_player((x, y))
+                                self.create_player((x, y), self.controls)
                             else:
                                 surf = graphics['entities'][int(col)]
                                 Tile((x, y), [self.visible_sprites], 'entities', surf)
         config['lvl']['visible_sprites'] = self.visible_sprites
         config['lvl']['obstacle_sprites'] = self.obstacle_sprites
 
-    def create_player(self, pos):
-        self.player = Player(pos, [self.visible_sprites], self.obstacle_sprites)
+    def create_player(self, pos, controls):
+        self.player = Player(pos, [self.visible_sprites], self.obstacle_sprites, controls)
         print(f'Player created at {pos}')
         config['lvl']['visible_sprites'] = self.visible_sprites
         config['lvl']['obstacle_sprites'] = self.obstacle_sprites

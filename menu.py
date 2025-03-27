@@ -91,7 +91,8 @@ class Menu:
 
                 elif self.available_options_selection_index == 1: 
                     # Handle scale setting
-                    config['screen']['scale_surface_trigger'] = True
+                    #config['screen']['scale_surface_trigger'] = True
+                    pass
                     
                 elif self.available_options_selection_index == 2:
                     config['screen']['fullscreen_trigger'] = True
