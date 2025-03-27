@@ -9,11 +9,11 @@
     ],
     "fileStates": {
         "test.tmx": {
-            "scale": 3,
+            "scale": 2,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 129,
-                "y": 117.83333333333334
+                "x": 51.25,
+                "y": 188.5
             }
         },
         "test_tileset.tsx": {

@@ -3,8 +3,8 @@ from entity import Entity
 from settings import config
 
 class Player(Entity):
-    def __init__(self, pos, groups, obstacle_sprites, controls):
-        super().__init__(pos, groups, 'player', obstacle_sprites)
+    def __init__(self, pos, groups, controls):
+        super().__init__(pos, groups, 'player')
         self.speed = 5.0
         self.controls = controls
         self.menu_running = config['menu']['menu_running']

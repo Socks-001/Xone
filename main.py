@@ -19,6 +19,7 @@ class MainLoop:
         self.screen_width = search_dict(config,'SCREEN_WIDTH')
         self.screen_height = search_dict(config,'SCREEN_HEIGHT')
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
+        
         self.game_surface = pygame.Surface((self.screen_width, self.screen_height))
         
         # Update settings dictionary

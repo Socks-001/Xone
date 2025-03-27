@@ -1,8 +1,9 @@
 import pygame
 from utilities import import_csv_layout, import_folder, search_dict
-from settings import config
+from settings import config, lvl
 from tile import Tile
 from player import Player
+from enemy import Enemy
 
 class Game:
     def __init__(self, controls):
@@ -54,16 +55,22 @@ class Game:
                             Tile((x, y), [self.visible_sprites, self.obstacle_sprites], 'wall', surf)
                         elif style == 'entities':
                             if col == '19':
-                                self.create_player((x, y), self.controls)
-                            else:
+                                self.create_player((x, y), None, self.controls)
+                            if col == '29': 
+                                enemy_name = 'test'
+                                self.create_enemy
                                 surf = graphics['entities'][int(col)]
                                 Tile((x, y), [self.visible_sprites], 'entities', surf)
+        
         config['lvl']['visible_sprites'] = self.visible_sprites
         config['lvl']['obstacle_sprites'] = self.obstacle_sprites
 
-    def create_player(self, pos, controls):
+    def create_player(self, pos, obstacle_sprites, controls):
         self.player = Player(pos, [self.visible_sprites], self.obstacle_sprites, controls)
         print(f'Player created at {pos}')
         config['lvl']['visible_sprites'] = self.visible_sprites
         config['lvl']['obstacle_sprites'] = self.obstacle_sprites
+
+    def create_enemy(self, name, pos, groups, player):
+        self.enemy = Enemy(name, pos, groups, player )
     
