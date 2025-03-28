@@ -45,7 +45,8 @@ config = {
         'lvl_running' : True,
         'visible_sprites' : None,
         'obstacle_sprites' : None,
-        'lvl_index' : 1
+        'lvl_index' : 1,
+        'test_graphics' : None
     },
 
     'controls' : {
@@ -53,7 +54,6 @@ config = {
         'controller_type' : None,
         'controlls' : None
     }
-     
 
     }
 

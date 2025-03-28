@@ -34,6 +34,7 @@ class Game:
             'wall': import_csv_layout(f'level_data/{self.lvl}/wall.csv'),
             'entities': import_csv_layout(f'level_data/{self.lvl}/entities.csv'),
         }
+ 
         graphics = {
             'floor': import_folder('graphics/level'),
             'wall': import_folder('graphics/level'),
@@ -58,7 +59,7 @@ class Game:
                                 self.create_player((x, y), None, self.controls)
                             if col == '29': 
                                 enemy_name = 'test'
-                                self.create_enemy
+                                self.create_enemy(enemy_name, (x, y), [self.visible_sprites, self.obstacle_sprites], self.player)
                                 surf = graphics['entities'][int(col)]
                                 Tile((x, y), [self.visible_sprites], 'entities', surf)
         
@@ -72,5 +73,6 @@ class Game:
         config['lvl']['obstacle_sprites'] = self.obstacle_sprites
 
     def create_enemy(self, name, pos, groups, player):
-        self.enemy = Enemy(name, pos, groups, player )
+        self.enemy = Enemy(name, pos, groups, player)
+        print(f"Enemy '{name}' created at {pos}")
     

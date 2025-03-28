@@ -1,6 +1,7 @@
 import pygame
 from entity import Entity
 from settings import config
+from weapon_data import weapons
 
 class Player(Entity):
     def __init__(self, pos, groups, controls):
@@ -9,6 +10,7 @@ class Player(Entity):
         self.controls = controls
         self.menu_running = config['menu']['menu_running']
         print (f'Player coordinates = {self.hitbox.center}')
+
 
     def update(self):
         

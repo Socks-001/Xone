@@ -1,10 +1,12 @@
 import pygame
 from settings import config
 from utilities import search_dict
+from weapon_data import weapons
 
 class Entity(pygame.sprite.Sprite):
     def __init__(self, pos, groups, sprite_type):
         super().__init__(groups)
+
         self.sprite_type = sprite_type
         tile_size = search_dict(config, 'TILESIZE') 
         self.image = pygame.Surface((tile_size, tile_size))
@@ -24,11 +26,8 @@ class Entity(pygame.sprite.Sprite):
         #self.collision('vertical')
         self.rect.center = self.hitbox.center
         
-    def death_particles(self,pos,particle_type):
-        self.animation_player.create_particles(particle_type,pos,self.weapon_sprites)
-
-    def create_attack(self):
-          Weapon(self.player, [self.weapon_sprites],  self.obstacle_sprites, self.enemy_sprites)
+    '''def death_particles(self,pos,particle_type):
+        self.animation_player.create_particles(particle_type,pos,self.weapon_sprites)'''
 
 class Weapon(pygame.sprite.Sprite):
     def __init__(self, player, groups, obstacle_sprites, entity_sprites):
@@ -37,12 +36,11 @@ class Weapon(pygame.sprite.Sprite):
         self.player = player
 
         # graphic
-        self.sprite_type = 'player_shot'
-        self.weapon_index = player.weapon_index
-        self.attack_damage = player.attack_damage
-        self.direction = pygame.Vector2(1,0)
+        self.sprite_type = weapons['test']['sprite']
+        self.attack_damage = weapons['test']['damage']
+        #self.direction = pygame.Vector2(1,0)
         
-        #self.weapon_datas
+        #self.weapon_data
 
         full_path = f'graphics/player/weapons/{player.weapon}.png'
         self.image = pygame.image.load(full_path).convert_alpha()
@@ -67,7 +65,10 @@ class Weapon(pygame.sprite.Sprite):
         # enemies 
         self.entity_sprites = entity_sprites
 
-    def move(self, velocity):
+    def attack(self, target):
+        Weapon(self.player, [self.weapon_sprites],  self.obstacle_sprites, self.enemy_sprites)
+
+    def move_projectile(self, velocity):
         if self.direction.x == 0:
             self.direction.x = 1
         
