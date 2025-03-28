@@ -39,16 +39,7 @@ config = {
         'menu_running': True
     },
 
-    'lvl': {
-        'game' : None,
-        'game_running': True,
-        'lvl_running' : True,
-        'visible_sprites' : None,
-        'obstacle_sprites' : None,
-        'lvl_index' : 1,
-        'test_graphics' : None
-    },
-
+    
     'controls' : {
         'controller_found' : False,
         'controller_type' : None,

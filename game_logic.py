@@ -1,6 +1,7 @@
 import pygame
 from utilities import import_csv_layout, import_folder, search_dict
-from settings import config, lvl
+from settings import config
+from level_data import level
 from tile import Tile
 from player import Player
 from enemy import Enemy
@@ -21,18 +22,29 @@ class Game:
 
         # Initialize player and level
         self.player = None
-        self.lvl = config['lvl']['lvl_index']
+        self.level = level['level']['level_index']
 
         # Initialize controls
         self.controls = controls
+    
+    def load_level_data(self, lvl_index):
+        """Load the level data from the 'level' dictionary."""
+        level_name = f"test_lvl"  # Update with a dynamic level name if necessary
         
+        # Load the level data (layout and graphics) from the level dictionary
+        self.level_data = level.get(level_name, {})
+
+        self.floor_layout = self.level_data.get('test_floor_layout', [])
+        self.wall_layout = self.level_data.get('test_wall_layout', [])
+        self.entity_layout = self.level_data.get('test_entity_layout', [])
+        self.graphics = self.level_data.get('test_graphics', [])
         
     def create_map(self):
         # Create level counter
         layouts = {
-            'floor': import_csv_layout(f'level_data/{self.lvl}/floor.csv'),
-            'wall': import_csv_layout(f'level_data/{self.lvl}/wall.csv'),
-            'entities': import_csv_layout(f'level_data/{self.lvl}/entities.csv'),
+            'floor': import_csv_layout(f'level_data/{self.level}/floor.csv'),
+            'wall': import_csv_layout(f'level_data/{self.level}/wall.csv'),
+            'entities': import_csv_layout(f'level_data/{self.level}/entities.csv'),
         }
  
         graphics = {

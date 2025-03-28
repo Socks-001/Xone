@@ -2,6 +2,7 @@ import pygame, sys
 from game_logic import Game
 from menu import Menu
 from settings import config
+from level_data import level
 from utilities import search_dict
 from controls import Controls
 
@@ -35,7 +36,7 @@ class MainLoop:
         self.controls = Controls()
         self.game = Game(self.controls)
         print("Game initialized.")
-        config['lvl']['game'] = self.game
+        level['level']['game'] = self.game
         
         
 
@@ -79,12 +80,12 @@ class MainLoop:
     def run(self):
         while True: 
             print("Starting main loop...")
-            config['lvl']['game_running'] = True
-            self.game_running = config['lvl']['game_running']
+            level['level']['game_running'] = True
+            self.game_running = level['level']['game_running']
             while self.game_running:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
-                        config['lvl']['game_running'] = False
+                        level['level']['game_running'] = False
                         pygame.quit()
                         sys.exit()
                     else:
@@ -95,8 +96,8 @@ class MainLoop:
                 if config['menu']['menu_running']:
                     self.menu.update(self.controls, self.game_surface)
                 else:
-                    self.visible_sprites = config['lvl']['visible_sprites']
-                    self.obstacle_sprites = config['lvl']['obstacle_sprites']
+                    self.visible_sprites = level['level']['visible_sprites']
+                    self.obstacle_sprites = level['level']['obstacle_sprites']
                     self.game.visible_sprites.draw(self.game_surface)
                     self.game.visible_sprites.update()
 

@@ -5,12 +5,25 @@ pygame.init()
 
 # Level dictionary to store data
 level = {
+    'lvl': {
+        'game' : None,
+        'game_running': True,
+        'level_running' : True,
+        'visible_sprites' : None,
+        'obstacle_sprites' : None,
+        'level_index' : 1,
+        'level_number' : ['test', 0, 1, 2],
+    },
+
     'test_lvl': {  
         'test_graphics': None,  
         'test_floor_layout': None,
         'test_wall_layout': None,
         'test_entity_layout': None
-    }
+    },
+    'sprite_groups' : {'visible_sprites' : None,
+                       'obstacle_sprites' : None
+                       }
 }
 
 def load_level_data(level_name):

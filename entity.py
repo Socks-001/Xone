@@ -2,6 +2,7 @@ import pygame
 from settings import config
 from utilities import search_dict
 from weapon_data import weapons
+from level_data import level
 
 class Entity(pygame.sprite.Sprite):
     def __init__(self, pos, groups, sprite_type):
@@ -13,7 +14,7 @@ class Entity(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=pos)
         self.hitbox = pygame.FRect(self.rect.inflate((self.rect.x*0.90), (self.rect.y*0.90)))
         self.direction = pygame.math.Vector2()
-        self.obstacle_sprites = config['lvl']['obstacle_sprites']
+        self.obstacle_sprites = level['level']['obstacle_sprites']
         self.collision_tolerance = 10
     
     def move(self, speed):
@@ -35,19 +36,10 @@ class Weapon(pygame.sprite.Sprite):
 
         self.player = player
 
-        # graphic
+        # Weapon Data
         self.sprite_type = weapons['test']['sprite']
         self.attack_damage = weapons['test']['damage']
-        #self.direction = pygame.Vector2(1,0)
-        
-        #self.weapon_data
-
-        full_path = f'graphics/player/weapons/{player.weapon}.png'
-        self.image = pygame.image.load(full_path).convert_alpha()
-
-        #Flip if shooting backwards
-        '''if self.player.direction.x < 0:
-            self.image = pygame.transform.flip(self.image, True, False)'''
+        self.sprite = weapons['test']['sprite']
 
         #self.velocity = float(weapon_data[player.weapon]['projectile_speed']) + float(player.direction.x * player.speed)	
         self.velocity = float(weapon_data[player.weapon]['projectile_speed'])
