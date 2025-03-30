@@ -96,8 +96,8 @@ class MainLoop:
                 if config['menu']['menu_running']:
                     self.menu.update(self.controls, self.game_surface)
                 else:
-                    self.visible_sprites = level['level_config']['visible_sprites']
-                    self.obstacle_sprites = level['level_config']['obstacle_sprites']
+                    self.visible_sprites = level['sprite_groups']['visible_sprites']
+                    self.obstacle_sprites = level['sprite_groups']['obstacle_sprites']
                     '''for sprite in self.game.visible_sprites:
                         print(f"Sprite: {sprite}, Image: {getattr(sprite, 'image', None)}, Rect: {getattr(sprite, 'rect', None)}")'''
                     self.visible_sprites.draw(self.game_surface)

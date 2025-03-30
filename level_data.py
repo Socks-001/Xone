@@ -22,7 +22,9 @@ level = {
         'test_entity_layout': None
     },
     'sprite_groups' : {'visible_sprites' : None,
-                       'obstacle_sprites' : None
+                       'obstacle_sprites' : None,
+                       'weapons_sprites' : None,
+                       'entity_sprites' : None
                        }
 }
 
