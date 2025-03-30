@@ -12,4 +12,3 @@ def load_projectile_images():
     test_projectile = pygame.image.load('graphics/projectiles/test.png').convert_alpha()
     weapons['test']['sprite'] = test_projectile
 
-load_projectile_images()

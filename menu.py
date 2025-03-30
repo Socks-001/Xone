@@ -1,5 +1,6 @@
 import pygame
 from settings import config
+from level_data import level
 from utilities import search_dict, quit
 
 class Menu:
@@ -27,7 +28,7 @@ class Menu:
         self.quit = quit
 
         # Game 
-        self.game = config['lvl']['game']
+        self.game = level['level_config']['game']
 
     def selection_cooldown(self):
         if not self.can_move:

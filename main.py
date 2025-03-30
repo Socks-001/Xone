@@ -2,7 +2,7 @@ import pygame, sys
 from game_logic import Game
 from menu import Menu
 from settings import config
-from level_data import level
+from level_data import level, load_level_data
 from utilities import search_dict
 from controls import Controls
 
@@ -36,7 +36,7 @@ class MainLoop:
         self.controls = Controls()
         self.game = Game(self.controls)
         print("Game initialized.")
-        level['level']['game'] = self.game
+        level['level_config']['game'] = self.game
         
         
 
@@ -80,8 +80,8 @@ class MainLoop:
     def run(self):
         while True: 
             print("Starting main loop...")
-            level['level']['game_running'] = True
-            self.game_running = level['level']['game_running']
+            level['level_config']['game_running'] = True
+            self.game_running = level['level_config']['game_running']
             while self.game_running:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
@@ -96,10 +96,12 @@ class MainLoop:
                 if config['menu']['menu_running']:
                     self.menu.update(self.controls, self.game_surface)
                 else:
-                    self.visible_sprites = level['level']['visible_sprites']
-                    self.obstacle_sprites = level['level']['obstacle_sprites']
-                    self.game.visible_sprites.draw(self.game_surface)
-                    self.game.visible_sprites.update()
+                    self.visible_sprites = level['level_config']['visible_sprites']
+                    self.obstacle_sprites = level['level_config']['obstacle_sprites']
+                    '''for sprite in self.game.visible_sprites:
+                        print(f"Sprite: {sprite}, Image: {getattr(sprite, 'image', None)}, Rect: {getattr(sprite, 'rect', None)}")'''
+                    self.visible_sprites.draw(self.game_surface)
+                    self.visible_sprites.update()
 
                 # Handle scaling and fullscreen changes
                 #self.handle_scaling()

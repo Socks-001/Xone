@@ -7,7 +7,7 @@ from debug import debug
 class Enemy(Entity):
     def __init__(self, name, pos, groups, player, sprite_type):
         # general setup
-        super().__init__(pos, groups, player, sprite_type)
+        super().__init__(pos, groups, sprite_type)
         self.player = player
         
         # stats
@@ -24,9 +24,9 @@ class Enemy(Entity):
         self.weapon_name = 'test'
 
         # graphics
-        self.import_graphics(name)
-        self.status = 'idle' # initializing default state
-        self.image = self.animations[self.status][int(self.frame_index)]
+        #self.import_graphics(name)
+        #self.status = 'idle' # initializing default state
+        #self.image = self.animations[self.status][int(self.frame_index)]
         self.collision_tolerance = 5
     
 
@@ -37,7 +37,8 @@ class Enemy(Entity):
         self.hit_time = None
         self.vulnerable = True
         self.invincibility_duration = 100
-
+        print(f"Entity initialized: {self}, Image: {self.image}, Rect: {self.rect}")
+        
     def get_target_distance_direction(self, object):
         object_vec = pygame.math.Vector2 (object.center)
         enemy_vec = pygame.math.Vector2 (self.rect.center)

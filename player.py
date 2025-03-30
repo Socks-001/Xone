@@ -10,7 +10,7 @@ class Player(Entity):
         self.controls = controls
         self.menu_running = config['menu']['menu_running']
         print (f'Player coordinates = {self.hitbox.center}')
-
+        print(f"Entity initialized: {self}, Image: {self.image}, Rect: {self.rect}")
 
     def update(self):
         

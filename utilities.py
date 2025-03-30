@@ -3,8 +3,7 @@ from csv import reader
 from os import walk
 import pygame
 import pathlib
-
-
+pygame.init()
 
 def import_csv_layout(path):
     terrain_map = []
