@@ -14,12 +14,14 @@ class Player(Entity):
         self.controls = controls
         self.menu_running = config['menu']['menu_running'] #??
         self.weapon_group = level['sprite_groups']['weapons_sprites']
+        self.visible_sprites = level['sprite_groups']['visible_sprites']
         self.weapon_name = 'test'
         
     def shoot(self):
         """Creates a projectile if shoot_direction is outside the deadzone."""
         if self.controls.shoot_direction.length() > 0.2:  # Adjust 0.2 as needed for deadzone
-            Weapon(self, self.weapon_group, self.controls.shoot_direction, self.weapon_name)
+            Weapon(self, self.sprite_type, [self.visible_sprites, self.weapon_group], self.controls.shoot_direction, self.weapon_name)
+            print('shot')
     
 
     def update(self):
@@ -28,4 +30,4 @@ class Player(Entity):
             self.shoot()  # Call shoot method
             self.move(self.speed)
             self.vulnerability_cooldown()
-            print (f'pos = {self.hitbox.center}')
+            #print (f'pos = {self.hitbox.center}')

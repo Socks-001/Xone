@@ -26,13 +26,12 @@ class Enemy(Entity):
         self.enemy_type = enemy_info['enemy_type']
 
         self.weapon_group = level['sprite_groups']['weapons_sprites']
+        self.visible_sprites = level['sprite_groups']['visible_sprites']
         self.weapon_name = 'test'
         self.player_direction = None
         self.collision_tolerance = 5
         self.vulnerable = True
         self.status = 'Idle'
-     
-    
      
     def get_target_distance_direction(self, target):
         target_location = pygame.math.Vector2(target.hitbox.center)
@@ -53,13 +52,12 @@ class Enemy(Entity):
             self.status = 'attack'
             self.shoot(direction)
             
-        
         elif distance <= self.notice_radius:
             self.status = 'move'
             self.rect.center += direction * self.speed  # Move toward player
            
     def shoot(self, player_direction):
-            Weapon(self, self.sprite_type, self.weapon_group, player_direction, self.weapon_name)
+            Weapon(self, self.sprite_type, [self.visible_sprites, self.weapon_group], player_direction, self.weapon_name)
     
     def update(self,):
         self.enemy_behavior(self.player)

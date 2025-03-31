@@ -7,8 +7,8 @@ pygame.init()
 
 class Weapon(pygame.sprite.Sprite):
     def __init__(self, owner, owner_sprite_type, groups, shoot_direction, weapon_name):
-        super().__init__(groups)	
 
+        super().__init__(groups)	
         self.owner = owner
         self.owner_sprite_type = owner_sprite_type # differentiates player/enemy
         self.direction = shoot_direction.normalize() # direction to shoot
@@ -25,20 +25,21 @@ class Weapon(pygame.sprite.Sprite):
 
         # Image and Rect 
         self.image = self.sprite  # Load sprite
-        self.projectile_rect = self.image.get_rect()
-        self.projectile_hitbox = pygame.FRect(self.projectile_rect)
+        self.rect = self.image.get_rect(center=self.owner.rect.center)
+        self.projectile_hitbox = pygame.FRect(self.rect)
 
         # Obstacle and Entity reference 
         self.obstacle_sprites = level['sprite_groups']['obstacle_sprites']
         self.entity_sprites = level['sprite_groups']['entity_sprites']
 
     def move_projectile(self, velocity):
-
-        self.projectile_hitbox += ((self.direction.x * velocity), (self.direction.y * velocity))
-        self.projectile_rect.center = self.projectile_hitbox.center
+        """Move the projectile in its fixed direction."""
+        self.projectile_hitbox.x += self.direction.x * velocity
+        self.projectile_hitbox.y += self.direction.y * velocity
+        self.rect.center = self.projectile_hitbox.center
 
     def lifetime_check(self):
-        if pygame.time.get_ticks() - self.lifetime > 1000:  # 1 second, lifetime of projectile
+        if pygame.time.get_ticks() - self.lifetime > 5000:  # 1 second, lifetime of projectile
             self.kill()
 
     def check_collision(self):
@@ -59,14 +60,19 @@ class Weapon(pygame.sprite.Sprite):
                     pass
         # check collisions with obstacles                
         for sprite in self.obstacle_sprites:
-            if self.projectile_hitbox.colliderect(sprite.rect) or self.projectile_hitbox.x > + self.SCREEN_WIDTH + 4 or self.projectile_hitbox.x <= 0:
+            if self.projectile_hitbox.colliderect(sprite.rect):
                 self.kill()
+        
+        if (self.projectile_hitbox.x > self.SCREEN_WIDTH or self.projectile_hitbox.x < 0 or self.projectile_hitbox.y > config['screen']['SCREEN_HEIGHT'] or self.projectile_hitbox.y < 0):
+            self.kill()
         
 
     def update(self):
-        
-        self.check_collision()
+        # Update obstacle and entity references
+        self.obstacle_sprites = level['sprite_groups']['obstacle_sprites']
+        self.entity_sprites = level['sprite_groups']['entity_sprites']
         self.move_projectile(self.velocity)
+        self.check_collision()
         self.lifetime_check()
 
         #Treasure of the Rudras SNES Art
