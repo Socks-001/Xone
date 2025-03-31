@@ -53,7 +53,7 @@ config = {
     }
 }
 
-ddef add_joystick_buttons(joystick):
+def add_joystick_buttons(joystick):
     name = joystick.get_name()
     print(f"Detected Controller: {name}")
 
