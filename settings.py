@@ -7,9 +7,10 @@ config = {
         'SCREEN_HEIGHT': 240,
         'FPS': 60,
         'TILESIZE': 16,
-        'scale_surface_trigger' : False,
-        'screen' : None,
-        'fullscreen_trigger' : False
+        'screen': None,
+        'fullscreen_trigger': False,
+        'scaled_surface': None, 
+        'game_surface': None
     },
 
     'ui': {
@@ -31,41 +32,62 @@ config = {
 
     'menu': {
         'HOME_MENU': ['Start Game', 'Options', 'Quit'],
-        'SETTINGS_MENU': ['Volume', 'Scale', 'Fullscreen', 'Back'],
+        'SETTINGS_MENU': ['Volume', 'Fullscreen', 'Back'],
         'PAUSE_MENU': ['Resume', 'Options', 'Quit'], 
         'menu_running': True,
-        'selection_cooldown_time' : None,
-        'menu' : None,
-        'menu_running': True
+        'selection_cooldown_time': None,
+        'menu': None
     },
 
-    
-    'controls' : {
-        'controller_found' : False,
-        'controller_type' : None,
-        'controlls' : None
+    'controls': {
+        'controller_found': False,
+        'controller_type': None,
+        'dpad_up': None,
+        'dpad_down': None,
+        'dpad_left': None,
+        'dpad_right': None,
+        'x': None,
+        'square': None,
+        'triangle': None,
+        'circle': None
     }
+}
 
-    }
+ddef add_joystick_buttons(joystick):
+    name = joystick.get_name()
+    print(f"Detected Controller: {name}")
 
-
-def add_joystick_buttons(joystick):
-    """ Adds joystick button mappings to config['controls'] """
-    config['controls'] = {
-        
-        'dpad_up': joystick.get_button(11),
-        'dpad_down': joystick.get_button(12),
-        'dpad_left': joystick.get_button(13),
-        'dpad_right': joystick.get_button(14),
-        'x': joystick.get_button(0),
-        'square': joystick.get_button(2),
-        'triangle': joystick.get_button(3),
-        'circle': joystick.get_button(1),
-    }
-    print(f"{config['controls']}")
-
-# Directly use the values from the config dictionary
-#scale_factor = config['screen']['SCALE_FACTOR_LIST'][config['screen']['SCALE_FACTOR_INDEX']]
-#config['screen']['game_surface'] = game_surface
-
-#pprint for easier readability
+    if "Xbox" in name:  # Xbox-style controller
+        config['joystick'] = {
+            'dpad_up': (0, 1),    # Xbox controllers typically use hat switches
+            'dpad_down': (0, -1),
+            'dpad_left': (-1, 0),
+            'dpad_right': (1, 0),
+            'x': 2,  # X on Xbox is different from PS4
+            'square': 3,  # Equivalent to Y
+            'triangle': 4,
+            'circle': 1  # Equivalent to B
+        }
+    elif "PlayStation" in name or "DualShock" in name:  # PS4 controller
+        config['joystick'] = {
+            'dpad_up': 11,
+            'dpad_down': 12,
+            'dpad_left': 13,
+            'dpad_right': 14,
+            'x': 0,  # PS4's X button is 0
+            'square': 2,
+            'triangle': 3,
+            'circle': 1
+        }
+    else:  # Default if unknown
+        print("Unknown joystick detected, using default layout.")
+        config['joystick'] = {
+            'dpad_up': 11,
+            'dpad_down': 12,
+            'dpad_left': 13,
+            'dpad_right': 14,
+            'x': 0,
+            'square': 2,
+            'triangle': 3,
+            'circle': 1
+        }

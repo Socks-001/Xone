@@ -63,12 +63,12 @@ class Menu:
     def input(self, controls):
         if config['menu']['menu_running']:
             if self.can_move:  # Check if the menu can move
-                if controls.menu_navigation_y == 1:
-                    self.available_options_selection_index = (self.available_options_selection_index + (controls.menu_navigation_y * -1)) % len(self.available_options)
+                if controls.menu_navigation.y == 1:
+                    self.available_options_selection_index = (self.available_options_selection_index + (controls.menu_navigation.y * -1)) % len(self.available_options)
                     self.can_move = False
                     self.can_move_time = pygame.time.get_ticks()
-                elif controls.menu_navigation_y == -1:
-                    self.available_options_selection_index = (self.available_options_selection_index + (controls.menu_navigation_y * -1)) % len(self.available_options)
+                elif controls.menu_navigation.y == -1:
+                    self.available_options_selection_index = (self.available_options_selection_index + (controls.menu_navigation.y * -1)) % len(self.available_options)
                     self.can_move = False
                     self.can_move_time = pygame.time.get_ticks()
 
@@ -90,15 +90,10 @@ class Menu:
                 if self.available_options_selection_index == 0:
                     pass # Handle volume setting (placeholder)
 
-                elif self.available_options_selection_index == 1: 
-                    # Handle scale setting
-                    #config['screen']['scale_surface_trigger'] = True
-                    pass
-                    
-                elif self.available_options_selection_index == 2:
+                elif self.available_options_selection_index == 1:
                     config['screen']['fullscreen_trigger'] = True
 
-                elif self.available_options_selection_index == 3:
+                elif self.available_options_selection_index == 2:
                     self.options_list_index = 0  # Set selection to "home menu"
                     self.available_options_selection_index = 0
                     self.reload_menu()

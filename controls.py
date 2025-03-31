@@ -16,130 +16,66 @@ class Controls:
 
         # Initialize joysticks
         try:
-            joystick_count = pygame.joystick.get_count()
-
-            if joystick_count > 0:
-                self.controller_found = True
-                for i in range(joystick_count):
-                    joystick = pygame.joystick.Joystick(i)
-                    joystick.init()
-                    print(f"Joystick {i} found: {joystick.get_name()}")
-                else:
-                    print("No joystick found")
-                if pygame.joystick.Joystick(0):
-                    self.controller_1 = pygame.joystick.Joystick(0)
-                    add_joystick_buttons(self.controller_1)
-                    print("Joystick found")
-                    self.dpad_up = search_dict(config,'dpad_up')
-                    self.dpad_down = search_dict(config,'dpad_down')
-                    self.dpad_left = search_dict(config,'dpad_left')
-                    self.dpad_right = search_dict(config,'dpad_right')
-                    self.x = search_dict(config,'x')  
-                    self.square = search_dict(config,'square')
-                    self.triangle = search_dict(config,'triangle')
-                    self.circle = search_dict(config,'circle')
+            if pygame.joystick.get_count() > 0:
+                self.controller_1 = pygame.joystick.Joystick(0)
+                self.controller_1.init()
+                print(f"Joystick found: {self.controller_1.get_name()}")
+                add_joystick_buttons(self.controller_1)
+                self._load_joystick_config()
+            else:
+                print("No joystick found")
+                
         except pygame.error as e:
             print(f"Joystick initialization failed: {e}")
 
+    def _load_joystick_config(self):
+        self.dpad_up = search_dict(config, 'dpad_up')
+        self.dpad_down = search_dict(config, 'dpad_down')
+        self.dpad_left = search_dict(config, 'dpad_left')
+        self.dpad_right = search_dict(config, 'dpad_right')
+        self.x = search_dict(config, 'x')  
+        self.square = search_dict(config, 'square')
+        self.triangle = search_dict(config, 'triangle')
+        self.circle = search_dict(config, 'circle')
+
     def handle_event(self, event):
         keys = pygame.key.get_pressed()
-        if self.controller_1:
-            if keys[pygame.K_UP] or self.dpad_up:
-                self.direction.y = -1
-                self.menu_navigation_y = 1
-                print(f'up , {self.direction.y}')
-            elif keys[pygame.K_DOWN] or self.dpad_down:
-                self.direction.y = 1
-                self.menu_navigation_y = -1
-                print(f'down , {self.direction.y}')
-            else:
-                self.direction.y = 0
-                self.menu_navigation_y = 0
-            if keys[pygame.K_LEFT] or self.dpad_left:
-                self.direction.x = -1
-                self.menu_navigation_x = 1
-                print(f'left , {self.direction.x}')
-            elif keys[pygame.K_RIGHT] or self.dpad_right:
-                self.direction.x = 1
-                self.menu_navigation_x = -1
-                print(f'right , {self.direction.x}')
-            else:
-                self.direction.x = 0
-                self.menu_navigation_x = 0
-            if keys[pygame.K_w]:
-                self.shoot_direction.y = -1
-            elif keys[pygame.K_s]:
-                self.shoot_direction.y = 1
-            else:
-                self.shoot_direction.y = 0
-            if keys[pygame.K_a]:
-                self.shoot_direction.x = -1
-            elif keys[pygame.K_d]:
-                self.shoot_direction.x = 1
-            else:
-                self.shoot_direction.x = 0
-            if keys[pygame.K_RETURN] or self.x:  # Example action for accessing the menu
-                self.menu_select = 1
-                print (f'menu_select = {self.menu_select}')
-            if keys[pygame.K_ESCAPE]:
-                if not config['menu']['menu_running']:
-                    config['menu']['menu_running'] = True
-                
-            elif event.type == pygame.KEYUP:
-                if  keys[pygame.K_UP] or keys[pygame.K_DOWN] or not self.dpad_up or not self.dpad_down:
-                    self.menu_navigation_y = 0
-                if keys[pygame.K_LEFT] or keys[pygame.K_RIGHT] or not self.dpad_left or not self.dpad_right:
-                    self.menu_navigation_x = 0 # Example action for accessing the menu
-                if keys[pygame.K_RETURN] or self.x:  # Example action for accessing the menu
-                    self.menu_select = 0
-                    print (f'menu_select = {self.menu_select}')
-        else : 
-            if keys[pygame.K_UP]:
-                self.direction.y = -1
-                self.menu_navigation_y = 1
-                print(f'up , {self.direction.y}')
-            elif keys[pygame.K_DOWN]:
-                self.direction.y = 1
-                self.menu_navigation_y = -1
-                print(f'down , {self.direction.y}')
-            else:
-                self.direction.y = 0
-                self.menu_navigation_y = 0
-            if keys[pygame.K_LEFT]:
-                self.direction.x = -1
-                self.menu_navigation_x = 1
-                print(f'left , {self.direction.x}')
-            elif keys[pygame.K_RIGHT]:
-                self.direction.x = 1
-                self.menu_navigation_x = -1
-                print(f'right , {self.direction.x}')
-            else:
-                self.direction.x = 0
-                self.menu_navigation_x = 0
-            if keys[pygame.K_w]:
-                self.shoot_direction.y = -1
-            elif keys[pygame.K_s]:
-                self.shoot_direction.y = 1
-            else:
-                self.shoot_direction.y = 0
-            if keys[pygame.K_a]:
-                self.shoot_direction.x = -1
-            elif keys[pygame.K_d]:
-                self.shoot_direction.x = 1
-            else:
-                self.shoot_direction.x = 0
-            if keys[pygame.K_RETURN]:  # Example action for accessing the menu
-                self.menu_select = 1
-                print (f'menu_select = {self.menu_select}')
-            if keys[pygame.K_ESCAPE]:
-                if not config['menu']['menu_running']:
-                    config['menu']['menu_running'] = True
-                
-            elif event.type == pygame.KEYUP:
-                if  keys[pygame.K_UP] or keys[pygame.K_DOWN]:
-                    self.menu_navigation_y = 0
-                if keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]:
-                    self.menu_navigation_x = 0 # Example action for accessing the menu
-                if keys[pygame.K_RETURN]:  # Example action for accessing the menu
-                    self.menu_select = 0
-                    print (f'menu_select = {self.menu_select}')
+        
+        # Movement Handling
+        prev_direction = self.direction.copy()
+        self.direction.y = -1 if keys[pygame.K_UP] or (self.controller_1 and self.controller_1.get_button(self.dpad_up)) else \
+                           1 if keys[pygame.K_DOWN] or (self.controller_1 and self.controller_1.get_button(self.dpad_down)) else 0
+        
+        self.direction.x = -1 if keys[pygame.K_LEFT] or (self.controller_1 and self.controller_1.get_button(self.dpad_left)) else \
+                           1 if keys[pygame.K_RIGHT] or (self.controller_1 and self.controller_1.get_button(self.dpad_right)) else 0
+
+        if self.direction != prev_direction:
+            print(f"Direction pressed: {self.direction}")
+
+        # Shooting Direction
+        self.shoot_direction.y = -1 if keys[pygame.K_w] else 1 if keys[pygame.K_s] else 0
+        self.shoot_direction.x = -1 if keys[pygame.K_a] else 1 if keys[pygame.K_d] else 0
+
+        # Menu Navigation
+        self.menu_navigation.y = 1 if self.direction.y == -1 else -1 if self.direction.y == 1 else 0
+        self.menu_navigation.x = 1 if self.direction.x == -1 else -1 if self.direction.x == 1 else 0
+
+        # Menu Selection
+        if keys[pygame.K_RETURN] or (self.controller_1 and self.controller_1.get_button(self.x)):
+            self.menu_select = 1
+            print(f"Menu Select = {self.menu_select}")
+
+        # Escape Key for Menu Toggle
+        if keys[pygame.K_ESCAPE]:
+            if not config['menu']['menu_running']:
+                config['menu']['menu_running'] = True
+
+        # Handle KEYUP Events
+        if event.type == pygame.KEYUP:
+            if event.key in [pygame.K_UP, pygame.K_DOWN]:
+                self.menu_navigation.y = 0
+            if event.key in [pygame.K_LEFT, pygame.K_RIGHT]:
+                self.menu_navigation.x = 0
+            if event.key == pygame.K_RETURN or (self.controller_1 and event.key == self.x):
+                self.menu_select = 0
+                print(f"Menu Select = {self.menu_select}")

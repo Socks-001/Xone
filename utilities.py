@@ -2,8 +2,10 @@ from copyreg import remove_extension
 from csv import reader
 from os import walk
 import pygame
+from sys import exit
 import pathlib
 pygame.init()
+
 
 def import_csv_layout(path):
     terrain_map = []
@@ -44,7 +46,7 @@ def counter (element):
 
     return amount  
 
-def quit(self):
+def quit():
     print("Quitting game...")
     pygame.quit()
     exit()
