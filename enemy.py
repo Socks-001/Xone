@@ -9,7 +9,7 @@ from weapon import Weapon
 class Enemy(Entity):
     def __init__(self, name, pos, groups, player, sprite_type):
         # general setup
-        super().__init__(pos, groups, sprite_type)
+        super().__init__(pos, groups, sprite_type, name)
         self.player = player
         
         # stats
@@ -24,6 +24,7 @@ class Enemy(Entity):
         self.attack_radius = enemy_info['attack_radius']
         self.notice_radius = enemy_info['notice_radius']
         self.enemy_type = enemy_info['enemy_type']
+        self.sprite = enemy_info['sprite']
 
         self.weapon_group = level['sprite_groups']['weapons_sprites']
         self.visible_sprites = level['sprite_groups']['visible_sprites']

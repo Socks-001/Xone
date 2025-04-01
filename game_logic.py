@@ -3,6 +3,8 @@ from utilities import import_csv_layout, import_folder, search_dict
 from settings import config
 from level_data import level, load_level_data
 from weapon_data import load_projectile_images
+from player_data import load_player_images
+from enemy_data import load_enemy_images
 from tile import Tile
 from player import Player
 from enemy import Enemy
@@ -34,6 +36,8 @@ class Game:
     def load_all_assets (self):
             load_level_data()
             load_projectile_images()
+            load_enemy_images()
+            load_player_images()
 
     def create_map(self):
         # Create level counter
@@ -81,9 +85,9 @@ class Game:
 
                 if col == '29':  # Enemy
                     enemy_name = 'test'
-                    self.create_enemy(enemy_name, (x, y), self.visible_sprites, self.player, 'enemy')
-                    surf = graphics['entities'][int(col)]
-                    Tile((x, y), [self.visible_sprites, self.entity_sprites], 'entities', surf)
+                    self.create_enemy(enemy_name, (x, y), [self.visible_sprites, self.entity_sprites], self.player, 'enemy')
+                    '''s
+                    Tile((x, y), [self.visible_sprites, self.entity_sprites], 'entities', surf)'''
         
         level['sprite_groups']['visible_sprites'] = self.visible_sprites
         level['sprite_groups']['obstacle_sprites'] = self.obstacle_sprites

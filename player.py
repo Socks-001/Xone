@@ -8,7 +8,7 @@ from level_data import level
 
 class Player(Entity):
     def __init__(self, pos, groups, controls):
-        super().__init__(pos, groups, 'player')
+        super().__init__(pos, groups, 'player', 'player')
         self.speed = player_data['speed']
         self.health = player_data['health']
         self.controls = controls

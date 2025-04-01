@@ -1,15 +1,21 @@
 import pygame
 from settings import config
 from level_data import level
+from player_data import player_data
+from enemy_data import enemy_data
 
 class Entity(pygame.sprite.Sprite):
-    def __init__(self, pos, groups, sprite_type):
+    def __init__(self, pos, groups, sprite_type, name):
         super().__init__(groups)
 
         self.sprite_type = sprite_type
+        self.sprite_name = name
         self.collision_tolerance = 10
-        tile_size = config['screen']['TILESIZE'] 
-        self.image = pygame.Surface((tile_size, tile_size))
+        if self.sprite_type == 'player':
+            self.sprite =  player_data['sprite']
+        else:
+            self.sprite = enemy_data[self.sprite_name]['sprite']
+        self.image = self.sprite
         self.rect = self.image.get_rect(topleft=pos)
         self.hitbox = pygame.FRect(self.rect.inflate(-self.collision_tolerance, -self.collision_tolerance))
         self.direction = pygame.math.Vector2()

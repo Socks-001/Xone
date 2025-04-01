@@ -1,4 +1,6 @@
 import pprint
+import pygame
+pygame.init()
 
 enemy_data = {   
     'test': {   'enemy_type': 'crasher',
@@ -10,6 +12,12 @@ enemy_data = {
                       'health': 6,
                       'notice_radius': 100,
                       'resistance': 10,
-                      'speed': 1.5},             
+                      'speed': 1.5},
+                      'sprite': None             
     	}
 
+def load_enemy_images():
+    # Load Test sprite
+    enemy_sprite = pygame.image.load('graphics/enemies/test.png').convert_alpha()
+    enemy_data['test']['sprite'] = enemy_sprite
+    

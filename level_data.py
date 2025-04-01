@@ -41,8 +41,9 @@ def load_level_data():
     entity_layout = import_csv_layout(f'level_data/test_level/entities.csv')
     level['test_level']['test_entity_layout'] = entity_layout
 
-    # Load graphics
-    test_graphics = import_folder ('graphics/test_level')
+    # Load graphics and apply convert_alpha to each surface
+    raw_graphics = import_folder('graphics/test_level')
+    test_graphics = [image.convert_alpha() for image in raw_graphics]  # Apply convert_alpha to each surface
     level['test_level']['test_graphics'] = test_graphics
 
 
