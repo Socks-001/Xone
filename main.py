@@ -6,6 +6,7 @@ from settings import config
 from level_data import level, load_level_data
 from utilities import search_dict
 from controls import Controls
+from debug import sprite_group_highlight
 
 class MainLoop:
     def __init__(self):
@@ -35,7 +36,9 @@ class MainLoop:
         print("Game initialized.")
         level['level_config']['game'] = self.game
         
-        
+        # Sprite Groups
+        self.visible_sprites = level['sprite_groups']['visible_sprites']
+        self.obstacle_sprites = level['sprite_groups']['obstacle_sprites']
 
         # Menu
         self.menu = Menu()
@@ -78,6 +81,9 @@ class MainLoop:
                 self.scaled_surface = pygame.transform.scale(self.game_surface, self.screen.get_size())
                 config['screen']['scaled_surface'] = self.scaled_surface
                 self.screen.blit(self.scaled_surface, (0, 0))
+                
+                sprite_group_highlight(self.obstacle_sprites)
+
                 pygame.display.flip()
                 pygame.event.pump()
                 self.clock.tick(self.fps)

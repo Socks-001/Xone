@@ -18,4 +18,10 @@ def debug(info, x, y):
         pygame.draw.rect(display_surface, UI_BORDER_COLOR, debug_rect.inflate(6,6),2)
         display_surface.blit(debug_surf,debug_rect)
 
+def sprite_group_highlight(sprite_group):
+    """Draws outlines around all tiles in the obstacle_sprites group."""
+    display_surface = pygame.display.get_surface()
+    for sprite in sprite_group:
+        # Draw a rectangle around the sprite's rect
+        pygame.draw.rect(display_surface, 'Red', sprite.rect, 2)  # Red outline with 2px thickness
         
