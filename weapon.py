@@ -20,7 +20,6 @@ class Weapon(pygame.sprite.Sprite):
         self.attack_damage = weapon_data['damage']
         self.sprite = weapon_data['sprite']
         self.velocity = float(weapon_data['speed']) # Speed projectile travles at 
-        self.cooldown = weapon_data['fire_rate'] # cooldown between shots
         self.lifetime = pygame.time.get_ticks()
 
         # Image and Rect 

@@ -69,8 +69,11 @@ class Entity(pygame.sprite.Sprite):
         """This method is used to apply damage to the entity, ensuring it can only be damaged when vulnerable."""
         if self.vulnerable:
             self.health -= damage  # Subtract health when hit
+            print (f'subtracting health, new health = {self.health}')
             self.vulnerable = False  # Set entity to invulnerable after being hit
             self.hit_time = pygame.time.get_ticks()  # Set the time of the hit
+            if self.health == 0:
+                self.kill()
         
     '''def death_particles(self,pos,particle_type):
         self.animation_player.create_particles(particle_type,pos,self.weapon_sprites)'''

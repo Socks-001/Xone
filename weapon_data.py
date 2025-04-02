@@ -6,7 +6,7 @@ weapons = {
              'damage': 1,
              'sprite': None, 
              'speed': 1.5,
-             'fire_rate': 15000}
+             'fire_rate': 1000}
         }
 
 def load_projectile_images():

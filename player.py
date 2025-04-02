@@ -16,12 +16,21 @@ class Player(Entity):
         self.weapon_group = level['sprite_groups']['weapons_sprites']
         self.visible_sprites = level['sprite_groups']['visible_sprites']
         self.weapon_name = 'test'
+    
+         # Cooldown Handling
+        self.fire_rate = weapons[self.weapon_name]['fire_rate']  # Get cooldown from weapon data
+        self.last_shot_time = 0  # Time when last shot was fired
+
+    def can_shoot(self):
+        """Returns True if the player can shoot based on cooldown."""
+        current_time = pygame.time.get_ticks()
+        return current_time - self.last_shot_time >= self.fire_rate
         
     def shoot(self):
         """Creates a projectile if shoot_direction is outside the deadzone."""
-        if self.controls.shoot_direction.length() > 0.2:  # Adjust 0.2 as needed for deadzone
+        if self.controls.shoot_direction.length() > 0.2 and self.can_shoot():  # Adjust 0.2 as needed for deadzone
             Weapon(self, self.sprite_type, [self.visible_sprites, self.weapon_group], self.controls.shoot_direction, self.weapon_name)
-            print('shot')
+            self.last_shot_time = pygame.time.get_ticks()
     
 
     def update(self):

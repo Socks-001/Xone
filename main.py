@@ -82,7 +82,7 @@ class MainLoop:
                 config['screen']['scaled_surface'] = self.scaled_surface
                 self.screen.blit(self.scaled_surface, (0, 0))
                 
-                sprite_group_highlight(self.obstacle_sprites)
+                #sprite_group_highlight(self.obstacle_sprites)
 
                 pygame.display.flip()
                 pygame.event.pump()
