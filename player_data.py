@@ -2,7 +2,7 @@ import pygame
 pygame.init()
 
 player_data = { 'speed' : 1.5,
-                'health' : 4, 
+                'health' : 25, 
                 'sprite' : None 
 }
 

@@ -9,7 +9,7 @@ enemy_data = {
                       'attack_type': 'contact',
                       'damage': 5,
                       'exp': 10,
-                      'health': 6,
+                      'health': 2,
                       'notice_radius': 100,
                       'resistance': 10,
                       'speed': 1.5},

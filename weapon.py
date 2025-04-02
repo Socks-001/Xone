@@ -32,24 +32,25 @@ class Weapon(pygame.sprite.Sprite):
         # Obstacle and Entity reference 
         self.obstacle_sprites = level['sprite_groups']['obstacle_sprites']
         self.entity_sprites = level['sprite_groups']['entity_sprites']
-        self.offset = None
+        self.offset_done = None
 
     def calculate_angle_offset(self):
-        """Move the projectile in its fixed direction, apply random angle offsets"""
-        max_offset = self.accuracy[0]  # Max random offset
-        min_offset = self.accuracy[1]  # Min random offset
+        """Applies a small random angular offset to the projectile's trajectory."""
+        offset = self.accuracy  # Max random offset
+        
 
-        # Randomly adjust direction within the accuracy range
-        rand_angle = random.uniform(min_offset, max_offset)
+        # Generate a single random offset within the accuracy range
+        offset_angle = random.uniform(-offset, offset)
 
-        # Adjust the direction with angle offset
-        angle = math.atan2(self.direction.y, self.direction.x)  # Get the current angle of direction
-        offset_angle = random.uniform(-rand_angle, rand_angle)  # Create a random small angle variation
-        new_angle = angle + offset_angle  # Add the offset to the original angle
+        # Get the current movement direction's angle
+        angle = math.atan2(self.direction.y, self.direction.x)
 
-        # Calculate new direction with the adjusted angle
+        # Apply the offset
+        new_angle = angle + offset_angle
+
+        # Convert back to a movement vector
         self.direction = pygame.math.Vector2(math.cos(new_angle), math.sin(new_angle))
-        self.offset = 1
+        self.offset_done = 1
 
     def move_projectile(self, velocity):
       
@@ -91,7 +92,7 @@ class Weapon(pygame.sprite.Sprite):
         # Update obstacle and entity references
         self.obstacle_sprites = level['sprite_groups']['obstacle_sprites']
         self.entity_sprites = level['sprite_groups']['entity_sprites']
-        if self.offset == None:
+        if self.offset_done == None:
             self.calculate_angle_offset()
         self.move_projectile(self.velocity)
         self.check_collision()

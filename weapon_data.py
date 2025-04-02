@@ -7,7 +7,7 @@ weapons = {
              'sprite': None, 
              'speed': 2.5,
              'fire_rate': 300,
-             'accuracy' :[0.98, 0.95] },
+             'accuracy' : 0.1,},
     'enemy_weapon': {'name' : 'enemy_weapon',
                     'damage': 1,
                     'sprite': None, 
