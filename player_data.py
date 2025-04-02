@@ -1,7 +1,7 @@
 import pygame
 pygame.init()
 
-player_data = { 'speed' : 2.5,
+player_data = { 'speed' : 1.5,
                 'health' : 4, 
                 'sprite' : None 
 }
