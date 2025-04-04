@@ -24,7 +24,11 @@ level = {
     'sprite_groups' : {'visible_sprites' : None,
                        'obstacle_sprites' : None,
                        'weapons_sprites' : None,
-                       'entity_sprites' : None
+                       'entity_sprites' : None,
+                       'player_sprites' : None,
+                       'enemy_sprites' : None,
+                       'floor_sprites' : None,
+                       'wall_sprites' : None,
                        }
 }
 

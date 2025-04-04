@@ -15,6 +15,10 @@ class Game:
         
         # Initialize Sprite Groups
         level['sprite_groups']['visible_sprites'] = self.visible_sprites = pygame.sprite.Group()
+        level['sprite_groups']['floor_sprites'] = self.floor_sprites = pygame.sprite.Group()
+        level['sprite_groups']['wall_sprites'] = self.wall_sprites = pygame.sprite.Group()
+        level['sprite_groups']['player_sprites'] = self.player_sprites = pygame.sprite.Group()
+        level['sprite_groups']['enemy_sprites'] = self.enemy_sprites = pygame.sprite.Group()
         level['sprite_groups']['obstacle_sprites'] = self.obstacle_sprites = pygame.sprite.Group()
         level['sprite_groups']['entity_sprites'] = self.entity_sprites = pygame.sprite.Group()
         level['sprite_groups']['weapons_sprites'] = self.weapon_group = pygame.sprite.Group()
@@ -52,10 +56,10 @@ class Game:
 
                         if style == 'floor':
                             surf = graphics['floor'][int(col)]
-                            Tile((x, y), self.visible_sprites, 'floor', surf)
+                            Tile((x, y), [self.floor_sprites, self.visible_sprites], 'floor', surf)
                         elif style == 'wall':
                             surf = graphics['wall'][int(col)]
-                            Tile((x, y), [self.visible_sprites, self.obstacle_sprites], 'wall', surf)
+                            Tile((x, y), [self.wall_sprites, self.visible_sprites, self.obstacle_sprites], 'wall', surf)
 
         # Second pass: Create the player FIRST
         for row_index, row in enumerate(layouts['entities']):
@@ -64,7 +68,7 @@ class Game:
                 y = row_index * self.tilesize
 
                 if col == '19':  # Player
-                    self.create_player((x, y), [self.visible_sprites,  self.entity_sprites], self.controls)
+                    self.create_player((x, y), [self.player_sprites, self.visible_sprites,  self.entity_sprites], self.controls)
 
         # Third pass: Create enemies AFTER the player
         for row_index, row in enumerate(layouts['entities']):
@@ -74,13 +78,16 @@ class Game:
 
                 if col == '29':  # Enemy
                     enemy_name = 'test'
-                    self.create_enemy(enemy_name, (x, y), [self.visible_sprites, self.entity_sprites], self.player, 'enemy')
+                    self.create_enemy(enemy_name, (x, y), [self.enemy_sprites, self.visible_sprites, self.entity_sprites], self.player, 'enemy')
                     '''s
                     Tile((x, y), [self.visible_sprites, self.entity_sprites], 'entities', surf)'''
         
         level['sprite_groups']['visible_sprites'] = self.visible_sprites
         level['sprite_groups']['obstacle_sprites'] = self.obstacle_sprites
         level['sprite_groups']['entity_sprites'] = self.entity_sprites
+        level['sprite_groups']['player_sprites'] = self.player_sprites
+        level['sprite_groups']['enemy_sprites'] = self.enemy_sprites
+        level['sprite_groups']['weapon_sprites'] = self.weapon_group
 
         print(f"Visible sprites count: {len(self.visible_sprites)}")
         print(f"Entity sprites count: {len(self.entity_sprites)}")

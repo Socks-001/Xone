@@ -30,14 +30,24 @@ config = {
         }
     },
 
-    'menu': {
-        'HOME_MENU': ['Start Game', 'Options', 'Quit'],
-        'SETTINGS_MENU': ['Volume', 'Fullscreen', 'Back'],
-        'PAUSE_MENU': ['Resume', 'Options', 'Quit'], 
-        'menu_running': True,
-        'selection_cooldown_time': None,
-        'menu': None
+   'menu': {
+    'menus': {
+        'HOME_MENU': [('Start Game', lambda: config['menu']['menu'].start_game()),
+                      ('Options', lambda: config['menu']['menu'].open_settings()),
+                      ('Quit', lambda: config['menu']['menu'].quit())],
+
+        'SETTINGS_MENU': [('Volume', lambda: config['menu']['menu'].placeholder()),
+                          ('Fullscreen', lambda: config['menu']['menu'].toggle_fullscreen()),
+                          ('Back', lambda: config['menu']['menu'].back())],
+
+        'PAUSE_MENU': [('Resume', lambda: config['menu']['menu'].resume_game()),  # Use same as start/resume logic
+                       ('Options', lambda: config['menu']['menu'].open_settings()),
+                       ('Quit', lambda: config['menu']['menu'].quit())]
     },
+    'menu_running': True,
+    'selection_cooldown_time': None,
+    'menu': None  # You’ll assign the Menu instance here
+},
 
     'controls': {
         'controller_found': False,

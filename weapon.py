@@ -33,6 +33,9 @@ class Weapon(pygame.sprite.Sprite):
         self.obstacle_sprites = level['sprite_groups']['obstacle_sprites']
         self.entity_sprites = level['sprite_groups']['entity_sprites']
         self.offset_done = None
+        
+        # Trail-related attributes
+        self.trail_positions = []  # List of previous positions
 
     def calculate_angle_offset(self):
         """Applies a small random angular offset to the projectile's trajectory."""
@@ -58,6 +61,11 @@ class Weapon(pygame.sprite.Sprite):
         self.projectile_hitbox.x += self.direction.x * velocity
         self.projectile_hitbox.y += self.direction.y * velocity
         self.rect.center = self.projectile_hitbox.center
+
+                # Update trail
+        self.trail_positions.insert(0, self.rect.center)
+        if len(self.trail_positions) > 5:
+            self.trail_positions.pop()
 
     def lifetime_check(self):
         if pygame.time.get_ticks() - self.lifetime > 5000:  # 1 second, lifetime of projectile
@@ -86,7 +94,19 @@ class Weapon(pygame.sprite.Sprite):
         
         if (self.projectile_hitbox.x > self.SCREEN_WIDTH or self.projectile_hitbox.x < 0 or self.projectile_hitbox.y > config['screen']['SCREEN_HEIGHT'] or self.projectile_hitbox.y < 0):
             self.kill()
-        
+    
+    def draw(self, surface):
+        """Call this manually from your main draw loop if using custom rendering."""
+        # Draw trail
+        for i, pos in enumerate(reversed(self.trail_positions)):
+            alpha = int(100 * (1 - i / 5))  # Decrease alpha with age
+            faded_image = self.image.copy()
+            faded_image.set_alpha(alpha)
+            rect = faded_image.get_rect(center=pos)
+            surface.blit(faded_image, rect.topleft)
+
+        # Draw main projectile
+        surface.blit(self.image, self.rect.topleft)
 
     def update(self):
         # Update obstacle and entity references

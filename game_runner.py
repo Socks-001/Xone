@@ -25,6 +25,7 @@ class GameRunner:
         # Sprite Groups
         self.visible_sprites = level['sprite_groups']['visible_sprites']
         self.obstacle_sprites = level['sprite_groups']['obstacle_sprites']
+        self.weapon_sprites = level['sprite_groups']['weapons_sprites']
 
         # Menu
         self.menu = Menu()
@@ -34,6 +35,27 @@ class GameRunner:
         if config['screen']['fullscreen_trigger']:
             pygame.display.toggle_fullscreen()
             config['screen']['fullscreen_trigger'] = False
+    
+    def update_sprite_groups(self):
+        self.visible_sprites = level['sprite_groups']['visible_sprites']
+        self.obstacle_sprites = level['sprite_groups']['obstacle_sprites']
+        self.weapon_sprites = level['sprite_groups']['weapons_sprites']
+        self.player_sprites = level['sprite_groups']['player_sprites']
+        self.enemy_sprites = level['sprite_groups']['enemy_sprites']
+        self.floor_sprites = level['sprite_groups']['floor_sprites']
+        self.wall_sprites = level['sprite_groups']['wall_sprites']
+        self.entity_sprites = level['sprite_groups']['entity_sprites']
+    
+    def draw_game_scene(self):
+        self.game_surface.fill(config['ui']['colors']['BG_COLOR'])
+        self.update_sprite_groups()
+        self.visible_sprites.update()
+        
+        self.floor_sprites.draw(self.game_surface)
+        self.wall_sprites.draw(self.game_surface)
+        for weapon in self.weapon_sprites:
+            weapon.draw(self.game_surface)
+        self.entity_sprites.draw(self.game_surface)
 
     def run(self):
         while True:
@@ -50,14 +72,11 @@ class GameRunner:
                         self.controls.handle_event(event)
 
                 self.game_surface.fill(config['ui']['colors']['BG_COLOR'])
-
+                action_map = self.controls.get_action_map()
                 if config['menu']['menu_running']:
-                    self.menu.update(self.controls, self.game_surface)
+                    self.menu.update(action_map, self.game_surface)
                 else:
-                    self.visible_sprites = level['sprite_groups']['visible_sprites']
-                    self.obstacle_sprites = level['sprite_groups']['obstacle_sprites']
-                    self.visible_sprites.draw(self.game_surface)
-                    self.visible_sprites.update()
+                   self.draw_game_scene()
 
                 # Handle scaling and fullscreen changes
                 self.handle_fullscreen()

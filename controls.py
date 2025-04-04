@@ -38,6 +38,17 @@ class Controls:
         self.triangle = search_dict(config, 'triangle')
         self.circle = search_dict(config, 'circle')
 
+    def get_action_map(self):
+        if self.menu_navigation != (0, 0):
+            print(f'Menu nav = {self.menu_navigation}')
+        return {
+            'menu_up': self.menu_navigation.y == -1,
+            'menu_down': self.menu_navigation.y == 1,
+            'menu_select': self.menu_select == 1,
+            # Add other mappings as needed (like 'pause', etc.)
+        }
+        
+    
     def handle_event(self, event):
         keys = pygame.key.get_pressed()
         
@@ -57,8 +68,8 @@ class Controls:
         self.shoot_direction.x = -1 if keys[pygame.K_a] else 1 if keys[pygame.K_d] else 0
 
         # Menu Navigation
-        self.menu_navigation.y = 1 if self.direction.y == -1 else -1 if self.direction.y == 1 else 0
-        self.menu_navigation.x = 1 if self.direction.x == -1 else -1 if self.direction.x == 1 else 0
+        self.menu_navigation.y = -self.direction.y 
+        self.menu_navigation.x = self.direction.x 
 
         # Menu Selection
         if keys[pygame.K_RETURN] or (self.controller_1 and self.controller_1.get_button(self.x)):
@@ -68,7 +79,7 @@ class Controls:
         # Escape Key for Menu Toggle
         if keys[pygame.K_ESCAPE]:
             if not config['menu']['menu_running']:
-                config['menu']['menu_running'] = True
+                config['menu']['menu'].resume_menu()
 
         # Handle KEYUP Events
         if event.type == pygame.KEYUP:

@@ -33,7 +33,7 @@ def initialize():
     load_player_images()
     load_enemy_images()
     print("Assets loaded successfully.")
-
+    
     return screen, game_surface, scaled_surface
 
 if __name__ == '__main__':
