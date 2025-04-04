@@ -1,11 +1,17 @@
+
+
 seems you cant shoot when not vulnerable (getting shot) 
 
-change game_runner name
+ -- change game_runner name
 
 change game_logic name
 
-add trail to bulletts
+ -- add trail to bulletts check
 
 add ammo to wweapon (need to reload)
 
 create weapon profiles and update the asset loader for all weapon sprites
+
+
+level and map generation
+ok so i have basicim trying to figure out how best to implement enemy generation. My game is a top down shooter kinda like binding of Xeno Crisis, Binding of Isaac, Smash TV. Its 2D twin stick, but anyway Xeno Crisis and Smash TV have the enemies coming through the doors to other rooms, In Xeno Crisis (can't remember Smash TV) the doors can be on any wall (i think it generates the map (like rooms and which rooms are adjacent based on rules) then generates doors on appropriate walls (any of the panels on the wall as the oor only takes 1 of the lik 4 or 5 wall panels) 
