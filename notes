@@ -1,0 +1,11 @@
+seems you cant shoot when not vulnerable (getting shot) 
+
+change game_runner name
+
+change game_logic name
+
+add trail to bulletts
+
+add ammo to wweapon (need to reload)
+
+create weapon profiles and update the asset loader for all weapon sprites

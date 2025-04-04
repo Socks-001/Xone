@@ -1,10 +1,7 @@
 import pygame
 from utilities import import_csv_layout, import_folder, search_dict
 from config import config
-from level_data import level, load_level_data
-from weapon_data import load_projectile_images
-from player_data import load_player_images
-from enemy_data import load_enemy_images
+from level_data import level
 from tile import Tile
 from player import Player
 from enemy import Enemy
@@ -27,18 +24,10 @@ class Game:
         self.level_index = level['level_config']['level_index']
         self.level_name = level['level_config']['level_list'][self.level_index]
         print (f'self.level_name = {self.level_name}')
-        
-        self.load_all_assets()
 
         # Initialize controls
         self.controls = controls
     
-    def load_all_assets (self):
-            load_level_data()
-            load_projectile_images()
-            load_enemy_images()
-            load_player_images()
-
     def create_map(self):
         # Create level counter
         layouts = {
