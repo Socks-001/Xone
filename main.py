@@ -1,94 +1,45 @@
 import pygame
-from sys import exit
-from game_logic import Game
-from menu import Menu
-from settings import config
-from level_data import level, load_level_data
-from utilities import search_dict
-from controls import Controls
-from debug import sprite_group_highlight
+from config import config
+from level_data import load_level_data
+from weapon_data import load_projectile_images
+from player_data import load_player_images
+from enemy_data import load_enemy_images
+from game_runner import GameRunner  # Import the game loop logic
 
-class MainLoop:
-    def __init__(self):
-        print("Initializing Pygame...")
-        pygame.init()
-        
-        # Display 
-        self.bg_color = search_dict(config,'BG_COLOR')
-        self.scale_factor = 4
-        self.screen_width = search_dict(config,'SCREEN_WIDTH')
-        self.screen_height = search_dict(config,'SCREEN_HEIGHT')
-        self.screen = pygame.display.set_mode((self.screen_width * self.scale_factor, self.screen_height * self.scale_factor), pygame.SCALED)
-        
-        # Update Dictionary 
-        config['screen']['screen'] = self.screen 
-        config['screen']['game_surface'] = self.game_surface = pygame.Surface((self.screen_width, self.screen_height))
-        config['screen']['scaled_surface'] = self.scaled_surface = pygame.transform.scale(self.game_surface, (self.screen_width, self.screen_height))
-        
-        # Clock
-        self.clock = pygame.time.Clock()
-        self.fps = search_dict(config, 'FPS')
-        pygame.display.set_caption('DC')
-        
-        # Game
-        self.controls = Controls()
-        self.game = Game(self.controls)
-        print("Game initialized.")
-        level['level_config']['game'] = self.game
-        
-        # Sprite Groups
-        self.visible_sprites = level['sprite_groups']['visible_sprites']
-        self.obstacle_sprites = level['sprite_groups']['obstacle_sprites']
+def initialize():
+    """Initialize Pygame, screen, and load assets."""
+    print("Initializing Pygame...")
+    pygame.init()
 
-        # Menu
-        self.menu = Menu()
-        config['menu']['menu'] = self.menu
-            
-    def handle_fullscreen(self):
-        if config['screen']['fullscreen_trigger'] :
-            pygame.display.toggle_fullscreen()
-            config['screen']['fullscreen_trigger'] = False
+    # Screen and Surface Setup
+    scale_factor = 4
+    screen_width = config['screen']['SCREEN_WIDTH']
+    screen_height = config['screen']['SCREEN_HEIGHT']
+    screen = pygame.display.set_mode(
+        (screen_width * scale_factor, screen_height * scale_factor), pygame.SCALED
+    )
+    game_surface = pygame.Surface((screen_width, screen_height))
+    scaled_surface = pygame.transform.scale(game_surface, (screen_width, screen_height))
 
-    def run(self):
-        while True: 
-            print("Starting main loop...")
-            level['level_config']['game_running'] = True
-            self.game_running = level['level_config']['game_running']
-            
-            
-            while self.game_running:
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        level['level_config']['game_running'] = False
-                        pygame.quit()
-                        exit()
-                    else:
-                        self.controls.handle_event(event)
-                       
-                self.game_surface.fill(self.bg_color)
+    # Update Config
+    config['screen']['screen'] = screen
+    config['screen']['game_surface'] = game_surface
+    config['screen']['scaled_surface'] = scaled_surface
 
-                if config['menu']['menu_running']:
-                    self.menu.update(self.controls, self.game_surface)
-                else:
-                    self.visible_sprites = level['sprite_groups']['visible_sprites']
-                    self.obstacle_sprites = level['sprite_groups']['obstacle_sprites']
-                    self.visible_sprites.draw(self.game_surface)
-                    self.visible_sprites.update()
+    # Load Assets
+    print("Loading assets...")
+    load_level_data()
+    load_projectile_images()
+    load_player_images()
+    load_enemy_images()
+    print("Assets loaded successfully.")
 
-                # Handle scaling and fullscreen changes
-                #self.handle_scaling()
-                self.handle_fullscreen()
-                self.scaled_surface = pygame.transform.scale(self.game_surface, self.screen.get_size())
-                config['screen']['scaled_surface'] = self.scaled_surface
-                self.screen.blit(self.scaled_surface, (0, 0))
-                
-                #sprite_group_highlight(self.obstacle_sprites)
-
-                pygame.display.flip()
-                pygame.event.pump()
-                self.clock.tick(self.fps)
-                pygame.display.set_caption(f'DC {self.clock.get_fps():.2f}')
+    return screen, game_surface, scaled_surface
 
 if __name__ == '__main__':
-    main_game = MainLoop()
-    main_game.run()
+    # Initialize resources
+    screen, game_surface, scaled_surface = initialize()
+
+    # Run the game loop
+    game_runner = GameRunner(screen, game_surface, scaled_surface)
+    game_runner.run()

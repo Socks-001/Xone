@@ -1,6 +1,6 @@
 import pygame
 from utilities import import_csv_layout, import_folder, search_dict
-from settings import config
+from config import config
 from level_data import level, load_level_data
 from weapon_data import load_projectile_images
 from player_data import load_player_images

@@ -1,5 +1,5 @@
 import pygame
-from settings import config
+from config import config
 from utilities import search_dict
 
 class Tile(pygame.sprite.Sprite):

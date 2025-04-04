@@ -3,7 +3,7 @@ import math
 import random
 from weapon_data import weapons
 from level_data import level
-from settings import config 
+from config import config 
 
 pygame.init()
 

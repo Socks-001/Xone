@@ -1,5 +1,5 @@
 import pygame
-from settings import config
+from config import config
 from level_data import level
 from utilities import search_dict, quit
 

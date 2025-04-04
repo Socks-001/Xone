@@ -1,6 +1,6 @@
 import pygame
 from entity import Entity
-from settings import config
+from config import config
 from weapon_data import weapons
 from weapon import Weapon
 from player_data import player_data

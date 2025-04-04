@@ -1,6 +1,6 @@
 import pygame
 from utilities import search_dict
-from settings import config, add_joystick_buttons
+from config import config, add_joystick_buttons
 
 class Controls:
     def __init__(self):

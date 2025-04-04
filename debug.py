@@ -1,6 +1,6 @@
 import pygame
 pygame.init()
-from settings import config
+from config import config
 
 
 

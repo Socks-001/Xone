@@ -1,5 +1,5 @@
 import pygame
-from settings import config
+from config import config
 from level_data import level
 from player_data import player_data
 from enemy_data import enemy_data
@@ -72,7 +72,7 @@ class Entity(pygame.sprite.Sprite):
             print (f'subtracting health, new health = {self.health}')
             self.vulnerable = False  # Set entity to invulnerable after being hit
             self.hit_time = pygame.time.get_ticks()  # Set the time of the hit
-            if self.health == 0:
+            if self.health <= 0:
                 self.kill()
         
     '''def death_particles(self,pos,particle_type):
