@@ -93,7 +93,7 @@ class GameEngine:
                 if config['menu']['menu_running']:
                     self.menu.update(action_map, self.game_surface)
                 else:
-                   self.draw_game_scene(True)
+                   self.draw_game_scene()
 
                 # Handle scaling and fullscreen changes
                 self.handle_fullscreen()
