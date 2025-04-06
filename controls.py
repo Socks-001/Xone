@@ -14,6 +14,12 @@ class Controls:
         self.menu_navigation = pygame.math.Vector2()
         self.menu_select = 0  # Initialize menu selection state
 
+        # Cooldown for the start button
+        self.button_cooldown = 500  # Cooldown in milliseconds (e.g., 500ms)
+        self.can_press_start = True  # Last time the start button was pressed
+        self.start_time = 0  # Initialize the last press time
+
+
         # Initialize joysticks
         try:
             if pygame.joystick.get_count() > 0:
@@ -33,6 +39,7 @@ class Controls:
         self.dpad_down = search_dict(config, 'dpad_down')
         self.dpad_left = search_dict(config, 'dpad_left')
         self.dpad_right = search_dict(config, 'dpad_right')
+        self.start = search_dict(config, 'start')
         self.x = search_dict(config, 'x')  
         self.square = search_dict(config, 'square')
         self.triangle = search_dict(config, 'triangle')
@@ -47,7 +54,11 @@ class Controls:
             'menu_select': self.menu_select == 1,
             # Add other mappings as needed (like 'pause', etc.)
         }
-        
+    
+    def start_cooldown(self):
+        current_time = pygame.time.get_ticks()
+        if current_time - self.start_time > self.button_cooldown:
+            self.can_press_start = True
     
     def handle_event(self, event):
         keys = pygame.key.get_pressed()
@@ -77,7 +88,12 @@ class Controls:
             print(f"Menu Select = {self.menu_select}")
 
         # Escape Key for Menu Toggle
-        if keys[pygame.K_ESCAPE]:
+
+        if keys[pygame.K_ESCAPE] or (self.controller_1 and self.controller_1.get_button(self.start)) and self.can_press_start:
+              # Update the last press time:
+            self.can_press_start = False
+            self.start_time = pygame.time.get_ticks()
+            self.start_cooldown()
             if not config['menu']['menu_running']:
                 config['menu']['menu'].resume_menu()
 

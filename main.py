@@ -4,7 +4,7 @@ from level_data import load_level_data
 from weapon_data import load_projectile_images
 from player_data import load_player_images
 from enemy_data import load_enemy_images
-from game_runner import GameRunner  # Import the game loop logic
+from game_engine import GameRunner  # Import the game loop logic
 
 def initialize():
     """Initialize Pygame, screen, and load assets."""

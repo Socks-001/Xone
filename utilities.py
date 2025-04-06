@@ -34,8 +34,7 @@ def import_folder (path):
             image_surf = pygame.image.load(full_path).convert_alpha()
             surface_list.append(image_surf)
             # Debug: Print loaded image paths
-            print(f"Loaded image: {full_path}")
-            
+            print(f"Loaded image: {full_path}")   
     
     return surface_list
 

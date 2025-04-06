@@ -1,7 +1,10 @@
 import pygame
 pygame.init()
+pygame.mixer.init() 
+
 
 weapons = {
+    'sound' : pygame.mixer.Sound('audio/shot.wav'),
     'test': {'name' : 'test_weapon',
              'damage': 1,
              'sprite': None, 

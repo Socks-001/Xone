@@ -20,6 +20,8 @@ class Entity(pygame.sprite.Sprite):
         self.hitbox = pygame.FRect(self.rect.inflate(-self.collision_tolerance, -self.collision_tolerance))
         self.direction = pygame.math.Vector2()
         self.obstacle_sprites = level['sprite_groups']['obstacle_sprites']
+        self.hit_sound = pygame.mixer.Sound('audio/hit.wav')
+          # Set volume to 50%
         
     
       # Vulnerability properties
@@ -70,6 +72,7 @@ class Entity(pygame.sprite.Sprite):
     def take_damage(self, damage):
         """This method is used to apply damage to the entity, ensuring it can only be damaged when vulnerable."""
         if self.vulnerable:
+            self.hit_sound.play()
             self.health -= damage  # Subtract health when hit
             print (f'subtracting health, new health = {self.health}')
             self.vulnerable = False  # Set entity to invulnerable after being hit

@@ -56,6 +56,7 @@ config = {
         'dpad_down': None,
         'dpad_left': None,
         'dpad_right': None,
+        'start': None,
         'x': None,
         'square': None,
         'triangle': None,
@@ -78,12 +79,14 @@ def add_joystick_buttons(joystick):
             'triangle': 4,
             'circle': 1  # Equivalent to B
         }
-    elif "PlayStation" in name or "DualShock" in name:  # PS4 controller
+    elif "PS4" in name or "DualShock" in name:  # PS4 controller
+        print("PS4 Input Loaded")
         config['joystick'] = {
             'dpad_up': 11,
             'dpad_down': 12,
             'dpad_left': 13,
             'dpad_right': 14,
+            'start': 6, 
             'x': 0,  # PS4's X button is 0
             'square': 2,
             'triangle': 3,

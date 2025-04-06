@@ -22,6 +22,7 @@ class Weapon(pygame.sprite.Sprite):
         self.attack_damage = weapon_data['damage']
         self.sprite = weapon_data['sprite']
         self.velocity = float(weapon_data['speed']) # Speed projectile travles at 
+        self.shot_sound = weapons['sound'] # Sound of the weapon, temporary sound, will update per weapon
         self.lifetime = pygame.time.get_ticks()
 
         # Image and Rect 
@@ -36,6 +37,8 @@ class Weapon(pygame.sprite.Sprite):
         
         # Trail-related attributes
         self.trail_positions = []  # List of previous positions
+
+        self.shot_sound.play()  # Play the shot sound
 
     def calculate_angle_offset(self):
         """Applies a small random angular offset to the projectile's trajectory."""
