@@ -62,14 +62,16 @@ class GameEngine:
         self.floor_sprites.draw(self.game_surface)
         self.wall_sprites.draw(self.game_surface)
         for weapon in self.weapon_sprites:
-            weapon.draw(self.game_surface)
+            weapon.draw(self.game_surface, debug = True)
         self.entity_sprites.draw(self.game_surface)
+        
 
         if debug == True:
             sprite_group_highlight(self.wall_sprites, self.game_surface, 1, 1)  # Blue for wall
             sprite_group_highlight(self.player_sprites, self.game_surface, 2, 1)
             sprite_group_highlight(self.enemy_sprites, self.game_surface, 3, 1)
             sprite_group_highlight(self.weapon_sprites, self.game_surface, 4, 1)
+            
         
 
     def run(self):
@@ -91,7 +93,7 @@ class GameEngine:
                 if config['menu']['menu_running']:
                     self.menu.update(action_map, self.game_surface)
                 else:
-                   self.draw_game_scene()
+                   self.draw_game_scene(True)
 
                 # Handle scaling and fullscreen changes
                 self.handle_fullscreen()

@@ -39,6 +39,8 @@ class Weapon(pygame.sprite.Sprite):
         self.trail_positions = []  # List of previous positions
 
         self.shot_sound.play()  # Play the shot sound
+        self.previous_position = (0,0)
+        self.current_position = (0,0)
 
     def calculate_angle_offset(self):
         """Applies a small random angular offset to the projectile's trajectory."""
@@ -59,11 +61,12 @@ class Weapon(pygame.sprite.Sprite):
         self.offset_done = 1
 
     def move_projectile(self, velocity):
-      
+        self.previous_position = tuple(self.projectile_hitbox.center)
         # Move the projectile in the adjusted direction
         self.projectile_hitbox.x += self.direction.x * velocity
         self.projectile_hitbox.y += self.direction.y * velocity
         self.rect.center = self.projectile_hitbox.center
+        self.current_position = tuple(self.projectile_hitbox.center)
 
                 # Update trail
         self.trail_positions.insert(0, self.rect.center)
@@ -75,14 +78,10 @@ class Weapon(pygame.sprite.Sprite):
             self.kill()
 
     def check_collision(self):
-        # Get the previous and current positions of the projectile
-        previous_position = pygame.math.Vector2(self.rect.center)
-        current_position = pygame.math.Vector2(self.projectile_hitbox.center)
-
         # Check collisions with entities
         for entity in self.entity_sprites:
             # Create a line segment from the previous position to the current position
-            if entity.hitbox.clipline(previous_position, current_position):
+            if entity.hitbox.clipline(self.previous_position, self.current_position):
                 # Check if the entity is of a different sprite type (not the owner)
                 if entity.sprite_type != self.owner_sprite_type:
                     if entity.vulnerable:
@@ -91,22 +90,20 @@ class Weapon(pygame.sprite.Sprite):
                         self.kill()  # Destroy the projectile
                         return  # Exit after the first collision
                   
-                elif entity.vulnerable == False:
-                    self.kill()
+                    else:
+                        entity.take_hit_no_damage()
+                        self.kill()
 
-                else:
-                    pass
-                
         # Check collisions with obstacles
         for sprite in self.obstacle_sprites:
-            if sprite.rect.clipline(previous_position, current_position):
+            if sprite.rect.clipline(self.previous_position, self.current_position):
                 self.kill()
                 return
         
         if (self.projectile_hitbox.x > self.SCREEN_WIDTH or self.projectile_hitbox.x < 0 or self.projectile_hitbox.y > config['screen']['SCREEN_HEIGHT'] or self.projectile_hitbox.y < 0):
             self.kill()
     
-    def draw(self, surface):
+    def draw(self, surface, debug = False):
         """Call this manually from your main draw loop if using custom rendering."""
         # Draw trail
         for i, pos in enumerate((self.trail_positions)):
@@ -118,6 +115,11 @@ class Weapon(pygame.sprite.Sprite):
 
         # Draw main projectile
         surface.blit(self.image, self.rect.topleft)
+
+        if debug:
+            # Draw the previous and current positions for debugging
+            pygame.draw.line(surface, (255, 255, 0), self.previous_position, self.current_position, 5)  # Yellow line
+
 
     def update(self):
         # Update obstacle and entity references

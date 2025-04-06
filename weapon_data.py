@@ -8,7 +8,7 @@ weapons = {
     'test': {'name' : 'test_weapon',
              'damage': 1,
              'sprite': None, 
-             'speed': 2.5,
+             'speed': 3.5,
              'fire_rate': 300,
              'ammo poermagazine' : 15,
              'total magazine' : 3,

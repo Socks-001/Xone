@@ -9,5 +9,5 @@ class Tile(pygame.sprite.Sprite):
         self.sprite_type = sprite_type
         self.image = surface
         self.rect = self.image.get_rect(topleft=pos)
-        self.hitbox = pygame.FRect(self.rect.inflate(0, -10))
+        self.hitbox = pygame.FRect(self.rect)
     
