@@ -67,7 +67,7 @@ class Weapon(pygame.sprite.Sprite):
 
                 # Update trail
         self.trail_positions.insert(0, self.rect.center)
-        if len(self.trail_positions) > 5:
+        if len(self.trail_positions) > 18:  # Limit trail length
             self.trail_positions.pop()
 
     def lifetime_check(self):
@@ -75,25 +75,33 @@ class Weapon(pygame.sprite.Sprite):
             self.kill()
 
     def check_collision(self):
-        # check collisions with entities 
+        # Get the previous and current positions of the projectile
+        previous_position = pygame.math.Vector2(self.rect.center)
+        current_position = pygame.math.Vector2(self.projectile_hitbox.center)
+
+        # Check collisions with entities
         for entity in self.entity_sprites:
-            if self.projectile_hitbox.colliderect(entity.hitbox):
+            # Create a line segment from the previous position to the current position
+            if entity.hitbox.clipline(previous_position, current_position):
                 # Check if the entity is of a different sprite type (not the owner)
                 if entity.sprite_type != self.owner_sprite_type:
                     if entity.vulnerable:
                         entity.take_damage(self.attack_damage)  # Apply damage
                         entity.vulnerable = False  # Entity becomes invulnerable after being hit
                         self.kill()  # Destroy the projectile
+                        return  # Exit after the first collision
                   
                 elif entity.vulnerable == False:
                     self.kill()
 
                 else:
                     pass
-        # check collisions with obstacles                
+                
+        # Check collisions with obstacles
         for sprite in self.obstacle_sprites:
-            if self.projectile_hitbox.colliderect(sprite.rect):
+            if sprite.rect.clipline(previous_position, current_position):
                 self.kill()
+                return
         
         if (self.projectile_hitbox.x > self.SCREEN_WIDTH or self.projectile_hitbox.x < 0 or self.projectile_hitbox.y > config['screen']['SCREEN_HEIGHT'] or self.projectile_hitbox.y < 0):
             self.kill()
@@ -101,8 +109,8 @@ class Weapon(pygame.sprite.Sprite):
     def draw(self, surface):
         """Call this manually from your main draw loop if using custom rendering."""
         # Draw trail
-        for i, pos in enumerate(reversed(self.trail_positions)):
-            alpha = int(100 * (1 - i / 5))  # Decrease alpha with age
+        for i, pos in enumerate((self.trail_positions)):
+            alpha = int(100 * (1 - i / 18))  # Decrease alpha with age
             faded_image = self.image.copy()
             faded_image.set_alpha(alpha)
             rect = faded_image.get_rect(center=pos)

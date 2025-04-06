@@ -18,10 +18,24 @@ def debug(info, x, y):
         pygame.draw.rect(display_surface, UI_BORDER_COLOR, debug_rect.inflate(6,6),2)
         display_surface.blit(debug_surf,debug_rect)
 
-def sprite_group_highlight(sprite_group, surface):
-    """Draws outlines around all tiles in the obstacle_sprites group."""
-    display_surface = pygame.display.surface()
+def sprite_group_highlight(sprite_group, surface, color_index, line_width = 2):
+    """Draws outlines around all tiles in the sprite group using a selected color."""
+    
+    # Define the color mapping
+    colors = [
+        config['ui']['colors']['DEBUG_LINE_COLOR'],      # Blue for wall
+        config['ui']['colors']['DEBUG_LINE_COLOR_2'],    # Green for player
+        config['ui']['colors']['DEBUG_LINE_COLOR_3'],    # Red for enemy
+        config['ui']['colors']['DEBUG_LINE_COLOR_4']     # Pink for weapon
+    ]
+
+    # Ensure the color_index is within bounds
+    if 0 <= color_index < len(colors):
+        selected_color = colors[color_index]
+    else:
+        selected_color = 'White'  # Default color if index is out of bounds
+
+    # Draw rectangles around the sprites
     for sprite in sprite_group:
-        # Draw a rectangle around the sprite's rect
-        pygame.draw.rect(display_surface, 'Red', sprite.rect, 2)  # Red outline with 2px thickness
+        pygame.draw.rect(surface, selected_color, sprite.rect, line_width)  # Outline with 2px thickness
         

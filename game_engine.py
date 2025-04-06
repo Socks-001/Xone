@@ -4,8 +4,9 @@ from menu import Menu
 from config import config
 from level_data import level
 from controls import Controls
+from debug import sprite_group_highlight
 
-class GameRunner:
+class GameEngine:
     def __init__(self, screen, game_surface, scaled_surface):
         # Screen and Surface
         self.screen = screen
@@ -36,7 +37,7 @@ class GameRunner:
             pygame.display.toggle_fullscreen()
             config['screen']['fullscreen_trigger'] = False
     
-    def update_sprite_groups(self):
+    def update_sprite_groups_in_dictionary(self):
         self.visible_sprites = level['sprite_groups']['visible_sprites']
         self.obstacle_sprites = level['sprite_groups']['obstacle_sprites']
         self.weapon_sprites = level['sprite_groups']['weapons_sprites']
@@ -46,16 +47,30 @@ class GameRunner:
         self.wall_sprites = level['sprite_groups']['wall_sprites']
         self.entity_sprites = level['sprite_groups']['entity_sprites']
     
-    def draw_game_scene(self):
+    def update_sprite_groups(self):
+        self.weapon_sprites.update()
+        self.entity_sprites.update()
+        self.floor_sprites.update()
+        self.wall_sprites.update()
+        
+
+    def draw_game_scene(self, debug = False):
         self.game_surface.fill(config['ui']['colors']['BG_COLOR'])
+        self.update_sprite_groups_in_dictionary()
         self.update_sprite_groups()
-        self.visible_sprites.update()
         
         self.floor_sprites.draw(self.game_surface)
         self.wall_sprites.draw(self.game_surface)
         for weapon in self.weapon_sprites:
             weapon.draw(self.game_surface)
         self.entity_sprites.draw(self.game_surface)
+
+        if debug == True:
+            sprite_group_highlight(self.wall_sprites, self.game_surface, 1, 1)  # Blue for wall
+            sprite_group_highlight(self.player_sprites, self.game_surface, 2, 1)
+            sprite_group_highlight(self.enemy_sprites, self.game_surface, 3, 1)
+            sprite_group_highlight(self.weapon_sprites, self.game_surface, 4, 1)
+        
 
     def run(self):
         while True:

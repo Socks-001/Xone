@@ -26,7 +26,10 @@ config = {
             'ENERGY_COLOR': 'blue',
             'UI_BORDER_ACTIVE': 'gold',
             'DEBUG_LINE_WIDTH': 10,
-            'DEBUG_LINE_COLOR': (200, 30, 10)
+            'DEBUG_LINE_COLOR': (0, 0, 255), # Blue for wall
+            'DEBUG_LINE_COLOR_2': (0, 255, 0), # Green for player
+            'DEBUG_LINE_COLOR_3': (255, 0, 0),  # Red for enemy
+            'DEBUG_LINE_COLOR_4': (250, 20, 190)  # Pink for weapon
         }
     },
 
