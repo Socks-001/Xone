@@ -65,7 +65,7 @@ class Entity(pygame.sprite.Sprite):
         
         self.rect.center = self.hitbox.center
 
-self.trigger_death_particles(self.rect.center, 'explosion')
+    
 
     def take_damage(self, damage):
         """This method is used to apply damage to the entity, ensuring it can only be damaged when vulnerable."""

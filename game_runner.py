@@ -1,5 +1,5 @@
 import pygame
-from game_logic import Game
+from map_generation import Game
 from menu import Menu
 from config import config
 from level_data import level
