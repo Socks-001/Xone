@@ -87,6 +87,7 @@ class GameEngine:
                         exit()
                     else:
                         self.controls.handle_event(event)
+                        self.controls.start_cooldown()
 
                 self.game_surface.fill(config['ui']['colors']['BG_COLOR'])
                 action_map = self.controls.get_action_map()

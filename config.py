@@ -42,8 +42,7 @@ config = {
 
    'menu': {
     'menus': {
-        'HOME_MENU': [('Start Game', lambda: config['menu']['menu'].start_game()),
-                      ('Options', lambda: config['menu']['menu'].open_settings()),
+        'HOME_MENU': [('Start Game', lambda: config['menu']['menu'].start_game()), 
                       ('Quit', lambda: config['menu']['menu'].quit())],
 
         'SETTINGS_MENU': [('Volume', lambda: config['menu']['menu'].placeholder()),

@@ -14,7 +14,7 @@ class Controls:
         self.menu_select = 0  # Initialize menu selection state
 
         # Cooldown for the start button
-        self.button_cooldown = 1000  # Cooldown in milliseconds (e.g., 500ms)
+        self.button_cooldown = 500  # Cooldown in milliseconds (e.g., 500ms)
         self.can_press_start = True  # Last time the start button was pressed
         self.start_time = 0  # Initialize the last press time
 
@@ -56,8 +56,9 @@ class Controls:
     
     def start_cooldown(self):
         current_time = pygame.time.get_ticks()
-        if not self.can_press_start and current_time - self.start_time > self.button_cooldown:
-            self.can_press_start = True
+        if not self.can_press_start:
+            if (current_time - self.start_time) >= self.button_cooldown:
+                self.can_press_start = True
     
     def handle_event(self, event):
         keys = pygame.key.get_pressed()
@@ -92,8 +93,11 @@ class Controls:
               # Update the last press time:
             self.can_press_start = False
             self.start_time = pygame.time.get_ticks()
-            if not config['menu']['menu_running']:
-                config['menu']['menu'].resume_menu()
+            if config['menu']['menu_running'] is False:
+                config['menu']['menu_running'] = True
+            elif config['menu']['menu_running'] is True:
+                config['menu']['menu_running'] = False
+            print(f"Menu Running = {config['menu']['menu_running']}")
 
         # Handle KEYUP Events
         if event.type == pygame.KEYUP:
@@ -103,4 +107,4 @@ class Controls:
                 self.menu_navigation.x = 0
             if event.key == pygame.K_RETURN or (self.controller_1 and event.key == self.x):
                 self.menu_select = 0
-                print(f"Menu Select = {self.menu_select}")
+                #print(f"Menu Select = {self.menu_select}")

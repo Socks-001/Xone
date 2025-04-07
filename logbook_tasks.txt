@@ -20,7 +20,6 @@ def bugs:
 
     -- fix joystic input (keeps registering as a held button)
 
-    
 
 def Completed:
 
@@ -59,27 +58,6 @@ def Completed:
     -- basic projectile collision 
 
     -- advanced projectile collision (tripple raycast, orient bullet to vector, add "accuracy"/shot angle variability)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 **Suggested Pathfinding 
