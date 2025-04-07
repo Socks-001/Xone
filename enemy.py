@@ -67,16 +67,13 @@ class Enemy(Entity):
             
         elif distance <= self.notice_radius:
             self.status = 'move'
-            self.rect.center += direction * self.speed  # Move toward player
+            self.move(self.speed) # Move toward player
         
-        
-           
     def shoot(self, player_direction):
         """Fires a projectile if the cooldown allows it."""
         if self.can_shoot():
             Weapon(self, self.sprite_type, [self.visible_sprites, self.weapon_group], player_direction, self.weapon_name)
             self.last_shot_time = pygame.time.get_ticks()  # Update last shot time
-
     
     def update(self,):
         self.enemy_behavior(self.player)

@@ -152,7 +152,7 @@ class Weapon(pygame.sprite.Sprite):
 
 
     
-    def draw(self, surface, debug = False):
+    def draw(self, surface, debug):
         """Call this manually from your main draw loop if using custom rendering."""
         # Draw trail
         for i, pos in enumerate((self.trail_positions)):

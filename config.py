@@ -10,9 +10,20 @@ config = {
         'screen': None,
         'fullscreen_trigger': False,
         'scaled_surface': None, 
-        'game_surface': None
+        'game_surface': None,
     },
-
+    'debug': {
+        'debug': False,  # Set to True to enable debug mode
+        'DEBUG_LINE_WIDTH': 10,
+        'colors': {
+        'DEBUG_LINE_COLOR': (0, 0, 255), # Blue for wall
+        'DEBUG_LINE_COLOR_2': (0, 255, 0), # Green for player
+        'DEBUG_LINE_COLOR_3': (255, 0, 0),  # Red for enemy
+        'DEBUG_LINE_COLOR_4': (250, 20, 190),  # Pink for weapon
+        'DEBUG_LINE_COLOR_5': (255, 255, 0),  # Yellow for hitbox
+        'DEBUG_LINE_COLOR_6': (255, 165, 0),  # Orange for special effects
+        'DEBUG_LINE_COLOR_7': (128, 0, 128)}  # Purple for special entities
+    },
     'ui': {
         'FONT': 'graphics/font/joystix monospace.otf',
         'FONT_SIZE': 12,
@@ -24,12 +35,8 @@ config = {
             'TEXT_COLOR': '#fffde4',
             'HEALTH_COLOR': '#dd5929',
             'ENERGY_COLOR': 'blue',
-            'UI_BORDER_ACTIVE': 'gold',
-            'DEBUG_LINE_WIDTH': 10,
-            'DEBUG_LINE_COLOR': (0, 0, 255), # Blue for wall
-            'DEBUG_LINE_COLOR_2': (0, 255, 0), # Green for player
-            'DEBUG_LINE_COLOR_3': (255, 0, 0),  # Red for enemy
-            'DEBUG_LINE_COLOR_4': (250, 20, 190)  # Pink for weapon
+            'UI_BORDER_ACTIVE': 'gold'
+
         }
     },
 
@@ -41,6 +48,7 @@ config = {
 
         'SETTINGS_MENU': [('Volume', lambda: config['menu']['menu'].placeholder()),
                           ('Fullscreen', lambda: config['menu']['menu'].toggle_fullscreen()),
+                          ('Debug', lambda: config['menu']['menu'].toggle_debug()),
                           ('Back', lambda: config['menu']['menu'].back())],
 
         'PAUSE_MENU': [('Resume', lambda: config['menu']['menu'].resume_game()),  # Use same as start/resume logic

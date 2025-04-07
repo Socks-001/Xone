@@ -25,7 +25,8 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.JOYAXISMOTION:
-                print(f"Joystick {event.joy} axis {event.axis} motion: {event.value}")
+                if event.value > 0.2: # Deadzone threshold
+                    print(f"Joystick {event.joy} axis {event.axis} motion: {event.value}")
             elif event.type == pygame.JOYBUTTONDOWN:
                 print(f"Joystick {event.joy} button {event.button} down")
             elif event.type == pygame.JOYBUTTONUP:

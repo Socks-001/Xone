@@ -54,7 +54,7 @@ class GameEngine:
         self.wall_sprites.update()
         
 
-    def draw_game_scene(self, debug = False):
+    def draw_game_scene(self, debug):
         self.game_surface.fill(config['ui']['colors']['BG_COLOR'])
         self.update_sprite_groups_in_dictionary()
         self.update_sprite_groups()
@@ -62,7 +62,7 @@ class GameEngine:
         self.floor_sprites.draw(self.game_surface)
         self.wall_sprites.draw(self.game_surface)
         for weapon in self.weapon_sprites:
-            weapon.draw(self.game_surface, debug = debug)
+            weapon.draw(self.game_surface, debug)
         self.entity_sprites.draw(self.game_surface)
         
 
@@ -93,7 +93,7 @@ class GameEngine:
                 if config['menu']['menu_running']:
                     self.menu.update(action_map, self.game_surface)
                 else:
-                   self.draw_game_scene()
+                   self.draw_game_scene( debug=config['debug']['debug'])
 
                 # Handle scaling and fullscreen changes
                 self.handle_fullscreen()

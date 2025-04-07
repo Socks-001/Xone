@@ -114,6 +114,13 @@ class Menu:
 
     def toggle_fullscreen(self):
         config['screen']['fullscreen_trigger'] = True
+    
+    def toggle_debug(self):
+        config['debug']['debug'] = not config['debug']['debug']
+        if config['debug']['debug']:
+            print("Debug mode enabled")
+        else:
+            print("Debug mode disabled")
 
     def placeholder(self):
         pass
