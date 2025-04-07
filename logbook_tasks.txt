@@ -20,7 +20,7 @@ def bugs:
 
     -- fix joystic input (keeps registering as a held button)
 
-    -- fix collision bug , you cant shoot enemies while getting shot
+    
 
 def Completed:
 
@@ -52,7 +52,7 @@ def Completed:
 
     -- basic joystic and keyboard input
 
-    
+    -- fix collision bug , you cant shoot enemies while getting shot
 
     -- basic collision for walls
 
