@@ -8,7 +8,6 @@ class Controls:
         self.controller_1 = None
         self.dpad_input_player1 = (0, 0)
         self.button_input_player1 = 0
-        self.coolingdown = False
         self.direction = pygame.math.Vector2()
         self.shoot_direction = pygame.math.Vector2()
         self.menu_navigation = pygame.math.Vector2()

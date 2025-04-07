@@ -62,7 +62,7 @@ class GameEngine:
         self.floor_sprites.draw(self.game_surface)
         self.wall_sprites.draw(self.game_surface)
         for weapon in self.weapon_sprites:
-            weapon.draw(self.game_surface, debug = True)
+            weapon.draw(self.game_surface, debug = debug)
         self.entity_sprites.draw(self.game_surface)
         
 

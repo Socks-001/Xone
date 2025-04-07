@@ -72,7 +72,7 @@ class Weapon(pygame.sprite.Sprite):
 
                 # Update trail
         self.trail_positions.insert(0, self.rect.center)
-        if len(self.trail_positions) > 18:  # Limit trail length
+        if len(self.trail_positions) > 3:  # Limit trail length
             self.trail_positions.pop()
         """Returns a rect representing the swept path of the projectile (covers tunneling)."""
         start = pygame.math.Vector2(self.previous_position)
@@ -127,9 +127,11 @@ class Weapon(pygame.sprite.Sprite):
                     if entity.hitbox.clipline(ray_start, ray_end):
                         if entity.vulnerable:
                             entity.take_damage(self.attack_damage)
+                            self.kill()
                         else:
                             entity.take_hit_no_damage()
-                        self.kill()
+                            self.kill()
+                        
                         return
 
         # Check obstacle collisions
@@ -154,7 +156,7 @@ class Weapon(pygame.sprite.Sprite):
         """Call this manually from your main draw loop if using custom rendering."""
         # Draw trail
         for i, pos in enumerate((self.trail_positions)):
-            alpha = int(100 * (1 - i / 5))  # Decrease alpha with age
+            alpha = int(100 * (1 - i / 3))  # Decrease alpha with age
             faded_image = self.image.copy()
             faded_image.set_alpha(alpha)
             rect = faded_image.get_rect(center=pos)
