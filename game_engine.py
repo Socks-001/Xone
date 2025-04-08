@@ -59,7 +59,7 @@ class GameEngine:
         self.update_sprite_groups_in_dictionary()
         self.update_sprite_groups()
         
-        self.floor_sprites.draw(self.game_surface)
+        self.floor_sprites.draw(self.game_surface) 
         self.wall_sprites.draw(self.game_surface)
         for weapon in self.weapon_sprites:
             weapon.draw(self.game_surface, debug)
