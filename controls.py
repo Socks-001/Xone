@@ -94,9 +94,9 @@ class Controls:
             self.can_press_start = False
             self.start_time = pygame.time.get_ticks()
             if config['menu']['menu_running'] is False:
-                config['menu']['menu_running'] = True
+                config['menu']['menu'].resume_menu()
             elif config['menu']['menu_running'] is True:
-                config['menu']['menu_running'] = False
+                config['menu']['menu'].resume_game()
             print(f"Menu Running = {config['menu']['menu_running']}")
 
         # Handle KEYUP Events
