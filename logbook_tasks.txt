@@ -14,7 +14,7 @@ def new_features:
 
     -- add A* pathfinding
 
-    -- understand distance and length
+    
 
 def bugs:
 
@@ -22,6 +22,8 @@ def bugs:
 
 
 def Completed:
+
+    -- understand direction and length
 
     -- fix joystic input (keeps registering as a held button)
 

@@ -4,6 +4,7 @@ import random
 from weapon_data import weapons
 from level_data import level
 from config import config 
+from sound_data import sounds
 
 pygame.init()
 
@@ -22,7 +23,7 @@ class Weapon(pygame.sprite.Sprite):
         self.attack_damage = weapon_data['damage']
         self.sprite = weapon_data['sprite']
         self.velocity = float(weapon_data['speed']) # Speed projectile travles at 
-        self.shot_sound = weapons['sound'] # Sound of the weapon, temporary sound, will update per weapon
+        self.shot_sound = sounds['weapon_sounds']['shot'] # Sound of the weapon, temporary sound, will update per weapon
         self.lifetime = pygame.time.get_ticks()
 
         # Image and Rect 

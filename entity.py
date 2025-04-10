@@ -3,6 +3,7 @@ from config import config
 from level_data import level
 from player_data import player_data
 from enemy_data import enemy_data
+from sound_data import sounds
 
 class Entity(pygame.sprite.Sprite):
     def __init__(self, pos, groups, sprite_type, name):
@@ -20,8 +21,8 @@ class Entity(pygame.sprite.Sprite):
         self.hitbox = pygame.FRect(self.rect)
         self.direction = pygame.math.Vector2()
         self.obstacle_sprites = level['sprite_groups']['obstacle_sprites']
-        self.hit_sound = pygame.mixer.Sound('audio/hit.wav')
-        self.hit_sound_no_damage = pygame.mixer.Sound('audio/death.wav')
+        self.hit_sound = sounds['entity_sounds']['hit']
+        self.death_sound = sounds['entity_sounds']['death']
           # Set volume to 50%
         
     
@@ -69,7 +70,8 @@ class Entity(pygame.sprite.Sprite):
         self.rect.center = self.hitbox.center
 
     def take_hit_no_damage(self):
-        self.hit_sound_no_damage.play()
+        pass
+        #self.hit_sound_no_damage.play()
 
     def take_damage(self, damage):
         """This method is used to apply damage to the entity, ensuring it can only be damaged when vulnerable."""
@@ -79,6 +81,7 @@ class Entity(pygame.sprite.Sprite):
         print (f'subtracting health, new health = {self}{self.health}')
         self.hit_time = pygame.time.get_ticks()  # Set the time of the hit
         if self.health <= 0: #check death
+            self.death_sound.play()
             self.kill()
         
     '''def death_particles(self,pos,particle_type):

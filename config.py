@@ -57,7 +57,7 @@ config = {
     },
     'menu_running': True,
     'selection_cooldown_time': None,
-    'menu': None  # You’ll assign the Menu instance here
+    'menu': None,  # You’ll assign the Menu instance here
 },
 
     'controls': {

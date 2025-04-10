@@ -5,18 +5,18 @@ from weapon_data import load_projectile_images
 from player_data import load_player_images
 from enemy_data import load_enemy_images
 from game_engine import GameEngine  # Import the game loop logic
+from utilities import init_audio
 
 def initialize():
     """Initialize Pygame, screen, and load assets."""
     print("Initializing Pygame...")
     pygame.init()
+    init_audio()
 
     # Screen and Surface Setup
     screen_width = config['screen']['SCREEN_WIDTH']
     screen_height = config['screen']['SCREEN_HEIGHT']
-    screen = pygame.display.set_mode(
-        (screen_width, screen_height), pygame.SCALED
-    )
+    screen = pygame.display.set_mode((screen_width, screen_height), pygame.SCALED)
     game_surface = pygame.Surface((screen_width, screen_height))
     scaled_surface = pygame.transform.scale(game_surface, (screen_width, screen_height))
 

@@ -61,3 +61,7 @@ def search_dict(d, key):
                 if result is not None:
                     return result
     return None  # Return None if key isn't found
+
+def init_audio():
+    pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=512)
+    print("Audio initialized.")
