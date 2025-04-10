@@ -18,10 +18,12 @@ def new_features:
 
 def bugs:
 
-    -- fix joystic input (keeps registering as a held button)
+    
 
 
 def Completed:
+
+    -- fix joystic input (keeps registering as a held button)
 
     -- load assets dynamically 
 

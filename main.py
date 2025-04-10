@@ -29,7 +29,7 @@ def initialize():
     print("Loading assets...")
     load_level_data()
     load_projectile_images()
-    load_player_images()
+    load_player_images() 
     load_enemy_images()
     print("Assets loaded successfully.")
     

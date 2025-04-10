@@ -43,6 +43,7 @@ config = {
    'menu': {
     'menus': {
         'HOME_MENU': [('Start Game', lambda: config['menu']['menu'].start_game()), 
+                      ('Options', lambda: config['menu']['menu'].open_settings()),
                       ('Quit', lambda: config['menu']['menu'].quit())],
 
         'SETTINGS_MENU': [('Volume', lambda: config['menu']['menu'].placeholder()),
@@ -70,7 +71,21 @@ config = {
         'x': None,
         'square': None,
         'triangle': None,
-        'circle': None
+        'circle': None,
+        'start': None,     
+        'share': None,
+        'ps': None,        
+        'l_stick_press': None,
+        'r_stick_press': None,
+        'l1': None,
+        'r1': None,
+        'touchpad': None,
+        'left_stick_x': None,  
+        'left_stick_y': None,  
+        'right_stick_x': None, 
+        'right_stick_y': None, 
+        'l2_axis': None,       
+        'r2_axis': None        
     }
 }
 
@@ -89,19 +104,47 @@ def add_joystick_buttons(joystick):
             'triangle': 4,
             'circle': 1  # Equivalent to B
         }
+
     elif "PS4" in name or "DualShock" in name:  # PS4 controller
         print("PS4 Input Loaded")
         config['joystick'] = {
-            'dpad_up': 11,
-            'dpad_down': 12,
-            'dpad_left': 13,
-            'dpad_right': 14,
-            'start': 6, 
-            'x': 0,  # PS4's X button is 0
-            'square': 2,
-            'triangle': 3,
-            'circle': 1
-        }
+        # D-Pad (digital)
+        'dpad_up': 11,
+        'dpad_down': 12,
+        'dpad_left': 13,
+        'dpad_right': 14,
+
+        # Face Buttons
+        'x': 0,         # Cross
+        'circle': 1,
+        'square': 2,
+        'triangle': 3,
+
+        # Start / Options
+        'start': 6,     # Options
+        'share': 4,
+        'ps': 5,        # PS button
+
+        # Thumbstick Clicks
+        'l_stick_press': 7,
+        'r_stick_press': 8,
+
+        # Bumpers
+        'l1': 9,
+        'r1': 10,
+
+        # Touchpad
+        'touchpad': 15,
+
+        # Analog Axes (these are accessed differently, not as buttons)
+        'left_stick_x': 0,  # Axis 0
+        'left_stick_y': 1,  # Axis 1
+        'right_stick_x': 2, # Axis 2
+        'right_stick_y': 3, # Axis 3
+        'l2_axis': 4,       # Left Trigger (analog)
+        'r2_axis': 5        # Right Trigger (analog)
+    }
+        
     else:  # Default if unknown
         print("Unknown joystick detected, using default layout.")
         config['joystick'] = {
@@ -114,3 +157,5 @@ def add_joystick_buttons(joystick):
             'triangle': 3,
             'circle': 1
         }
+
+   
