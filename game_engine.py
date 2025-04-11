@@ -67,10 +67,24 @@ class GameEngine:
         
 
         if debug == True:
-            sprite_group_highlight(self.wall_sprites, self.game_surface, 1, 1)  # Blue for wall
-            sprite_group_highlight(self.player_sprites, self.game_surface, 2, 1)
-            sprite_group_highlight(self.enemy_sprites, self.game_surface, 3, 1)
-            sprite_group_highlight(self.weapon_sprites, self.game_surface, 4, 1)
+             # Highlight walls
+            if config['debug']['walls_debug']:
+                sprite_group_highlight(self.wall_sprites, self.game_surface, 1, 1)
+
+            # Highlight players
+            if config['debug']['player_debug']:
+                sprite_group_highlight(self.player_sprites, self.game_surface, 2, 1)
+
+            # Highlight enemies
+            if config['debug']['enemies_debug']:
+                sprite_group_highlight(self.enemy_sprites, self.game_surface, 3, 1)
+
+            # Highlight weapons
+            if config['debug']['weapons_debug']:
+                sprite_group_highlight(self.weapon_sprites, self.game_surface, 4, 1)
+            
+
+            
             
         
 

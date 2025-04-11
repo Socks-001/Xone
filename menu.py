@@ -17,6 +17,7 @@ class Menu:
         self.menu_stack = ['HOME_MENU']
         self.menu_running = config['menu']['menu_running']
         self.selection_index = 0
+        self.menu_length = None
 
         # Cooldowns
         self.can_move = True
@@ -48,7 +49,7 @@ class Menu:
         options = self.get_current_menu()
         for i, (label, _) in enumerate(options):
             text = self.font.render(label, False, self.text_color)
-            rect = text.get_rect(center=(surface.get_width() // 2, surface.get_height() // 2.5 + i * 20))
+            rect = text.get_rect(center=(surface.get_width() // 2, surface.get_height() // self.menu_length + i * 20))
             if i == self.selection_index:
                 pygame.draw.rect(surface, self.UI_BORDER_COLOR, rect.inflate(20, 10), 2)
             surface.blit(text, rect)
@@ -90,6 +91,12 @@ class Menu:
         self.selection_index = 0
         self.move_timer = 0
         self.select_timer = 0
+
+        # Reset to 'Home Menu'
+        if len(self.menu_stack) > 1:
+            self.menu_stack.pop()
+            self.selection_index = 0
+
         print("RESUME MENU CALLED")
 
     
@@ -123,12 +130,31 @@ class Menu:
     def toggle_fullscreen(self):
         config['screen']['fullscreen_trigger'] = True
     
-    def toggle_debug(self):
-        config['debug']['debug'] = not config['debug']['debug']
-        if config['debug']['debug']:
-            print("Debug mode enabled")
-        else:
-            print("Debug mode disabled")
+    def toggle_debug(self, index):
+        if index == 0 :
+            config['debug']['debug'] = not config['debug']['debug']
+            if config['debug']['debug']:
+                print("Debug mode enabled")
+            else:
+                print("Debug mode disabled")
+
+        if index == 1 : 
+            config['debug']['walls_debug'] = not config['debug']['walls_debug']
+            print("Toggeling walls")
+        
+        if index == 2 : 
+            config['debug']['player_debug'] = not config['debug']['player_debug']
+            print("Toggeling player")
+        
+        if index == 3 : 
+            config['debug']['enemies_debug'] = not config['debug']['enemies_debug']
+            print("Toggeling enemies")
+        
+        if index == 4 :
+            config['debug']['weapons_debug'] = not config['debug']['weapons_debug']
+            print("Toggeling weapons")
+
+            
 
     def placeholder(self):
         pass

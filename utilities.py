@@ -64,3 +64,4 @@ def search_dict(d, key):
 def init_audio():
     pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=512)
     print("Audio initialized.")
+    #midi is available 

@@ -141,22 +141,19 @@ class Controls:
         if event.type == pygame.JOYBUTTONDOWN :
             if event.button == self.x : 
                 self.menu_select = True
-        
             if event.button == self.start and self.can_press_start:
                 self.start_pressed = True
                 self.can_press_start = False
                 self.start_time = pygame.time.get_ticks()
-
+        # Detect jostick up
         elif event.type == pygame.JOYBUTTONUP : 
-            
             if event.button == self.x : 
                 self.menu_select = False
-
             if event.button == self.start : 
                 self.start_pressed = False
          
             
-        # Handle KEYUP Events
+        # Detect KEYUP Events
         if event.type == pygame.KEYUP:
             if event.key in [pygame.K_UP, pygame.K_DOWN]:
                 self.menu_navigation.y = 0
@@ -192,9 +189,3 @@ class Controls:
                 exit()
             else: 
                 self.process_input_event(event)
-  
-        
-    
-        
-        
-        

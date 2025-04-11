@@ -1,5 +1,4 @@
 # Game Settings Data
-import pygame
 from sfx import sfx
 
 config = {
@@ -16,6 +15,10 @@ config = {
     'debug': {
         'debug': False,  # Set to True to enable debug mode
         'DEBUG_LINE_WIDTH': 10,
+        'walls_debug' : False,
+        'player_debug' : False,
+        'enemies_debug' : False, 
+        'weapons_debug' : False,
         'colors': {
         'DEBUG_LINE_COLOR': (0, 0, 255), # Blue for wall
         'DEBUG_LINE_COLOR_2': (0, 255, 0), # Green for player
@@ -24,6 +27,7 @@ config = {
         'DEBUG_LINE_COLOR_5': (255, 255, 0),  # Yellow for hitbox
         'DEBUG_LINE_COLOR_6': (255, 165, 0),  # Orange for special effects
         'DEBUG_LINE_COLOR_7': (128, 0, 128)}  # Purple for special entities
+        
     },
     'ui': {
         'FONT': 'graphics/font/joystix monospace.otf',
@@ -37,32 +41,38 @@ config = {
             'HEALTH_COLOR': '#dd5929',
             'ENERGY_COLOR': 'blue',
             'UI_BORDER_ACTIVE': 'gold'
-
         }
     },
 
    'menu': {
-    'menus': {
-        'HOME_MENU': [('Start Game', lambda: config['menu']['menu'].start_game()), 
-                      ('Options', lambda: config['menu']['menu'].open_settings()),
-                      ('Quit', lambda: config['menu']['menu'].quit())],
+        'menus': {
+            'HOME_MENU': [('Start Game', lambda: config['menu']['menu'].start_game()), 
+                        ('Options', lambda: config['menu']['menu'].open_settings()),
+                        ('Quit', lambda: config['menu']['menu'].quit())],
 
-        'SETTINGS_MENU': [('Volume', lambda: config['menu']['menu'].placeholder()),
-                          ('Fullscreen', lambda: config['menu']['menu'].toggle_fullscreen()),
-                          ('Debug', lambda: config['menu']['menu'].toggle_debug()),
-                          ('Back', lambda: config['menu']['menu'].back())],
+            'SETTINGS_MENU': [('Volume', lambda: config['menu']['menu'].placeholder()),
+                            ('Fullscreen', lambda: config['menu']['menu'].toggle_fullscreen()),
+                            ('Debug', lambda: config['menu']['menu'].toggle_debug(0)),
+                            ('walls', lambda: config['menu']['menu'].toggle_debug(1)),
+                            ('player', lambda: config['menu']['menu'].toggle_debug(2)),
+                            ('enemies', lambda: config['menu']['menu'].toggle_debug(3)),
+                            ('weapons', lambda: config['menu']['menu'].toggle_debug(4)),
+                            ('Back', lambda: config['menu']['menu'].back())],
 
-        'PAUSE_MENU': [('Resume', lambda: config['menu']['menu'].resume_game()),  # Use same as start/resume logic
-                       ('Options', lambda: config['menu']['menu'].open_settings()),
-                       ('Quit', lambda: config['menu']['menu'].quit())]
+            'PAUSE_MENU': [('Resume', lambda: config['menu']['menu'].resume_game()),  # Use same as start/resume logic
+                        ('Options', lambda: config['menu']['menu'].open_settings()),
+                        ('Quit', lambda: config['menu']['menu'].quit())]
+        },
+        'menu_running': True,
+        'selection_cooldown_time': None,
+        'menu': None,  # You’ll assign the Menu instance here
+        'menu_select' : sfx['menu']['menu_select'],
+        'menu_move' : sfx['menu']['menu_move'],
     },
-    'menu_running': True,
-    'selection_cooldown_time': None,
-    'menu': None,  # You’ll assign the Menu instance here
-    'menu_select' : sfx['menu']['menu_select'],
-    'menu_move' : sfx['menu']['menu_move'] 
-},
-
+    'audio' : {
+        'music_volume': 0.5,
+        'sfx_volume': 0.7
+    },
     'controls': {
         'controller_found': False,
         'controller_type': None,
@@ -70,7 +80,6 @@ config = {
         'dpad_down': None,
         'dpad_left': None,
         'dpad_right': None,
-        'start': None,
         'x': None,
         'square': None,
         'triangle': None,
