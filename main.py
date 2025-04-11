@@ -1,5 +1,8 @@
 import pygame
-import graphics_data
+from graphics_data import load_graphics
+from player_data import load_player_images
+from enemy_data import load_enemy_images
+from weapon_data import load_projectile_images
 from config import config
 from level_data import load_level_data 
 from game_engine import GameEngine  # Import the game loop logic
@@ -25,6 +28,10 @@ def initialize():
 
     # Load Assets
     print("Loading assets...")    
+    load_graphics()
+    load_player_images()
+    load_enemy_images()
+    load_projectile_images()
     load_level_data()
     return screen, game_surface, scaled_surface
 

@@ -39,7 +39,7 @@ def load_level_data():
     floor_layout = import_csv_layout(f'level_data/test_level/floor.csv')
     level['test_level']['test_floor_layout'] = floor_layout
     
-    wall_layout = import_csv_layout(f'level_data/test_level/wall.csv')
+    wall_layout = import_csv_layout(f'level_data/test_level/walls.csv')
     level['test_level']['test_wall_layout'] = wall_layout
     
     entity_layout = import_csv_layout(f'level_data/test_level/entities.csv')

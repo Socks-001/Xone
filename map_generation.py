@@ -77,7 +77,7 @@ class Game:
                 y = row_index * self.tilesize
 
                 if col == '29':  # Enemy
-                    enemy_name = 'test'
+                    enemy_name = 'goblin'
                     self.create_enemy(enemy_name, (x, y), [self.enemy_sprites, self.visible_sprites, self.entity_sprites], self.player, 'enemy')
                     '''s
                     Tile((x, y), [self.visible_sprites, self.entity_sprites], 'entities', surf)'''

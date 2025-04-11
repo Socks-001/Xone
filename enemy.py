@@ -35,7 +35,7 @@ class Enemy(Entity):
         self.player_direction = None
         self.collision_tolerance = 5
         self.vulnerable = True
-        self.status = 'Idle'
+        self.status = 'idle'
         
         # Cooldown Handling
         self.fire_rate = weapons[self.weapon_name]['fire_rate']  # Default 1000ms (1 sec) if not in data
@@ -61,14 +61,16 @@ class Enemy(Entity):
         """ Updates enemy status and behavior based on distance and action type. """
         distance, direction = self.get_target_distance_direction(player)
         
+        if distance >= self.notice_radius:
+            self.status = 'hunt'
+            self.direction = direction
+            self.move(self.speed) # Move toward player
+
         if distance <= self.attack_radius:
             self.status = 'attack'
             self.shoot(direction)
-            
-        elif distance <= self.notice_radius:
-            self.status = 'move'
-            self.move(self.speed) # Move toward player
         
+
     def shoot(self, player_direction):
         """Fires a projectile if the cooldown allows it."""
         if self.can_shoot():
