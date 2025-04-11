@@ -11,13 +11,14 @@ class Controls:
         self.direction = pygame.math.Vector2()
         self.shoot_direction = pygame.math.Vector2()
         self.menu_navigation = pygame.math.Vector2()
-        self.menu_select = 0  # Initialize menu selection state
+        self.menu_select = False  # Initialize menu selection state
 
         # Cooldown for the start button
-        self.button_cooldown = 1000  # Cooldown in milliseconds (e.g., 500ms)
+        self.button_cooldown = 500  # Cooldown in milliseconds (e.g., 500ms)
         self.can_press_start = True  # Last time the start button was pressed
         self.start_time = 0  # Initialize the last press time
-
+        self.start_pressed = False
+        #self.prev_start_button = False
 
         # Initialize joysticks
         try:
@@ -71,8 +72,6 @@ class Controls:
         self.r2_axis = search_dict(config, 'r2_axis')
         self.l2_axis = search_dict(config, 'l2_axis')
 
-        
-
     def get_action_map(self):
         MENU_INPUT_THRESHOLD = 0.5
         if self.menu_navigation != (0, 0):
@@ -81,7 +80,8 @@ class Controls:
         return {
             'menu_up': self.menu_navigation.y < -MENU_INPUT_THRESHOLD,
             'menu_down': self.menu_navigation.y > MENU_INPUT_THRESHOLD,
-            'menu_select': self.menu_select == 1,
+            'menu_select': self.menu_select,
+            'paused': self.start_pressed,
             # Add other mappings as needed (like 'pause', etc.)
         }
     
@@ -91,28 +91,27 @@ class Controls:
             if (current_time - self.start_time) >= self.button_cooldown:
                 print(f"Cooldown finished, allowing press again at {current_time}")
                 self.can_press_start = True
-    
-    def handle_event(self, event):
+
+    def apply_deadzone(self, value, threshold=0.10, upper_limit=1.0):
+        return 0 if abs(value) < threshold or abs(value) > upper_limit else value
+
+    def process_input_event(self, event):
+        
         keys = pygame.key.get_pressed()
         # set right stick and left stick input 
 
-        right_stick_x = self.controller_1.get_axis(self.r_stick_x)  # Right stick X-axis
-        right_stick_y = self.controller_1.get_axis(self.r_stick_y)  # Right stick Y-axis
-        left_stick_x = self.controller_1.get_axis(self.l_stick_x)  # Left stick X-axis (for movement, if needed)
-        left_stick_y = self.controller_1.get_axis(self.l_stick_y)  # Left stick Y-axis (for movement, if needed)
+        right_stick_x = self.apply_deadzone(self.controller_1.get_axis(self.r_stick_x))  # Right stick X-axis
+        right_stick_y = self.apply_deadzone(self.controller_1.get_axis(self.r_stick_y))  # Right stick Y-axis
+        left_stick_x = self.apply_deadzone(self.controller_1.get_axis(self.l_stick_x))  # Left stick X-axis (for movement, if needed)
+        left_stick_y = self.apply_deadzone(self.controller_1.get_axis(self.l_stick_y))  # Left stick Y-axis (for movement, if needed)
         rightstick_input = pygame.Vector2(right_stick_x, right_stick_y)
         leftstick_input = pygame.Vector2(left_stick_x, left_stick_y)
 
         self.start_cooldown()
         # Movement Handling
-        if abs(left_stick_x) < 0.10 or abs(left_stick_x) > 1 :
-            left_stick_x = 0
-        if abs(left_stick_y) < 0.10 or abs(left_stick_y) > 1 :
-            left_stick_y = 0
         if leftstick_input.length() > 0.10:
-            self.direction = leftstick_input
-        
-            print (f"Left Stick Input: {leftstick_input.length}")
+            self.direction = leftstick_input.normalize()
+            # print (f"Left Stick Input: {leftstick_input.length}")
         
         else:
             # Fallback to WASD
@@ -120,13 +119,10 @@ class Controls:
             kb_y = int(keys[pygame.K_DOWN]) - int(keys[pygame.K_UP])
             self.direction = pygame.Vector2(kb_x, kb_y)
 
-                # Deadzone check
-        if abs(right_stick_x) < 0.10 or abs(right_stick_x) > 1 :
-            right_stick_x = 0
-        if abs(right_stick_y) < 0.10 or abs(right_stick_y) > 1 :
-            right_stick_y = 0
+        # Set Shooting Direction 
         if rightstick_input.length_squared() > 0.10:
-            self.shoot_direction = rightstick_input
+            self.shoot_direction = rightstick_input.normalize()
+
         else:
             # Fallback to WASD
             kb_s_x = int(keys[pygame.K_d]) - int(keys[pygame.K_a])
@@ -141,30 +137,64 @@ class Controls:
         self.menu_navigation.y = -self.direction.y 
         self.menu_navigation.x = self.direction.x 
 
-        # Menu Selection
-        if keys[pygame.K_RETURN] or (self.controller_1 and self.controller_1.get_button(self.x)):
-            self.menu_select = 1
-            print(f"Menu Select = {self.menu_select}")
+        # Detect Button Down
+        if event.type == pygame.JOYBUTTONDOWN :
+            if event.button == self.x : 
+                self.menu_select = True
+        
+            if event.button == self.start and self.can_press_start:
+                self.start_pressed = True
+                self.can_press_start = False
+                self.start_time = pygame.time.get_ticks()
 
-        # Escape Key for Menu Toggle
+        elif event.type == pygame.JOYBUTTONUP : 
+            
+            if event.button == self.x : 
+                self.menu_select = False
 
-        if (keys[pygame.K_ESCAPE] or (self.controller_1 and self.controller_1.get_button(self.start))) and self.can_press_start:
-              # Update the last press time:
-            self.can_press_start = False
-            self.start_time = pygame.time.get_ticks()
-            print(f"Start/ESC button pressed at {self.start_time}")
-            if config['menu']['menu_running'] is False:
-                config['menu']['menu'].resume_menu()
-            elif config['menu']['menu_running'] is True:
-                config['menu']['menu'].resume_game()
-            print(f"Menu Running = {config['menu']['menu_running']}")
-
+            if event.button == self.start : 
+                self.start_pressed = False
+         
+            
         # Handle KEYUP Events
         if event.type == pygame.KEYUP:
             if event.key in [pygame.K_UP, pygame.K_DOWN]:
                 self.menu_navigation.y = 0
             if event.key in [pygame.K_LEFT, pygame.K_RIGHT]:
                 self.menu_navigation.x = 0
-            if event.key == pygame.K_RETURN or (self.controller_1 and event.key == self.x):
-                self.menu_select = 0  
-                #print(f"Menu Select = {self.menu_select}")
+            if event.key == pygame.K_RETURN:
+                self.menu_select = False
+            if event.key == pygame.K_ESCAPE:
+                self.start_pressed = False
+    
+    def toggle_menu(self):
+        self.start_pressed = False
+        if config['menu']['menu_running'] is False:
+            config['menu']['menu'].resume_menu()
+        elif config['menu']['menu_running'] is True:
+            config['menu']['menu'].resume_game()
+        print(f"Menu Running = {config['menu']['menu_running']}")
+        
+        
+
+    def update(self):
+        action_map = self.get_action_map()
+        # Get current button state for Start
+
+        if action_map.get('paused'):
+            self.toggle_menu()
+    
+        self.start_cooldown()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            else: 
+                self.process_input_event(event)
+  
+        
+    
+        
+        
+        

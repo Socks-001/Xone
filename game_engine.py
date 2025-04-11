@@ -80,15 +80,7 @@ class GameEngine:
             self.game_running = level['level_config']['game_running']
 
             while self.game_running:
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        level['level_config']['game_running'] = False
-                        pygame.quit()
-                        exit()
-                    else:
-                        self.controls.handle_event(event)
-                        self.controls.start_cooldown()
-
+                self.controls.update()
                 self.game_surface.fill(config['ui']['colors']['BG_COLOR'])
                 action_map = self.controls.get_action_map()
                 if config['menu']['menu_running']:
@@ -98,9 +90,7 @@ class GameEngine:
 
                 # Handle scaling and fullscreen changes
                 self.handle_fullscreen()
-                self.scaled_surface = pygame.transform.scale(
-                    self.game_surface, self.screen.get_size()
-                )
+                self.scaled_surface = pygame.transform.scale(self.game_surface, self.screen.get_size())
                 self.screen.blit(self.scaled_surface, (0, 0))
 
                 pygame.display.flip()

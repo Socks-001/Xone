@@ -90,10 +90,13 @@ class Menu:
         self.selection_index = 0
         self.move_timer = 0
         self.select_timer = 0
+        print("RESUME MENU CALLED")
+
     
     def resume_game(self):
         config['menu']['menu_running'] = False
         self.menu_running = config['menu']['menu_running']
+        print("RESUME GAME CALLED")
 
     def update(self, action_map, surface):
         self.input(action_map)
