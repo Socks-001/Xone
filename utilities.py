@@ -16,7 +16,6 @@ def import_csv_layout(path):
             terrain_map.append(list(row))
     return terrain_map
 
-
 def str_to_int(text: str):
     """Given a string, returns the int embedded within it, e.g. 'text12text3txt4' -> 1234"""
     digits = "".join(c for c in text if (ord('0') <= ord(c) <= ord('9')))

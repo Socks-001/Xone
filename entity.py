@@ -3,7 +3,7 @@ from config import config
 from level_data import level
 from player_data import player_data
 from enemy_data import enemy_data
-from sound_data import sounds
+from sfx import sfx
 
 class Entity(pygame.sprite.Sprite):
     def __init__(self, pos, groups, sprite_type, name):
@@ -12,6 +12,7 @@ class Entity(pygame.sprite.Sprite):
         self.sprite_type = sprite_type
         self.sprite_name = name
         self.collision_tolerance = 10
+        print (f"player sprite = {player_data['sprite']}")
         if self.sprite_type == 'player':
             self.sprite =  player_data['sprite']
         else:
@@ -21,8 +22,8 @@ class Entity(pygame.sprite.Sprite):
         self.hitbox = pygame.FRect(self.rect)
         self.direction = pygame.math.Vector2()
         self.obstacle_sprites = level['sprite_groups']['obstacle_sprites']
-        self.hit_sound = sounds['entity_sounds']['hit']
-        self.death_sound = sounds['entity_sounds']['death']
+        self.hit_sound = sfx['entity']['hit']
+        self.death_sound = sfx['entity']['death']
           # Set volume to 50%
         
     

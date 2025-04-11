@@ -2,7 +2,7 @@ import pygame
 from config import config
 from level_data import level
 from utilities import search_dict, quit
-from sound_data import sounds
+
 
 class Menu:
     def __init__(self):
@@ -10,8 +10,8 @@ class Menu:
         self.font = pygame.font.Font(config['ui']['FONT'], config['ui']['FONT_SIZE'])
         self.text_color = search_dict(config, 'TEXT_COLOR')
         self.UI_BORDER_COLOR = search_dict(config, 'UI_BORDER_COLOR')
-        self.move_sound = sounds['menu_sounds']['menu_move']
-        self.select_sound = sounds['menu_sounds']['menu_select']
+        self.move_sound = config['menu']['menu_move']
+        self.select_sound = config['menu']['menu_select']
 
         # Menu state
         self.menu_stack = ['HOME_MENU']

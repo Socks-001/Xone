@@ -1,9 +1,7 @@
 import pygame
+import graphics_data
 from config import config
-from level_data import load_level_data
-from weapon_data import load_projectile_images
-from player_data import load_player_images
-from enemy_data import load_enemy_images
+from level_data import load_level_data 
 from game_engine import GameEngine  # Import the game loop logic
 from utilities import init_audio
 
@@ -26,13 +24,8 @@ def initialize():
     config['screen']['scaled_surface'] = scaled_surface
 
     # Load Assets
-    print("Loading assets...")
+    print("Loading assets...")    
     load_level_data()
-    load_projectile_images()
-    load_player_images() 
-    load_enemy_images()
-    print("Assets loaded successfully.")
-    
     return screen, game_surface, scaled_surface
 
 if __name__ == '__main__':

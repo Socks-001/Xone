@@ -1,5 +1,6 @@
 # Game Settings Data
 import pygame
+from sfx import sfx
 
 config = {
     'screen': {
@@ -58,6 +59,8 @@ config = {
     'menu_running': True,
     'selection_cooldown_time': None,
     'menu': None,  # You’ll assign the Menu instance here
+    'menu_select' : sfx['menu']['menu_select'],
+    'menu_move' : sfx['menu']['menu_move'] 
 },
 
     'controls': {

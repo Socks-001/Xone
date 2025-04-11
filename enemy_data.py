@@ -1,5 +1,6 @@
 import pprint
 import pygame
+from graphics_data import graphics
 pygame.init()
 
 enemy_data = {   
@@ -13,7 +14,7 @@ enemy_data = {
                       'notice_radius': 100,
                       'resistance': 10,
                       'speed': 1.5},
-                      'sprite': None             
+                      'sprite': graphics['enemies']['goblin']             
     	}
 
 def load_enemy_images():

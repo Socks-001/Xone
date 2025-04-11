@@ -2,7 +2,7 @@ import pygame
 from entity import Entity
 from config import config
 from weapon_data import weapons
-from weapon import Weapon
+from projectile import Projectile
 from player_data import player_data
 from level_data import level
 
@@ -29,7 +29,7 @@ class Player(Entity):
     def shoot(self):
         """Creates a projectile if shoot_direction is outside the deadzone."""
         if self.controls.shoot_direction.length() > 0.2 and self.can_shoot():  # Adjust 0.2 as needed for deadzone
-            Weapon(self, self.sprite_type, [self.visible_sprites, self.weapon_group], self.controls.shoot_direction, self.weapon_name)
+            Projectile(self, self.sprite_type, [self.visible_sprites, self.weapon_group], self.controls.shoot_direction, self.weapon_name)
             self.last_shot_time = pygame.time.get_ticks()
     
 

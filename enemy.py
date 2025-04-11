@@ -3,7 +3,7 @@ from enemy_data import enemy_data
 from entity import Entity
 from debug import debug
 from level_data import level
-from weapon import Weapon
+from projectile import Projectile
 from weapon_data import weapons
 
 
@@ -72,7 +72,7 @@ class Enemy(Entity):
     def shoot(self, player_direction):
         """Fires a projectile if the cooldown allows it."""
         if self.can_shoot():
-            Weapon(self, self.sprite_type, [self.visible_sprites, self.weapon_group], player_direction, self.weapon_name)
+            Projectile(self, self.sprite_type, [self.visible_sprites, self.weapon_group], player_direction, self.weapon_name)
             self.last_shot_time = pygame.time.get_ticks()  # Update last shot time
     
     def update(self,):

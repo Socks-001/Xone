@@ -2,15 +2,15 @@ import pygame
 pygame.init()
 
 
-sounds = {
-    'weapon_sounds' : {
+sfx = {
+    'weapon' : {
         'shot': pygame.mixer.Sound('audio/shot.wav'),
     },
-    'entity_sounds' : {
+    'entity' : {
         'hit': pygame.mixer.Sound('audio/hit.wav'),
         'death': pygame.mixer.Sound('audio/death.wav')
     },
-    'menu_sounds' : {
+    'menu' : {
         'menu_move': pygame.mixer.Sound('audio/menu_move.wav'),
         'menu_select': pygame.mixer.Sound('audio/select.wav'),
         'marimba': pygame.mixer.Sound('audio/marimba.wav'),
