@@ -74,12 +74,13 @@ class Controls:
         
 
     def get_action_map(self):
+        MENU_INPUT_THRESHOLD = 0.5
         if self.menu_navigation != (0, 0):
             pass
             #print(f'Menu nav = {self.menu_navigation}')
         return {
-            'menu_up': self.menu_navigation.y == -1,
-            'menu_down': self.menu_navigation.y == 1,
+            'menu_up': self.menu_navigation.y < -MENU_INPUT_THRESHOLD,
+            'menu_down': self.menu_navigation.y > MENU_INPUT_THRESHOLD,
             'menu_select': self.menu_select == 1,
             # Add other mappings as needed (like 'pause', etc.)
         }
@@ -104,9 +105,9 @@ class Controls:
 
         self.start_cooldown()
         # Movement Handling
-        if abs(left_stick_x) < 0.10 or abs(left_stick_x) > 1.0 :
+        if abs(left_stick_x) < 0.10 or abs(left_stick_x) > 1 :
             left_stick_x = 0
-        if abs(left_stick_y) < 0.10 or abs(left_stick_y) > 1.0 :
+        if abs(left_stick_y) < 0.10 or abs(left_stick_y) > 1 :
             left_stick_y = 0
         if leftstick_input.length() > 0.10:
             self.direction = leftstick_input
@@ -120,9 +121,9 @@ class Controls:
             self.direction = pygame.Vector2(kb_x, kb_y)
 
                 # Deadzone check
-        if abs(right_stick_x) < 0.10 or abs(right_stick_x) > 1.0 :
+        if abs(right_stick_x) < 0.10 or abs(right_stick_x) > 1 :
             right_stick_x = 0
-        if abs(right_stick_y) < 0.10 or abs(right_stick_y) > 1.0 :
+        if abs(right_stick_y) < 0.10 or abs(right_stick_y) > 1 :
             right_stick_y = 0
         if rightstick_input.length_squared() > 0.10:
             self.shoot_direction = rightstick_input

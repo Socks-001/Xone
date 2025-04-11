@@ -34,7 +34,7 @@ def main():
             elif event.type == pygame.JOYHATMOTION:
                 print(f"Joystick {event.joy} hat {event.hat} motion: {event.value}")
         
-        print(f'pygame axis 3: {joysticks[0].get_axis(3)}, pygame axis 2: {joysticks[0].get_axis(2)}')
+        #print(f'pygame axis 3: {joysticks[0].get_axis(3)}, pygame axis 2: {joysticks[0].get_axis(2)}')
 
         screen.fill((0, 0, 0))
         pygame.display.flip()
