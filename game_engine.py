@@ -46,12 +46,14 @@ class GameEngine:
         self.floor_sprites = level['sprite_groups']['floor_sprites']
         self.wall_sprites = level['sprite_groups']['wall_sprites']
         self.entity_sprites = level['sprite_groups']['entity_sprites']
+        self.light_sprites = level['sprite_groups']['light_sprites']
     
     def update_sprite_groups(self):
         self.weapon_sprites.update()
         self.entity_sprites.update()
         self.floor_sprites.update()
         self.wall_sprites.update()
+        self.light_sprites.update()
         
     def draw_game_scene(self, debug):
         self.game_surface.fill(config['ui']['colors']['BG_COLOR'])
@@ -64,6 +66,8 @@ class GameEngine:
         for weapon in self.weapon_sprites:
             weapon.draw(self.game_surface, self.debug_bool)
         self.entity_sprites.draw(self.game_surface)
+        self.light_sprites.draw(self.game_surface)
+
 
         if debug == True:
              # Highlight walls

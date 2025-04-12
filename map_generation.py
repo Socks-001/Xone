@@ -26,7 +26,7 @@ class Game:
         level['sprite_groups']['weapons_sprites'] = self.weapon_group = pygame.sprite.Group()
         level['sprite_groups']['light_sprites'] = self.light_group = pygame.sprite.Group()
         
-        self.update_sprite_group_dicts()
+        self.update_dicts_refs()
 
         # Initialize player and level
         self.player = None
@@ -38,7 +38,7 @@ class Game:
         self.controls = controls
 
 
-    def update_sprite_group_dicts(self):
+    def update_dicts_refs(self):
             level['sprite_groups']['visible_sprites'] = self.visible_sprites
             level['sprite_groups']['floor_sprites'] = self.floor_sprites
             level['sprite_groups']['wall_sprites'] = self.wall_sprites
@@ -106,10 +106,10 @@ class Game:
 
                 if col == '50':  # Enemy
                     
-                    self.create_light((x, y), [self.visible_sprites, self.light_group], 'light', 64)
+                    self.create_light((x, y), [self.visible_sprites, self.light_group], 'light', 8)
                     
         
-        self.update_sprite_group_dicts()
+        self.update_dicts_refs()
 
         print(f"Visible sprites count: {len(self.visible_sprites)}")
         print(f"Entity sprites count: {len(self.entity_sprites)}")
