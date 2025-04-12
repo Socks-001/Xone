@@ -2,8 +2,9 @@ import pygame
 from graphics_data import graphics
 pygame.init()
 
-print ('player_data.py accessed')
-player_data = { 'speed' : 1.5,
+
+player_data = { 'player' : None,
+                'speed' : 1.5,
                 'health' : 4, 
                 'sprite' : None
 }

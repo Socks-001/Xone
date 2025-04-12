@@ -153,24 +153,32 @@ class Projectile(pygame.sprite.Sprite):
 
 
     
-    def draw(self, surface, debug):
+    def draw(self, surface, debug_bool):
         """Call this manually from your main draw loop if using custom rendering."""
         # Draw trail
-        for i, pos in enumerate((self.trail_positions)):
-            alpha = int(100 * (1 - i / 3))  # Decrease alpha with age
+        for i, pos in enumerate(self.trail_positions):
+            fade_strength = (1 - i / len(self.trail_positions)) ** 2
+            alpha = int(255 * fade_strength)
+
+            # Create a copy of the image to modify for the trail (so we don't change the original sprite)
             faded_image = self.image.copy()
             faded_image.set_alpha(alpha)
+
+            # Apply a red tint to the faded image (only affecting the trail)
+            faded_image.fill((100, 100, 120), special_flags=pygame.BLEND_RGB_ADD)  # Red tint
+
+            # Now place the faded image with the red tint on the trail position
             rect = faded_image.get_rect(center=pos)
             surface.blit(faded_image, rect.topleft)
 
-        # Draw main projectile
+        # Draw the main projectile (no changes to the original sprite)
         surface.blit(self.image, self.rect.topleft)
 
-
-        if debug:
+        if debug_bool:
             color = (255, 255, 0)
             for ray_start, ray_end in self.debug_ray_paths:
                 pygame.draw.line(surface, color, ray_start, ray_end, 1)
+
 
 
     def update(self):

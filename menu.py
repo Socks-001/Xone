@@ -17,7 +17,7 @@ class Menu:
         self.menu_stack = ['HOME_MENU']
         self.menu_running = config['menu']['menu_running']
         self.selection_index = 0
-        self.menu_length = None
+        self.menu_length = len(self.menu_stack[-1])
 
         # Cooldowns
         self.can_move = True
@@ -32,7 +32,9 @@ class Menu:
         self.quit = quit
 
     def get_current_menu(self):
+        self.menu_length = len(config['menu']['menus'][self.menu_stack[-1]]) - 0.5
         return config['menu']['menus'][self.menu_stack[-1]]
+        
 
     def selection_cooldown(self):
         current_time = pygame.time.get_ticks()
@@ -140,19 +142,24 @@ class Menu:
 
         if index == 1 : 
             config['debug']['walls_debug'] = not config['debug']['walls_debug']
-            print("Toggeling walls")
+            walls_debug = config['debug']['walls_debug']
+            print(f'weapons_debug = {walls_debug}')
         
         if index == 2 : 
             config['debug']['player_debug'] = not config['debug']['player_debug']
-            print("Toggeling player")
+            player_debug = config['debug']['player_debug']
+            print(f'weapons_debug = {player_debug}')
         
         if index == 3 : 
             config['debug']['enemies_debug'] = not config['debug']['enemies_debug']
-            print("Toggeling enemies")
+            enemies_debug = config['debug']['enemies_debug']
+            print(f'weapons_debug = {enemies_debug}')
         
         if index == 4 :
             config['debug']['weapons_debug'] = not config['debug']['weapons_debug']
-            print("Toggeling weapons")
+            config['debug']['projectile_lines'] = not config['debug']['projectile_lines']
+            weapons_debug = config['debug']['weapons_debug']
+            print(f'weapons_debug = {weapons_debug}')
 
             
 

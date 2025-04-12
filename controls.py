@@ -6,6 +6,7 @@ class Controls:
     def __init__(self):
         pygame.joystick.init()
         self.controller_1 = None
+        self.has_controller = None
         self.dpad_input_player1 = (0, 0)
         self.button_input_player1 = 0
         self.direction = pygame.math.Vector2()
@@ -28,6 +29,7 @@ class Controls:
                 print(f"Joystick found: {self.controller_1.get_name()}")
                 add_joystick_buttons(self.controller_1)
                 self._load_joystick_config()
+                self.has_controller = True
             else:
                 print("No joystick found")
                 
@@ -96,18 +98,24 @@ class Controls:
         return 0 if abs(value) < threshold or abs(value) > upper_limit else value
 
     def process_input_event(self, event):
+        right_stick_x = 0
+        right_stick_y = 0
+        left_stick_x = 0
+        left_stick_y = 0
         
         keys = pygame.key.get_pressed()
+        
         # set right stick and left stick input 
-
-        right_stick_x = self.apply_deadzone(self.controller_1.get_axis(self.r_stick_x))  # Right stick X-axis
-        right_stick_y = self.apply_deadzone(self.controller_1.get_axis(self.r_stick_y))  # Right stick Y-axis
-        left_stick_x = self.apply_deadzone(self.controller_1.get_axis(self.l_stick_x))  # Left stick X-axis (for movement, if needed)
-        left_stick_y = self.apply_deadzone(self.controller_1.get_axis(self.l_stick_y))  # Left stick Y-axis (for movement, if needed)
-        rightstick_input = pygame.Vector2(right_stick_x, right_stick_y)
-        leftstick_input = pygame.Vector2(left_stick_x, left_stick_y)
+        if self.has_controller : 
+            right_stick_x = self.apply_deadzone(self.controller_1.get_axis(self.r_stick_x))  # Right stick X-axis
+            right_stick_y = self.apply_deadzone(self.controller_1.get_axis(self.r_stick_y))  # Right stick Y-axis
+            left_stick_x = self.apply_deadzone(self.controller_1.get_axis(self.l_stick_x))  # Left stick X-axis (for movement, if needed)
+            left_stick_y = self.apply_deadzone(self.controller_1.get_axis(self.l_stick_y))  # Left stick Y-axis (for movement, if needed)
+            rightstick_input = pygame.Vector2(right_stick_x, right_stick_y)
+            leftstick_input = pygame.Vector2(left_stick_x, left_stick_y)
 
         self.start_cooldown()
+
         # Movement Handling
         if leftstick_input.length() > 0.10:
             self.direction = leftstick_input.normalize()
@@ -137,22 +145,29 @@ class Controls:
         self.menu_navigation.y = -self.direction.y 
         self.menu_navigation.x = self.direction.x 
 
-        # Detect Button Down
-        if event.type == pygame.JOYBUTTONDOWN :
-            if event.button == self.x : 
+        if self.has_controller:
+            # Detect Button Down
+            if event.type == pygame.JOYBUTTONDOWN :
+                if event.button == self.x : 
+                    self.menu_select = True
+                if event.button == self.start and self.can_press_start:
+                    self.start_pressed = True
+                    self.can_press_start = False
+                    self.start_time = pygame.time.get_ticks()
+            # Detect jostick up
+            elif event.type == pygame.JOYBUTTONUP : 
+                if event.button == self.x : 
+                    self.menu_select = False
+                if event.button == self.start : 
+                    self.start_pressed = False
+
+         # Detect KEYDOWN Events
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
                 self.menu_select = True
-            if event.button == self.start and self.can_press_start:
+            if event.key == pygame.K_ESCAPE:
                 self.start_pressed = True
-                self.can_press_start = False
-                self.start_time = pygame.time.get_ticks()
-        # Detect jostick up
-        elif event.type == pygame.JOYBUTTONUP : 
-            if event.button == self.x : 
-                self.menu_select = False
-            if event.button == self.start : 
-                self.start_pressed = False
-         
-            
+
         # Detect KEYUP Events
         if event.type == pygame.KEYUP:
             if event.key in [pygame.K_UP, pygame.K_DOWN]:

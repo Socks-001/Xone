@@ -53,18 +53,17 @@ class GameEngine:
         self.floor_sprites.update()
         self.wall_sprites.update()
         
-
     def draw_game_scene(self, debug):
         self.game_surface.fill(config['ui']['colors']['BG_COLOR'])
         self.update_sprite_groups_in_dictionary()
         self.update_sprite_groups()
+        self.debug_bool = config['debug']['projectile_lines']
         
         self.floor_sprites.draw(self.game_surface) 
         self.wall_sprites.draw(self.game_surface)
         for weapon in self.weapon_sprites:
-            weapon.draw(self.game_surface, debug)
+            weapon.draw(self.game_surface, self.debug_bool)
         self.entity_sprites.draw(self.game_surface)
-        
 
         if debug == True:
              # Highlight walls
@@ -83,10 +82,6 @@ class GameEngine:
             if config['debug']['weapons_debug']:
                 sprite_group_highlight(self.weapon_sprites, self.game_surface, 4, 1)
             
-
-            
-            
-        
 
     def run(self):
         while True:

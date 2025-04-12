@@ -4,6 +4,7 @@ from config import config
 from level_data import level
 from tile import Tile
 from player import Player
+from player_data import player_data
 from enemy import Enemy
 
 class Game:
@@ -22,7 +23,10 @@ class Game:
         level['sprite_groups']['obstacle_sprites'] = self.obstacle_sprites = pygame.sprite.Group()
         level['sprite_groups']['entity_sprites'] = self.entity_sprites = pygame.sprite.Group()
         level['sprite_groups']['weapons_sprites'] = self.weapon_group = pygame.sprite.Group()
- 
+        level['sprite_groups']['light_sprites'] = self.light_group = pygame.sprite.Group()
+        
+        self.update_sprite_group_dicts()
+
         # Initialize player and level
         self.player = None
         self.level_index = level['level_config']['level_index']
@@ -31,13 +35,26 @@ class Game:
 
         # Initialize controls
         self.controls = controls
-    
+
+
+    def update_sprite_group_dicts(self):
+            level['sprite_groups']['visible_sprites'] = self.visible_sprites
+            level['sprite_groups']['floor_sprites'] = self.floor_sprites
+            level['sprite_groups']['wall_sprites'] = self.wall_sprites
+            level['sprite_groups']['player_sprites'] = self.player_sprites
+            level['sprite_groups']['enemy_sprites'] = self.enemy_sprites
+            level['sprite_groups']['obstacle_sprites'] = self.obstacle_sprites
+            level['sprite_groups']['entity_sprites'] = self.entity_sprites
+            level['sprite_groups']['weapons_sprites'] = self.weapon_group
+            level['sprite_groups']['light_sprites'] = self.light_group
+
     def create_map(self):
         # Create level counter
         layouts = {
             'floor': level['test_level']['test_floor_layout'],
             'wall': level['test_level']['test_wall_layout'],
             'entities': level['test_level']['test_entity_layout'],
+            'lights': level['test_level']['test_lights_layout']
         }
  
         graphics = {
@@ -78,25 +95,42 @@ class Game:
 
                 if col == '29':  # Enemy
                     enemy_name = 'goblin'
-                    self.create_enemy(enemy_name, (x, y), [self.enemy_sprites, self.visible_sprites, self.entity_sprites], self.player, 'enemy')
-                    '''s
-                    Tile((x, y), [self.visible_sprites, self.entity_sprites], 'entities', surf)'''
+                    self.create_enemy(enemy_name, (x, y), [self.enemy_sprites, self.visible_sprites, self.entity_sprites],  'enemy')
         
-        level['sprite_groups']['visible_sprites'] = self.visible_sprites
-        level['sprite_groups']['obstacle_sprites'] = self.obstacle_sprites
-        level['sprite_groups']['entity_sprites'] = self.entity_sprites
-        level['sprite_groups']['player_sprites'] = self.player_sprites
-        level['sprite_groups']['enemy_sprites'] = self.enemy_sprites
-        level['sprite_groups']['weapon_sprites'] = self.weapon_group
+        # Fourth pass: Create lights 
+        for row_index, row in enumerate(layouts['lights']):
+            for col_index, col in enumerate(row):
+                x = col_index * self.tilesize
+                y = row_index * self.tilesize
+
+                if col == '50':  # Enemy
+                    
+                    self.create_light('glow', (x, y), [self.visible_sprites, self.light_group], 'light')
+                    
+        
+        self.update_sprite_group_dicts()
 
         print(f"Visible sprites count: {len(self.visible_sprites)}")
         print(f"Entity sprites count: {len(self.entity_sprites)}")
 
     def create_player(self, pos, groups, controls):
         self.player = Player(pos, groups, controls)
+        player_data['player'] = self.player
         print(f'Player created at {pos}')
 
-
-    def create_enemy(self, name, pos, groups, player, sprite_type):
-        self.enemy = Enemy(name, pos, groups, player, sprite_type)
+    def create_enemy(self, name, pos, groups, sprite_type):
+        self.enemy = Enemy(name, pos, groups, sprite_type)
         print(f"Enemy '{name}' created at {pos}")
+    
+    def create_light(self, name, pos, groups, sprite_type):
+        player = player_data['player']
+        class Light(pygame.sprite.Sprite):
+            def __init__(self, pos, groups):
+                super().__init__(groups)
+                self.image = pygame.Surface((self_radius * 2, self_radius * 2), pygame.SRCALPHA)
+                pygame.draw.aacircle(self.image, (255, 255, 100, 180), (self_radius, self_radius), self_radius)
+                self.rect = self.image.get_rect(center=pos)
+        
+        self_radius = 64  # Customize your light radius here
+        Light(pos, groups)
+        print(f"Light created at {pos} with radius {self_radius}")

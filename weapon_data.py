@@ -11,8 +11,8 @@ weapons = {
              'damage': 1,
              'sprite': graphics['projectiles']['test'],
              'shot_sound' : sfx['weapon']['shot'],
-             'speed': 22.5,
-             'fire_rate': 50,
+             'speed': 2.5,
+             'fire_rate': 200,
              'ammo poermagazine' : 15,
              'total magazine' : 3,
              'current ammo' : 0,
@@ -20,8 +20,8 @@ weapons = {
     'enemy_weapon': {'name' : 'enemy_weapon',
                     'damage': 1,
                     'sprite': graphics['projectiles']['test'], 
-                    'speed': 1.5,
-                    'fire_rate': 1000,
+                    'speed': 2.5,
+                    'fire_rate': 200,
                     'accuracy' : [1.00, 0.98]}
         }
 

@@ -1,5 +1,6 @@
 import pygame
 from enemy_data import enemy_data
+from player_data import player_data
 from entity import Entity
 from debug import debug
 from level_data import level
@@ -8,11 +9,11 @@ from weapon_data import weapons
 
 
 class Enemy(Entity):
-    def __init__(self, name, pos, groups, player, sprite_type):
+    def __init__(self, name, pos, groups, sprite_type):
         
         # General Setup
         super().__init__(pos, groups, sprite_type, name)
-        self.player = player
+        self.player = player_data['player']
         
         # Stats
         enemy_info = enemy_data[name]  # Store dictionary reference for cleaner code

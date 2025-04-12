@@ -19,6 +19,7 @@ config = {
         'player_debug' : False,
         'enemies_debug' : False, 
         'weapons_debug' : False,
+        'projectile_lines' : False,
         'colors': {
         'DEBUG_LINE_COLOR': (0, 0, 255), # Blue for wall
         'DEBUG_LINE_COLOR_2': (0, 255, 0), # Green for player
