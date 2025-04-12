@@ -1,16 +1,12 @@
 import pygame
 from graphics_data import graphics
 from sfx import sfx
-pygame.init()
-
-
-
 
 weapons = {
     'test': {'name' : 'test_weapon',
              'damage': 1,
-             'sprite': graphics['projectiles']['test'],
-             'shot_sound' : sfx['weapon']['shot'],
+             'sprite': None,
+             'shot_sound': None,
              'speed': 2.5,
              'fire_rate': 200,
              'ammo poermagazine' : 15,
@@ -19,7 +15,7 @@ weapons = {
              'accuracy' : 0.1,},
     'enemy_weapon': {'name' : 'enemy_weapon',
                     'damage': 1,
-                    'sprite': graphics['projectiles']['test'], 
+                    'sprite': None, 
                     'speed': 2.5,
                     'fire_rate': 200,
                     'accuracy' : [1.00, 0.98]}
@@ -27,8 +23,11 @@ weapons = {
 
 def load_projectile_images():
     # Load Test sprite
-    test_projectile = pygame.image.load('graphics/projectiles/test.png').convert_alpha()
-    weapons['test']['sprite'] = test_projectile
-    weapons['enemy_weapon']['sprite'] = test_projectile
-    print (f" weapon = {weapons['test']['sprite']}")
+    weapons['test']['sprite'] = graphics['projectiles']['test']
+    weapons['enemy_weapon']['sprite'] = graphics['projectiles']['test']
+
+def load_projectile_sfx():
+    sfx['weapon']['shot']
+    
+
 

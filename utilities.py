@@ -4,7 +4,7 @@ from os import walk
 import pygame
 from sys import exit
 import pathlib
-pygame.init()
+
 
 
 def import_csv_layout(path):

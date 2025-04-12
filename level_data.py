@@ -1,7 +1,7 @@
 import pygame
 from utilities import import_csv_layout, import_folder  # Assuming these functions exist
 
-pygame.init()
+
 
 # Level dictionary to store data
 level = {

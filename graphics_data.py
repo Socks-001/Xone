@@ -1,5 +1,4 @@
 import pygame
-pygame.init()
 
 graphics = {
     'player': {
@@ -35,4 +34,3 @@ def load_graphics () :
         for name in graphics[type]:
             populate_graphics_images(type, name)
             
-load_graphics()

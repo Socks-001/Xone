@@ -4,6 +4,7 @@ from config import config
 from level_data import level
 from tile import Tile
 from player import Player
+from light import Light
 from player_data import player_data
 from enemy import Enemy
 
@@ -105,7 +106,7 @@ class Game:
 
                 if col == '50':  # Enemy
                     
-                    self.create_light('glow', (x, y), [self.visible_sprites, self.light_group], 'light')
+                    self.create_light((x, y), [self.visible_sprites, self.light_group], 'light', 64)
                     
         
         self.update_sprite_group_dicts()
@@ -122,15 +123,6 @@ class Game:
         self.enemy = Enemy(name, pos, groups, sprite_type)
         print(f"Enemy '{name}' created at {pos}")
     
-    def create_light(self, name, pos, groups, sprite_type):
-        player = player_data['player']
-        class Light(pygame.sprite.Sprite):
-            def __init__(self, pos, groups):
-                super().__init__(groups)
-                self.image = pygame.Surface((self_radius * 2, self_radius * 2), pygame.SRCALPHA)
-                pygame.draw.aacircle(self.image, (255, 255, 100, 180), (self_radius, self_radius), self_radius)
-                self.rect = self.image.get_rect(center=pos)
-        
-        self_radius = 64  # Customize your light radius here
-        Light(pos, groups)
-        print(f"Light created at {pos} with radius {self_radius}")
+    def create_light(self, pos, groups, sprite_type, radius):
+        light = Light(pos, groups, sprite_type, radius)
+        print(f"Light created at {pos} with radius {radius}")

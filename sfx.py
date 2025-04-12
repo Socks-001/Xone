@@ -1,20 +1,33 @@
 import pygame
-pygame.init()
-
 
 sfx = {
     'weapon' : {
-        'shot': pygame.mixer.Sound('audio/shot.wav'),
+        'shot': None,
     },
     'entity' : {
-        'hit': pygame.mixer.Sound('audio/hit.wav'),
-        'death': pygame.mixer.Sound('audio/death.wav')
+        'hit': None,
+        'death': None
     },
     'menu' : {
-        'menu_move': pygame.mixer.Sound('audio/menu_move.wav'),
-        'menu_select': pygame.mixer.Sound('audio/select.wav'),
-        'marimba': pygame.mixer.Sound('audio/marimba.wav'),
-        'blipSelect' : pygame.mixer.Sound('audio/blipSelect.wav'),
+        'menu_move': None,
+        'menu_select': None,
+        'marimba': None,
+        'blipSelect' : None,
 
     }
 }
+
+def populate_sfx(type, name):
+    try:
+        sfx_path = f'audio/sfx/{name}.wav'
+        sound_effect = pygame.mixer.Sound(sfx_path)
+        sfx[type][name] = sound_effect
+        print (f'{name} loaded sucessfully')
+    except pygame.error as e:
+        print(f'Error loading sfx {type}/{name}: {e}')
+
+def load_sfx () : 
+    for type in sfx:
+        for name in sfx[type]:
+            populate_sfx(type, name)
+            

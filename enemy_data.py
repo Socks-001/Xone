@@ -2,7 +2,6 @@ import pprint
 import pygame
 from graphics_data import graphics
 from utilities import search_dict
-pygame.init()
 
 enemy_data = {   
     'goblin': {

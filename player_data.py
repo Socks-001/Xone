@@ -1,8 +1,5 @@
 import pygame
 from graphics_data import graphics
-pygame.init()
-
-
 player_data = { 'player' : None,
                 'speed' : 1.5,
                 'health' : 4, 

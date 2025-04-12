@@ -6,7 +6,6 @@ from level_data import level
 from config import config 
 from sfx import sfx
 
-pygame.init()
 
 class Projectile(pygame.sprite.Sprite):
     def __init__(self, owner, owner_sprite_type, groups, shoot_direction, weapon_name):

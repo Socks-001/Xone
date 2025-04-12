@@ -67,8 +67,8 @@ config = {
         'menu_running': True,
         'selection_cooldown_time': None,
         'menu': None,  # You’ll assign the Menu instance here
-        'menu_select' : sfx['menu']['menu_select'],
-        'menu_move' : sfx['menu']['menu_move'],
+        'menu_select' :None,
+        'menu_move' : None,
     },
     'audio' : {
         'music_volume': 0.5,
@@ -171,4 +171,7 @@ def add_joystick_buttons(joystick):
             'circle': 1
         }
 
+def load_menu_sfx(): 
+    config['menu']['menu_select'] = sfx['menu']['menu_select']
+    config['menu']['menu_move'] = sfx['menu']['menu_move']
    

@@ -111,8 +111,9 @@ class Controls:
             right_stick_y = self.apply_deadzone(self.controller_1.get_axis(self.r_stick_y))  # Right stick Y-axis
             left_stick_x = self.apply_deadzone(self.controller_1.get_axis(self.l_stick_x))  # Left stick X-axis (for movement, if needed)
             left_stick_y = self.apply_deadzone(self.controller_1.get_axis(self.l_stick_y))  # Left stick Y-axis (for movement, if needed)
-            rightstick_input = pygame.Vector2(right_stick_x, right_stick_y)
-            leftstick_input = pygame.Vector2(left_stick_x, left_stick_y)
+        
+        rightstick_input = pygame.Vector2(right_stick_x, right_stick_y)
+        leftstick_input = pygame.Vector2(left_stick_x, left_stick_y)
 
         self.start_cooldown()
 
