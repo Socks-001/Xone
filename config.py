@@ -2,6 +2,29 @@
 from sfx import sfx
 
 config = {
+    'color_list' : {
+        #debug colors
+
+        # basic colors
+        'yellow': (255, 255, 100),
+        'blue': (100, 100, 255),
+        'red': (255, 100, 100),
+        'green': (100, 255, 100),
+        'off_white': (255, 255, 200),
+        'purple': (69, 54, 99),
+        
+        # game pallette
+        'black': (0, 0, 0),
+        'steel_blue': (70, 130, 180),
+        'dark_olive': (85, 107, 47),
+        'rust': (183, 65, 14),
+        'brass': (181, 166, 66),
+        'gunmetal': (42, 52, 57),
+        'charcoal': (54, 69, 79),
+        'sepia': (112, 66, 20),
+        'ivory': (255, 255, 240)
+    },
+    
     'screen': {
         'SCREEN_WIDTH': 240,    
         'SCREEN_HEIGHT': 240,
@@ -11,6 +34,7 @@ config = {
         'fullscreen_trigger': False,
         'scaled_surface': None, 
         'game_surface': None,
+    
     },
     'debug': {
         'debug': False,  # Set to True to enable debug mode
@@ -41,8 +65,7 @@ config = {
             'TEXT_COLOR': '#fffde4',
             'HEALTH_COLOR': '#dd5929',
             'ENERGY_COLOR': 'blue',
-            'UI_BORDER_ACTIVE': 'gold'
-        }
+            'UI_BORDER_ACTIVE': 'gold'}
     },
 
    'menu': {

@@ -1,12 +1,15 @@
 import pygame
 from utilities import import_csv_layout, import_folder, search_dict
 from config import config
-from level_data import level
 from tile import Tile
-from player import Player
-from light import Light
-from player_data import player_data
+from level_data import level
 from enemy import Enemy
+from player import Player
+from player_data import player_data
+from light import Light
+from light_data import light_types
+
+
 
 class Game:
     def __init__(self, controls):
@@ -104,9 +107,13 @@ class Game:
                 x = col_index * self.tilesize
                 y = row_index * self.tilesize
 
-                if col == '50':  # Enemy
+                if col in light_types:
+                    light_config = light_types[col]
+                    Light((x, y), [self.visible_sprites, self.light_group], col)
+
+                '''if col == '50':  # Enemy
                     
-                    self.create_light((x, y), [self.visible_sprites, self.light_group], 'light', 8)
+                    self.create_light((x, y), [self.visible_sprites, self.light_group], 'light', 8)'''
                     
         
         self.update_dicts_refs()
@@ -123,6 +130,6 @@ class Game:
         self.enemy = Enemy(name, pos, groups, sprite_type)
         print(f"Enemy '{name}' created at {pos}")
     
-    def create_light(self, pos, groups, sprite_type, radius):
-        light = Light(pos, groups, sprite_type, radius)
+    def create_light(self, pos, groups, light_config_index):
+        light = Light(pos, groups, light_config_index)
         print(f"Light created at {pos} with radius {radius}")

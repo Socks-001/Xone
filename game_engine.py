@@ -37,7 +37,7 @@ class GameEngine:
             pygame.display.toggle_fullscreen()
             config['screen']['fullscreen_trigger'] = False
     
-    def update_sprite_groups_in_dictionary(self):
+    def get_sprite_groups_from_dict(self):
         self.visible_sprites = level['sprite_groups']['visible_sprites']
         self.obstacle_sprites = level['sprite_groups']['obstacle_sprites']
         self.weapon_sprites = level['sprite_groups']['weapons_sprites']
@@ -57,7 +57,7 @@ class GameEngine:
         
     def draw_game_scene(self, debug):
         self.game_surface.fill(config['ui']['colors']['BG_COLOR'])
-        self.update_sprite_groups_in_dictionary()
+        self.get_sprite_groups_from_dict()
         self.update_sprite_groups()
         self.debug_bool = config['debug']['projectile_lines']
         
