@@ -55,20 +55,20 @@ class Game:
     def create_map(self):
         # Create level counter
         self.level_index = level['level_config']['level_index']
-        self.level_list = level['level_list']['level_index']
-        self.current_level = level_list[level_index]
+        self.level_list = level['level_config']['level_list']
+        self.current_level = self.level_list[self.level_index]
         
         layouts = {
-            'floor': level['test_level']['floor_layout'],
-            'wall': level['test_level']['wall_layout'],
-            'entities': level['test_level']['entity_layout'],
-            'lights': level['test_level']['lights_layout']
+            'floor': level[self.current_level]['floor_layout'],
+            'wall':  level[self.current_level]['wall_layout'],
+            'entities':  level[self.current_level]['entity_layout'],
+            'lights':  level[self.current_level]['lights_layout']
         }
  
         graphics = {
-            'floor': level['test_level']['test_graphics'],
-            'wall': level['test_level']['test_graphics'],
-            'entities': level['test_level']['test_graphics'],
+            'floor': level[self.current_level]['graphics'],
+            'wall':  level[self.current_level]['graphics'],
+            'entities': level[self.current_level]['graphics']
         }
 
             # First pass: Create floor and walls

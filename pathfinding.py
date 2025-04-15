@@ -1,6 +1,7 @@
 import pygame
 from config import config
 import heapq
+from level_data import level
 
 
 
@@ -34,7 +35,7 @@ def astar(grid, start, goal):
 
 def make_grid(): 
     level_index = level['level_config']['level_index']
-    level_list = level['level_list']
+    level_list = level['level_config']['level_list']
     current_level = level_list[level_index]
     level_data = level[current_level]['wall_data']
     TILESIZE = config['tile_size']

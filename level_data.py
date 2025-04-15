@@ -16,10 +16,11 @@ level = {
     },
 
     'test_level': {  
-        'test_graphics': None,  
-        'test_floor_layout': None,
-        'test_wall_layout': None,
-        'test_entity_layout': None
+        'graphics': None,  
+        'floor_layout': None,
+        'wall_layout': None,
+        'entity_layout': None,
+        'lights_layout': None
     },
     'sprite_groups' : {'visible_sprites' : None,
                        'obstacle_sprites' : None,
@@ -37,21 +38,21 @@ def load_level_data():
     
     # Load CSV layouts
     floor_layout = import_csv_layout(f'level_data/test_level/floor.csv')
-    level['test_level']['test_floor_layout'] = floor_layout
+    level['test_level']['floor_layout'] = floor_layout
     
     wall_layout = import_csv_layout(f'level_data/test_level/walls.csv')
-    level['test_level']['test_wall_layout'] = wall_layout
+    level['test_level']['wall_layout'] = wall_layout
     
     entity_layout = import_csv_layout(f'level_data/test_level/entities.csv')
-    level['test_level']['test_entity_layout'] = entity_layout
+    level['test_level']['entity_layout'] = entity_layout
 
     lights_layout = import_csv_layout(f'level_data/test_level/lights.csv')
-    level['test_level']['test_lights_layout'] = lights_layout
+    level['test_level']['lights_layout'] = lights_layout
 
     # Load graphics and apply convert_alpha to each surface
     raw_graphics = import_folder('graphics/test_level')
     test_graphics = [image.convert_alpha() for image in raw_graphics]  # Apply convert_alpha to each surface
-    level['test_level']['test_graphics'] = test_graphics
+    level['test_level']['graphics'] = test_graphics
 
 
 

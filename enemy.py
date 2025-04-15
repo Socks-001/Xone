@@ -6,7 +6,7 @@ from debug import debug
 from level_data import level
 from projectile import Projectile
 from weapon_data import weapons
-from pathfinding import astar
+import pathfinding
 
 
 class Enemy(Entity):
@@ -42,6 +42,9 @@ class Enemy(Entity):
         # Cooldown Handling
         self.fire_rate = weapons[self.weapon_name]['fire_rate']  # Default 1000ms (1 sec) if not in data
         self.last_shot_time = 0  # Time when last shot was fired
+
+        # A* Pathfinding
+        self.pos = pos
      
     def get_target_distance_direction(self, target):
         target_location = pygame.math.Vector2(target.hitbox.center)
@@ -61,6 +64,12 @@ class Enemy(Entity):
         
     def enemy_behavior(self, player):
         """ Updates enemy status and behavior based on distance and action type. """
+
+        TILESIZE = config['tile_size']
+        start = (int(self.pos[0] // TILESIZE), int(self.pos[1] // TILESIZE))
+        goal = (int(self.player.FRect.centerx // TILESIZE), int(player.FRect.centery // TILESIZE))
+        self.grid = pathfinding.make_grid()
+        self.path = pathfinding.astar(self.grid, start, goal)
         distance, direction = self.get_target_distance_direction(player)
         
         if distance >= self.attack_radius:
