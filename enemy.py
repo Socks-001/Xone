@@ -1,4 +1,5 @@
 import pygame
+from config import config
 from enemy_data import enemy_data
 from player_data import player_data
 from entity import Entity
@@ -45,6 +46,8 @@ class Enemy(Entity):
 
         # A* Pathfinding
         self.pos = pos
+        self.path = []
+        self.path_index = 0
      
     def get_target_distance_direction(self, target):
         target_location = pygame.math.Vector2(target.hitbox.center)
@@ -61,26 +64,44 @@ class Enemy(Entity):
         """Returns True if the enemy can shoot based on cooldown."""
         current_time = pygame.time.get_ticks()
         return current_time - self.last_shot_time >= self.fire_rate
+    
+    def follow_path_to_player(self, player):
+        TILESIZE = config['screen']['TILESIZE']
+        start = (int(self.rect.centerx // TILESIZE), int(self.rect.centery // TILESIZE))
+        goal = (int(player.rect.centerx // TILESIZE), int(player.rect.centery // TILESIZE))
+
+        if not self.path or self.path_index >= len(self.path):
+            self.grid = pathfinding.make_grid()
+            self.path = pathfinding.astar(self.grid, start, goal)
+            self.path_index = 0
+
+        if self.path and self.path_index < len(self.path):
+            next_tile = self.path[self.path_index]
+            next_pos = pygame.math.Vector2((next_tile[0] * TILESIZE) + TILESIZE // 2,
+                                        (next_tile[1] * TILESIZE) + TILESIZE // 2)
+            direction = (next_pos - pygame.math.Vector2(self.rect.center)).normalize()
+            self.direction = direction
+            self.move(self.speed)
+
+            if pygame.math.Vector2(self.rect.center).distance_to(next_pos) < 4:
+                self.path_index += 1
+
         
     def enemy_behavior(self, player):
         """ Updates enemy status and behavior based on distance and action type. """
-
-        TILESIZE = config['tile_size']
-        start = (int(self.pos[0] // TILESIZE), int(self.pos[1] // TILESIZE))
-        goal = (int(self.player.FRect.centerx // TILESIZE), int(player.FRect.centery // TILESIZE))
-        self.grid = pathfinding.make_grid()
-        self.path = pathfinding.astar(self.grid, start, goal)
-        distance, direction = self.get_target_distance_direction(player)
+        distance_to_target, direction = self.get_target_distance_direction(player)
         
-        if distance >= self.attack_radius:
-            self.status = 'hunt'
-            self.direction = direction
-            self.move(self.speed) # Move toward player
-
-        if distance <= self.attack_radius:
+        if distance_to_target <= self.attack_radius:
             self.status = 'attack'
-            self.shoot(direction)
-        
+            self.shoot(self.direction)
+
+        elif distance_to_target <= self.notice_radius:
+            self.status = 'hunt'
+            self.follow_path_to_player(player)
+
+        else:
+            self.status = 'idle'
+            self.direction = pygame.math.Vector2()  # Stop moving
 
     def shoot(self, player_direction):
         """Fires a projectile if the cooldown allows it."""
