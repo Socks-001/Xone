@@ -9,7 +9,7 @@ from level_data import load_level_data
 from game_engine import GameEngine  # Import the game loop logic
 from utilities import init_audio
 
-def initialize():
+def initialize(): 
     """Initialize Pygame, screen, and load assets."""
     print("Initializing Pygame...")
     pygame.init()

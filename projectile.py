@@ -5,6 +5,7 @@ from weapon_data import weapons
 from level_data import level
 from config import config 
 from sfx import sfx
+from light import Light
 
 
 class Projectile(pygame.sprite.Sprite):
@@ -29,7 +30,11 @@ class Projectile(pygame.sprite.Sprite):
         angle = math.degrees(math.atan2(-self.direction.y, self.direction.x))
         self.image = pygame.transform.rotate(self.sprite, angle)
         self.rect = self.image.get_rect(center=self.owner.rect.center)
-        self.projectile_hitbox = pygame.FRect(self.rect)
+        self.hitbox = pygame.FRect(self.rect)
+        #movement varialbles
+        self.previous_position = (0,0)
+        self.current_position = (0,0)
+        self.debug_ray_paths = []  # For debug purposes
 
         # Obstacle and Entity reference 
         self.obstacle_sprites = level['sprite_groups']['obstacle_sprites']
@@ -38,17 +43,20 @@ class Projectile(pygame.sprite.Sprite):
         
         # Trail-related attributes
         self.trail_positions = []  # List of previous positions
+        self.trail_length = 10  # Number of trail elements
+        self.trail_image = self.image.copy()  # Image for the trail
 
+        #sound
         self.shot_sound.play()  # Play the shot sound
-        self.previous_position = (0,0)
-        self.current_position = (0,0)
-        self.debug_ray_paths = []  # For debug purposes
+     
+       #tracer
+        #self.tracer = Light(self.hitbox.center, level['sprite_groups']['light_sprites'], '53', self)
 
     def calculate_angle_offset(self):
         """Applies a small random angular offset to the projectile's trajectory."""
+        
         offset = self.accuracy  # Max random offset
         
-
         # Generate a single random offset within the accuracy range
         offset_angle = random.uniform(-offset, offset)
 
@@ -63,16 +71,16 @@ class Projectile(pygame.sprite.Sprite):
         self.offset_applied = True
 
     def move_projectile(self, velocity):
-        self.previous_position = tuple(self.projectile_hitbox.center)
+        self.previous_position = tuple(self.hitbox.center)
         # Move the projectile in the adjusted direction
-        self.projectile_hitbox.x += self.direction.x * velocity
-        self.projectile_hitbox.y += self.direction.y * velocity
-        self.rect.center = self.projectile_hitbox.center
-        self.current_position = tuple(self.projectile_hitbox.center)
+        self.hitbox.x += self.direction.x * velocity
+        self.hitbox.y += self.direction.y * velocity
+        self.rect.center = self.hitbox.center
+        self.current_position = tuple(self.hitbox.center)
 
                 # Update trail
         self.trail_positions.insert(0, self.rect.center)
-        if len(self.trail_positions) > 3:  # Limit trail length
+        if len(self.trail_positions) > self.trail_length:  # Limit trail length
             self.trail_positions.pop()
         """Returns a rect representing the swept path of the projectile (covers tunneling)."""
         start = pygame.math.Vector2(self.previous_position)
@@ -99,7 +107,6 @@ class Projectile(pygame.sprite.Sprite):
     def lifetime_check(self):
         if pygame.time.get_ticks() - self.lifetime > 5000:  # 1 second, lifetime of projectile
             self.kill()
-
 
     def check_collision(self):
         start = pygame.Vector2(self.previous_position)
@@ -143,10 +150,10 @@ class Projectile(pygame.sprite.Sprite):
 
         # Check bounds
         if (
-            self.projectile_hitbox.x > self.SCREEN_WIDTH or
-            self.projectile_hitbox.x < 0 or
-            self.projectile_hitbox.y > config['screen']['SCREEN_HEIGHT'] or
-            self.projectile_hitbox.y < 0
+            self.hitbox.x > self.SCREEN_WIDTH or 
+            self.hitbox.x < 0 or
+            self.hitbox.y > config['screen']['SCREEN_HEIGHT'] or
+            self.hitbox.y < 0
         ):
             self.kill()
 
@@ -158,17 +165,19 @@ class Projectile(pygame.sprite.Sprite):
         for i, pos in enumerate(self.trail_positions):
             fade_strength = (1 - i / len(self.trail_positions)) ** 2
             alpha = int(255 * fade_strength)
+            
 
             # Create a copy of the image to modify for the trail (so we don't change the original sprite)
-            faded_image = self.image.copy()
-            faded_image.set_alpha(alpha)
+            self.trail_image = pygame.Surface(self.image.get_size(), pygame.SRCALPHA)
 
-            # Apply a red tint to the faded image (only affecting the trail)
-            faded_image.fill((100, 100, 120), special_flags=pygame.BLEND_RGB_ADD)  # Red tint
+            # Apply color (only affecting the trail)
+            self.trail_image.fill(config['color_list']['neon_green'])
+            self.trail_image.set_alpha(alpha)
 
             # Now place the faded image with the red tint on the trail position
-            rect = faded_image.get_rect(center=pos)
-            surface.blit(faded_image, rect.topleft)
+            #trail_FRect = pygame.FRect(center=pos, size=self.trail_image.get_size())
+            rect = self.trail_image.get_rect(center=pos)
+            surface.blit(self.trail_image, rect.topleft)
 
         # Draw the main projectile (no changes to the original sprite)
         surface.blit(self.image, self.rect.topleft)
@@ -177,8 +186,6 @@ class Projectile(pygame.sprite.Sprite):
             color = (255, 255, 0)
             for ray_start, ray_end in self.debug_ray_paths:
                 pygame.draw.line(surface, color, ray_start, ray_end, 1)
-
-
 
     def update(self):
         # Update obstacle and entity references

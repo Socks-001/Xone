@@ -41,6 +41,16 @@ light_types = {
         'color': color_list['purple'], 
         'flicker': True, 
         'ebb': False,
-        'decay': 0.1}
+        'decay': 0.1},
+
+    '53':{
+        'sprite_type': 'light',
+        'type': 'bullet_tracer',
+        'shape': 'circle',
+        'draw_shape': shape_list['circle'], 
+        'radius': 24, 
+        'color' : color_list['red'], 
+        'flicker': False,
+        'ebb': False},
 }
 

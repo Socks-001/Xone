@@ -6,6 +6,7 @@ from debug import debug
 from level_data import level
 from projectile import Projectile
 from weapon_data import weapons
+from pathfinding import astar
 
 
 class Enemy(Entity):
@@ -62,7 +63,7 @@ class Enemy(Entity):
         """ Updates enemy status and behavior based on distance and action type. """
         distance, direction = self.get_target_distance_direction(player)
         
-        if distance >= self.notice_radius:
+        if distance >= self.attack_radius:
             self.status = 'hunt'
             self.direction = direction
             self.move(self.speed) # Move toward player

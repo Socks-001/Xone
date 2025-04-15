@@ -22,7 +22,8 @@ config = {
         'gunmetal': (42, 52, 57),
         'charcoal': (54, 69, 79),
         'sepia': (112, 66, 20),
-        'ivory': (255, 255, 240)
+        'ivory': (255, 255, 240),
+        'neon_green':(57, 255, 20)
     },
     
     'screen': {

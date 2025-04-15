@@ -79,11 +79,17 @@ class Entity(pygame.sprite.Sprite):
         self.vulnerable = False # Set entity to invulnerable after being hit
         self.hit_sound.play()
         self.health -= damage  # Subtract health when hit
-        print (f'subtracting health, new health = {self}{self.health}')
+        #print (f'subtracting health, new health = {self}{self.health}')
         self.hit_time = pygame.time.get_ticks()  # Set the time of the hit
         if self.health <= 0: #check death
             self.death_sound.play()
             self.kill()
+
+    def display_health(self):
+        health_bar = pygame.Surface((self.health * 2, 10))
+        self.health_rect = health_bar.get_rect(center = (self.rect.x, self.rect.y - 20))
+        health_bar.fill((255, 0, 0))
+       
         
     '''def death_particles(self,pos,particle_type):
         self.animation_player.create_particles(particle_type,pos,self.weapon_sprites)'''
