@@ -1,3 +1,18 @@
+X-Files
+Supernatural 
+childhood fears (under bed, clsoset)
+clowns
+local legends (urban legends)
+Twilight Zone
+Five Nights at Freddie's
+toy one 
+Goosebumps 
+Are You Afraid of the Dark
+Don't Look Under the Bed 
+Scary Stories to Tell in the Dark
+
+**Redemption - 
+
 
 ### **General Design Overview ::**
 
