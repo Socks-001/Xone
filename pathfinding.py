@@ -30,9 +30,10 @@ def get_neighbors(current, grid, flying=False):
 
         if dx != 0 and dy != 0 and not flying:
             # Prevent corner clipping: both adjacent sides must be walkable
-            if grid[y][ny] != 0 and grid[ny][x] != 0:
-                continue
-
+           if dx != 0 and dy != 0 and not flying:
+               if grid[y][x + dx] != 0 and grid[y + dy][x] != 0:
+                   continue
+               
         neighbors.append((nx, ny))
 
     return neighbors
@@ -70,36 +71,17 @@ def make_grid():
     current_level = level_list[level_index]
     
     TILESIZE = config['screen']['TILESIZE']
-    ro = level[current_level]['wall_layout']
+    walls = level[current_level]['wall_layout'] #csv for current level walls
 
-    # Assume you know the map size ahead of time or infer it from sprite positions
-    max_x = max(sprite.rect.x for sprite in obstacle_sprites) // TILESIZE
-    max_y = max(sprite.rect.y for sprite in obstacle_sprites) // TILESIZE
-    rows, cols = max_y + 2, max_x + 2  # Add padding
-
-    pathfinding_grid = [[0 for _ in range(cols)] for _ in range(rows)]
-
-    for sprite in obstacle_sprites:
-        x = sprite.rect.x // TILESIZE
-        y = sprite.rect.y // TILESIZE
-        if 0 <= y < rows and 0 <= x < cols:
-            pathfinding_grid[y][x] = 1
-
-    level['pathfinding_grid'] = pathfinding_grid
-
-~~~~~~~
-
-
-    # Calculate dimensions based on level data
-    rows = level_data['rows']
-    cols = level_data['cols']
-    pathfinding_grid = [[0 for _ in range(cols)] for _ in range(rows)]
-
-    # Mark obstacles
-    for sprite in obstacle_sprites:
-        x = sprite.rect.x // TILESIZE
-        y = sprite.rect.y // TILESIZE
-        if 0 <= y < rows and 0 <= x < cols:
-            pathfinding_grid[y][x] = 1
-
-    level['pathfinding_grid'] = pathfinding_grid
+    grid = []
+    for row in walls:
+        grid_row = []
+        for tile in row:
+            if int(tile) == -1:  # Assume -1 means empty/walkable
+                grid_row.append(0)
+            else:
+                grid_row.append(1)  # Any tile with a sprite (wall) is blocked
+        grid.append(grid_row)
+    
+    level['current']['pathfinding_grid'] = grid
+    return grid

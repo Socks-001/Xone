@@ -38,7 +38,7 @@ class Enemy(Entity):
         self.player_direction = None
         self.collision_tolerance = 5
         self.vulnerable = True
-        self.status = 'idle'
+        self.status = 'hunt'
         
         # Cooldown Handling
         self.fire_rate = weapons[self.weapon_name]['fire_rate']  # Default 1000ms (1 sec) if not in data

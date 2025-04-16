@@ -15,6 +15,10 @@ level = {
         'level_list' : ['test_level', 0, 1, 2]
     },
 
+    'current' : {
+        'pathfinding_grid' : None
+    },
+
     'test_level': {  
         'graphics': None,  
         'floor_layout': None,
@@ -22,6 +26,7 @@ level = {
         'entity_layout': None,
         'lights_layout': None
     },
+    
     'sprite_groups' : {'visible_sprites' : None,
                        'obstacle_sprites' : None,
                        'weapons_sprites' : None,
