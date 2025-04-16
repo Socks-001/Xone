@@ -8,6 +8,7 @@ from player import Player
 from player_data import player_data
 from light import Light
 from light_data import light_types
+from pathfinding import make_grid
 
 
 
@@ -34,8 +35,9 @@ class Game:
         # Initialize player and level
         self.player = None
         self.level_index = level['level_config']['level_index']
-        self.level_name = level['level_config']['level_list'][self.level_index]
-        print (f'self.level_name = {self.level_name}')
+        self.level_list = level['level_config']['level_list']
+        self.current_level = self.level_list[self.level_index]
+        #print (f'self.level_name = {self.level_name}')
 
         # Initialize controls
         self.controls = controls
@@ -53,10 +55,6 @@ class Game:
             level['sprite_groups']['light_sprites'] = self.light_group
 
     def create_map(self):
-        # Create level counter
-        self.level_index = level['level_config']['level_index']
-        self.level_list = level['level_config']['level_list']
-        self.current_level = self.level_list[self.level_index]
         
         layouts = {
             'floor': level[self.current_level]['floor_layout'],
@@ -86,6 +84,8 @@ class Game:
                             surf = graphics['wall'][int(col)]
                             Tile((x, y), [self.wall_sprites, self.visible_sprites, self.obstacle_sprites], 'wall', surf)
 
+        make_grid()
+        
         # Second pass: Create the player FIRST
         for row_index, row in enumerate(layouts['entities']):
             for col_index, col in enumerate(row):
@@ -113,7 +113,7 @@ class Game:
 
                 if col in light_types:
                     light_config = light_types[col]
-                    Light((x, y), [self.visible_sprites, self.light_group], col)
+                    self.create_light((x, y), [self.visible_sprites, self.light_group], col)
 
                 '''if col == '50':  # Enemy
                     
@@ -121,7 +121,7 @@ class Game:
                     
         
         self.update_dicts_refs()
-
+       
         print(f"Visible sprites count: {len(self.visible_sprites)}")
         print(f"Entity sprites count: {len(self.entity_sprites)}")
 
@@ -136,4 +136,4 @@ class Game:
     
     def create_light(self, pos, groups, light_config_index):
         light = Light(pos, groups, light_config_index)
-        print(f"Light created at {pos} with radius {radius}")
+        
