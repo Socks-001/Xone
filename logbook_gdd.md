@@ -10,6 +10,10 @@ Goosebumps
 Are You Afraid of the Dark
 Don't Look Under the Bed 
 Scary Stories to Tell in the Dark
+Spawn
+
+Paradise Lost
+Bible
 
 **Redemption - 
 
