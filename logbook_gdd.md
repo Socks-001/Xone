@@ -1,18 +1,17 @@
-2D Top down twin stick shooter, keyboard and controller support
 
-semi-random level generation
+### **General Design Overview ::**
 
-rougielike with some persistent meta elements 
+- 2D Top down twin stick shooter, keyboard and controller support
+- semi-random level generation
+- rougielike with some persistent meta elements 
 
-Graphics
-
-sprite stacking?
-
-dark dramatic lighting (torches/tracers helpful)
-
-Basic Story
-
-basic plot for game
+### **Graphics**
+- sprite stacking
+- 2D Normal Maps 
+- dark dramatic lighting (torches/tracers helpful)
+-
+### **Basic Story**
+- basic plot for game
 
 time : modern maybe slightly future (2040)
 takes place in US
@@ -22,7 +21,7 @@ corporate interests have set up private military groups to combat threat
 humans hate the supernatural beings
 
 you chose a character from a group of humans and monsters (a rag tag lol) that naturally come together to fight the forces of evil (satan and his demons)
-
+ 
 Opening scene ::
 
 We follow a new recruit into (need name) organization. They are a military/defense force created by corporate interests (Meta, Google, Apple) maybe not all but yeah. Opens to recruit in APC (red lighting) sitting next to others in his squad. APC doors open and they run out to immediate engagement/firefight (sounds of gunfire screaming, fade to black). Fad back in recruit is bloodied, camera pans up to reveal a vampire with his clawed hands about to rip out the recruits throat. Flash (bright light)and *bang* come too to find a clothed vampire has put his fist through the others abdomen killing him. The recruit is helped up by the saving vamp confused ( humans are meant to hate all supernatural beings). Just then a second squad comes in (led by major authority in organization, they are clad in serious exoskeleton/power armour). He is surprised to see the recruit alive, he then notices the vamp who had helped him. Looking like he was allied with the vamp he orders his squad to take out the recruit and the vamp unloading a flurry of arms while running toward them.Suddenly time stops and angel (by the looks of it, high tech white slightly larger than a normal person basically idealized beauty and form (athletic)), he explains he stopped time, but it wont hold forever (the demon tech will find the time algorithm he has attached them to and time will resume). Confused, he continues to explain how the heads of these organizations obtained their power by entering into contracts with demonic forces, receiving tech and influence from them. The angel tells the recruit he has been selected by the angelic forces to help restore order/combat the demonic forces. The recruit accepts and the vamp agrees to help. The angel looks to him and says "this changes nothing" basically the vampire is still destined to go to hell when he dies. The vampire accepts and states how he just wants to do what he can to right his wrongs and the wrongs of his people. The game starts
