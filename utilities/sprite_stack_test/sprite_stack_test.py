@@ -76,6 +76,24 @@ class SpriteStackTest:
             image = sheet.subsurface(rect).copy()
             slices.append(image)
         return slices
+    
+    def get_perspective_offset(self, draw_pos, focus_point, layer_index, max_offset=20):
+        """
+        Returns an (x, y) offset for a given draw position based on its layer and distance from the focus point.
+        The higher the layer_index, the more offset is applied.
+        """
+        dx = draw_pos[0] - focus_point[0]
+        dy = draw_pos[1] - focus_point[1]
+        distance = math.hypot(dx, dy)
+        if distance == 0:
+            return (0, 0)
+
+        norm_dx = dx / distance
+        norm_dy = dy / distance
+
+        perspective_strength = min(layer_index * 0.5, max_offset)
+        return (norm_dx * perspective_strength, norm_dy * perspective_strength)
+
 
     def draw_stack_with_optional_rotation(self, x, y, sprite_sheet, angle, scale=1, height_spacing=1.0, perspective=10):
         """
