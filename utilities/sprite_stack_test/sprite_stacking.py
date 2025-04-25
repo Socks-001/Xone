@@ -18,7 +18,8 @@ class screen_setup:
 
 class SpriteStackTest:
     def __init__(self):
-        self.font = pygame.font.SysFont("Arial", 18, bold=True)
+        self.font = pygame.font.SysFont("atkinsonhyperlegiblemonoextralight", 18)
+        self.font_small = pygame.font.SysFont("atkinsonhyperlegiblemonoextralight", 8)
         self.screen = pygame.display.get_surface()
         self.screen_size = self.screen.get_size()
         self.clock = pygame.time.Clock() 
@@ -44,7 +45,8 @@ class SpriteStackTest:
         self.mod_scale = 2.0
         self.mod_spacing = 0.05
         self.mod_angle = 0
-        self.screen_divisor = 15  
+        self.screen_divisor = 15 
+        
 
         # CHANGED: Added position for sprite movement
         self.sprite_pos = [self.screen_size[0] // 2, self.screen_size[1] // 2]
@@ -78,8 +80,7 @@ class SpriteStackTest:
             rect = pygame.Rect(i * slice_length, 0, slice_length, slice_length)
             image = sheet.subsurface(rect).copy()
             slices.append(image)
-        return slices
-    
+        return slices  
     
     def get_perspective_offset(self, draw_pos, focus_point, layer_index, max_total_offset=10, total_layers=16):
         direction = pygame.Vector2(draw_pos) - pygame.Vector2(focus_point)
@@ -97,14 +98,56 @@ class SpriteStackTest:
             normalized_direction.y * offset_magnitude * layer_index
         )
 
-    # Add this method to the class
-    def draw_text(self, text, pos):
-        text_surface = self.font.render(text, True, (255, 255, 255))
-        text_rect = text_surface.get_rect(center=pos)
-        self.screen.blit(text_surface, text_rect)
+    def draw_text(self, text, pos, small=False):
+        if small:
+            text_surface = self.font_small.render(text, False, (255, 255, 255))
+            text_rect = text_surface.get_rect(center=pos)
+            self.screen.blit(text_surface, text_rect)
+        else:
+            text_surface = self.font.render(text, True, (255, 255, 255))
+            text_rect = text_surface.get_rect(center=pos)
+            self.screen.blit(text_surface, text_rect)
+
+    def draw_dashed_rect(self, surface, color, rect, dash_length=5, space_length=3, width=1, alpha=128):
+        """
+        Draws a dashed rectangle on the given surface with alpha transparency.
+
+        :param surface: The Pygame surface to draw on.
+        :param color: The color of the dashes (e.g., (255, 0, 0) for red).
+        :param rect: A pygame.Rect object defining the rectangle.
+        :param dash_length: The length of each dash.
+        :param space_length: The length of the space between dashes.
+        :param width: The thickness of the dashes.
+        :param alpha: The transparency of the dashes (0 = fully transparent, 255 = fully opaque).
+        """
+        x, y, w, h = rect
+
+        # Create a transparent surface for the dashed rectangle
+        dashed_surface = pygame.Surface((w, h), pygame.SRCALPHA)
+        dashed_surface.set_alpha(alpha)
+
+        # Top edge
+        for i in range(x, x + w, dash_length + space_length):
+            pygame.draw.line(dashed_surface, color, (i - x, 0), (min(i + dash_length, x + w) - x, 0), width)
+
+        # Bottom edge
+        for i in range(x, x + w, dash_length + space_length):
+            pygame.draw.line(dashed_surface, color, (i - x, h - 1), (min(i + dash_length, x + w) - x, h - 1), width)
+
+        # Left edge
+        for i in range(y, y + h, dash_length + space_length):
+            pygame.draw.line(dashed_surface, color, (0, i - y), (0, min(i + dash_length, y + h) - y), width)
+
+        # Right edge
+        for i in range(y, y + h, dash_length + space_length):
+            pygame.draw.line(dashed_surface, color, (w - 1, i - y), (w - 1, min(i + dash_length, y + h) - y), width)
+
+        # Blit the dashed surface onto the main surface
+        surface.blit(dashed_surface, (x, y))
 
     def draw_point(self, pos):
         pygame.draw.line(self.screen, (255, 0, 0), (pos[0], pos[1]), (pos[0], pos[1]))
+
     def draw_stack_with_optional_rotation(self, x, y, sprite_sheet, angle, scale=1, height_spacing=1.0, perspective = 10):
         """
         Draw the rotated stack or a specific slice for debugging.
@@ -159,6 +202,11 @@ class SpriteStackTest:
 
             # Blit to screen
             self.screen.blit(larger_surface, (draw_x, draw_y))
+
+            # Draw a rectangle around the lowest layer
+            if i == 0:  # Lowest layer
+                rect = pygame.Rect(draw_x, draw_y, larger_surface.get_width(), larger_surface.get_height())
+                self.draw_dashed_rect(self.screen, (255, 0, 0), rect, dash_length=5, space_length=3, width=1, alpha=128)
 
     def handle_input(self):
         keys = pygame.key.get_pressed()
@@ -215,6 +263,8 @@ class SpriteStackTest:
             # CHANGED: Use self.sprite_pos for positioning
             x, y = self.sprite_pos
             self.draw_stack_with_optional_rotation(x, y, self.current_sprite, self.mod_angle, self.mod_scale, self.mod_spacing)
+            self.draw_point((x,y))
+            self.draw_text(f"cen = {(x,y)}", (x + 64, y), True)
 
             pygame.display.flip()
             self.clock.tick(60)
