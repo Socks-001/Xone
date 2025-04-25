@@ -69,6 +69,7 @@ class SpriteStackTest:
 
         # Toggle to switch between top-left and center-based placement
         self.use_center_based = True  # True means center-based, False means top-left based
+        
 
     def centre(parent : tuple, child : tuple):
             return np.divide(np.subtract(parent, child), 2)
@@ -83,6 +84,19 @@ class SpriteStackTest:
         return slices  
     
     def get_perspective_offset(self, draw_pos, focus_point, layer_index, max_total_offset=10, total_layers=16):
+        """
+        Calculates the perspective offset for a given layer in the sprite stack.
+
+        This method determines how much each layer in the stack should be offset
+        based on its position relative to a focus point, creating a pseudo-3D perspective effect.
+
+        :param draw_pos: A tuple (x, y) representing the base position of the layer being drawn.
+        :param focus_point: A tuple (x, y) representing the focus point (e.g., the camera or perspective center).
+        :param layer_index: The index of the current layer in the stack (0-based).
+        :param max_total_offset: The maximum offset (in pixels) to apply across all layers. Defaults to 10.
+        :param total_layers: The total number of layers in the stack. Defaults to 16.
+        :return: A tuple (offset_x, offset_y) representing the calculated perspective offset for the layer.
+        """
         direction = pygame.Vector2(draw_pos) - pygame.Vector2(focus_point)
 
         if direction.length() == 0:
@@ -99,6 +113,16 @@ class SpriteStackTest:
         )
 
     def draw_text(self, text, pos, small=False):
+        """
+        Renders and draws text on the screen at the specified position.
+
+        :param text: The string to render and display.
+        :param pos: A tuple (x, y) representing the position where the text will be drawn. 
+                    The text will be centered at this position.
+        :param small: A boolean indicating whether to use the smaller font. 
+                    If True, the smaller font (`self.font_small`) is used; otherwise, the default font (`self.font`) is used.
+        """
+
         if small:
             text_surface = self.font_small.render(text, False, (255, 255, 255))
             text_rect = text_surface.get_rect(center=pos)
@@ -148,9 +172,17 @@ class SpriteStackTest:
     def draw_point(self, pos):
         pygame.draw.line(self.screen, (255, 0, 0), (pos[0], pos[1]), (pos[0], pos[1]))
 
-    def draw_stack_with_optional_rotation(self, x, y, sprite_sheet, angle, scale=1, height_spacing=1.0, perspective = 10):
+    def draw_sprite_stack(self, x, y, sprite_sheet, angle, scale=1.0, height_spacing=1.0, perspective = 10):
         """
-        Draw the rotated stack or a specific slice for debugging.
+        Draws a stack of rotated and scaled sprite layers at a specified position, with optional perspective and spacing.
+
+        :param x: The x-coordinate of the base position for the stack.
+        :param y: The y-coordinate of the base position for the stack.
+        :param sprite_sheet: The sprite sheet containing horizontal slices to stack.
+        :param angle: The rotation angle (in degrees) to apply to each layer.
+        :param scale: The scaling factor for the layers. Defaults to 1 (no scaling).
+        :param height_spacing: The vertical spacing between layers in the stack. Defaults to 1.0.
+        :param perspective: The perspective angle (in degrees) to apply to the stack. Defaults to 10.
         """
         slices = self.get_slices(sprite_sheet)
         perspective_scale = math.cos(math.radians(perspective))
@@ -210,6 +242,16 @@ class SpriteStackTest:
                 self.draw_dashed_rect(self.screen, (255, 0, 0), rect, dash_length=5, space_length=3, width=1, alpha=128)
 
     def handle_input(self):
+        """
+        Handles user input for controlling sprite movement, rotation, and toggling settings.
+
+        - Movement: Arrow keys (UP, DOWN, LEFT, RIGHT) move the sprite position.
+        - Rotation: 'A' and 'D' keys rotate the sprite stack counterclockwise and clockwise, respectively.
+        - Toggle Placement Mode: 'C' key toggles between center-based and top-left-based placement.
+        - Sprite Switching: SPACE key switches to the next sprite in the list, with a cooldown to prevent rapid switching.
+
+        :return: None
+        """
         keys = pygame.key.get_pressed()
                 # Toggle to switch between top-left and center-based placement
         if keys[pygame.K_c]:  # Press C to toggle between center-based and top-left-based
@@ -257,16 +299,16 @@ class SpriteStackTest:
             '''for location in self.locations:
                 x, y = location
                 # Draw the stack with optional rotation
-                self.draw_stack_with_optional_rotation(x, y, self.current_sprite, self.mod_angle, self.mod_scale, self.mod_spacing)
+                self.draw_sprite_stack(x, y, self.current_sprite, self.mod_angle, self.mod_scale, self.mod_spacing)
                 self.draw_point((x,y))
             self.draw_text(f"cen = {self.use_center_based}", self.locations[3])'''
 
             # CHANGED: Use self.sprite_pos for positioning
             x, y = self.sprite_pos
-            self.draw_stack_with_optional_rotation(x, y, self.current_sprite, self.mod_angle, self.mod_scale, self.mod_spacing)
+            self.draw_sprite_stack(x, y, self.current_sprite, self.mod_angle, self.mod_scale, self.mod_spacing)
             self.draw_point((x,y))
             self.draw_text(f"cen = {(x,y)}", (x + 64, y), True)
-
+            self.draw_text(f'screen size = {self.screen_size}', (self.locations[1][0] - 50, self.locations[1][1]), small=True)
             pygame.display.flip()
             self.clock.tick(60)
 
