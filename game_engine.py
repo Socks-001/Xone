@@ -12,6 +12,7 @@ class GameEngine:
         self.screen = screen
         self.game_surface = game_surface
         self.scaled_surface = scaled_surface
+        self.screen_center = (self.screen // 2, self.screen // 2)
 
         # Clock
         self.clock = pygame.time.Clock()

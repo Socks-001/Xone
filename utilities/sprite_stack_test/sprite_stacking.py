@@ -23,7 +23,7 @@ class SpriteStackTest:
         self.screen = pygame.display.get_surface()
         self.screen_size = self.screen.get_size()
         self.clock = pygame.time.Clock() 
-        self.input_cooldown = 1000
+        self.input_cooldown = 50
         self.last_input_time = 0  
 
         # Load the horizontal sprite sheets
@@ -185,6 +185,7 @@ class SpriteStackTest:
             base_center_y = larger_surface.get_height() // 2
             base_center = (base_center_x, base_center_y)
             self.draw_point(base_center)
+            #doesnt work correctly yet
             
 
             # Get perspective offset
@@ -270,6 +271,6 @@ class SpriteStackTest:
             self.clock.tick(60)
 
 # Run the program
-if __name__ == "__main__":
+if __name__ == "__main__":#
     app = SpriteStackTest()
     app.update()

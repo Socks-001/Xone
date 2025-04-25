@@ -27,8 +27,8 @@ config = {
     },
     
     'screen': {
-        'SCREEN_WIDTH': 240,    
-        'SCREEN_HEIGHT': 240,
+        'SCREEN_WIDTH': 256,    
+        'SCREEN_HEIGHT': 256,
         'FPS': 60,
         'TILESIZE': 16,
         'screen': None,
