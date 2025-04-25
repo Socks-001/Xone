@@ -5,14 +5,16 @@ from config import config
 from level_data import level
 from controls import Controls
 from debug import sprite_group_highlight
+from utilities import draw_point, get_surface_center
 
 class GameEngine:
-    def __init__(self, screen, game_surface, scaled_surface):
+    def __init__(self, screen, game_surface):
         # Screen and Surface
         self.screen = screen
         self.game_surface = game_surface
-        self.scaled_surface = scaled_surface
-        self.screen_center = (self.screen // 2, self.screen // 2)
+        self.screen_center = get_surface_center(self.screen)
+        self.game_surface_center = get_surface_center(self.game_surface)
+        self.game_surface_centering_coordinates = ((self.screen_center[0] - self.game_surface_center[0]), (self.screen_center[1] - self.game_surface_center[1]))
 
         # Clock
         self.clock = pygame.time.Clock()
@@ -104,8 +106,9 @@ class GameEngine:
 
                 # Handle scaling and fullscreen changes
                 self.handle_fullscreen()
-                self.scaled_surface = pygame.transform.scale(self.game_surface, self.screen.get_size())
-                self.screen.blit(self.scaled_surface, (0, 0))
+                
+                self.screen.blit(self.game_surface, self.game_surface_centering_coordinates)
+                draw_point(self.screen, color = (200,255,200, 255))
 
                 pygame.display.flip()
                 pygame.event.pump()

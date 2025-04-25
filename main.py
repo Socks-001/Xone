@@ -20,12 +20,11 @@ def initialize():
     screen_height = config['screen']['SCREEN_HEIGHT']
     screen = pygame.display.set_mode((screen_width, screen_height), pygame.SCALED)
     game_surface = pygame.Surface((screen_width, screen_height))
-    scaled_surface = pygame.transform.scale(game_surface, (screen_width, screen_height))
+    
 
     # Update Config
     config['screen']['screen'] = screen
     config['screen']['game_surface'] = game_surface
-    config['screen']['scaled_surface'] = scaled_surface
 
     # Load Graphics Assets
     print("Loading assets...")    
@@ -41,12 +40,12 @@ def initialize():
     load_menu_sfx()
 
 
-    return screen, game_surface, scaled_surface
+    return screen, game_surface
 
 if __name__ == '__main__':
     # Initialize resources
-    screen, game_surface, scaled_surface = initialize()
+    screen, game_surface = initialize()
 
     # Run the game loop
-    game_engine = GameEngine(screen, game_surface, scaled_surface)
+    game_engine = GameEngine(screen, game_surface)
     game_engine.run()

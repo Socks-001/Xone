@@ -44,6 +44,38 @@ def counter (element):
 
     return amount  
 
+def get_surface_center(surface):
+    """
+    Returns the center (x, y) coordinates of a Pygame surface. Especially useful for positioning elements without rects.
+
+    :param surface: The Pygame surface to calculate the center for.
+    :return: A tuple (center_x, center_y) representing the center of the surface.
+    """
+    center_x = surface.get_width() // 2
+    center_y = surface.get_height() // 2
+    return center_x, center_y
+
+def draw_point(surface, pos=None, color=(255, 0, 0, 255)):
+    """
+    Draws a single point (1px) on the given screen at the specified position, considering alpha transparency.
+
+    :param surface: The Pygame surface to draw on.
+    :param pos: A tuple (x, y) representing the position of the point on the screen. Defaults to the center of the surface.
+    :param color: A tuple (R, G, B, A) representing the color and alpha transparency of the point.
+    """
+    # If pos is None, calculate the center of the surface
+    if pos is None:
+        pos = get_surface_center(surface)
+
+    # Create a 1x1 surface with an alpha channel
+    point_surface = pygame.Surface((1, 1), pygame.SRCALPHA)
+    
+    # Fill the surface with the color (including alpha)
+    point_surface.fill(color)
+    
+    # Blit the point surface onto the screen at the specified position
+    surface.blit(point_surface, pos)
+
 def quit():
     print("Quitting game...")
     pygame.quit()
