@@ -16,7 +16,7 @@ class screen_setup:
     pygame.display.set_caption("Sprite Stack Test")
 
 
-class SpriteStackTest:
+class SpriteStackTest():
     def __init__(self):
         self.font = pygame.font.SysFont("atkinsonhyperlegiblemonoextralight", 18)
         self.font_small = pygame.font.SysFont("atkinsonhyperlegiblemonoextralight", 8)
@@ -45,6 +45,7 @@ class SpriteStackTest:
         self.mod_scale = 2.0
         self.mod_spacing = 0.05
         self.mod_angle = 0
+        self.mod_stack_object_height = 2
         self.screen_divisor = 15 
         
 
@@ -67,9 +68,13 @@ class SpriteStackTest:
             self.center                   # center
         ]
 
-        # Toggle to switch between top-left and center-based placement
-        self.use_center_based = True  # True means center-based, False means top-left based
         
+        
+        self.total_layers = None  # Total number of layers in the stack
+
+        # cache sprite stack surfaces and rects 
+        self.larger_surface_cache = {}  # Cache for larger surfaces
+        self.rect_cache = {}  # Cache for rects
 
     def centre(parent : tuple, child : tuple):
             return np.divide(np.subtract(parent, child), 2)
@@ -81,37 +86,49 @@ class SpriteStackTest:
             rect = pygame.Rect(i * slice_length, 0, slice_length, slice_length)
             image = sheet.subsurface(rect).copy()
             slices.append(image)
+            self.total_layers = len(slices)  # Update total layers based on the number of slices
+            #print (f'total layers = {self.total_layers}')
         return slices  
     
-    def get_perspective_offset(self, draw_pos, focus_point, layer_index, max_total_offset=10, total_layers=16):
+    def get_perspective_offset(self, surface_pos, focus_point, layer_index, stack_object_height, total_layers=None):
         """
         Calculates the perspective offset for a given layer in the sprite stack.
 
         This method determines how much each layer in the stack should be offset
         based on its position relative to a focus point, creating a pseudo-3D perspective effect.
 
-        :param draw_pos: A tuple (x, y) representing the base position of the layer being drawn.
+        :param surface_pos: A tuple (x, y) representing the base position of the layer being drawn.
         :param focus_point: A tuple (x, y) representing the focus point (e.g., the camera or perspective center).
         :param layer_index: The index of the current layer in the stack (0-based).
         :param max_total_offset: The maximum offset (in pixels) to apply across all layers. Defaults to 10.
         :param total_layers: The total number of layers in the stack. Defaults to 16.
         :return: A tuple (offset_x, offset_y) representing the calculated perspective offset for the layer.
         """
-        direction = pygame.Vector2(draw_pos) - pygame.Vector2(focus_point)
+        if total_layers is None:
+            total_layers = self.total_layers
+        
+        #print (f'total layers = {total_layers}')
 
-        if direction.length() == 0:
+        direction = pygame.Vector2(surface_pos) - pygame.Vector2(focus_point)
+        
+        # Normalize the direction vector to get the unit vector
+        if direction.length() == 0:    
             return (0, 0)
-        normalized_direction = direction.normalize()
+        
+        else : 
+            direction.normalize_ip()
 
         #print (f'draw position = {draw_pos} focus point = {focus_point} normalized direction = {normalized_direction}')
 
         # Calculate the offset magnitude
-        offset_magnitude = max_total_offset / total_layers
+        offset_magnitude = stack_object_height / total_layers
+        
+        #print(f"Layer {layer_index}: direction = {direction}, offset = ({direction.x * offset_magnitude * layer_index}, {direction.y * offset_magnitude * layer_index})")
 
         # Apply the offset based on the layer index
         return (
-            normalized_direction.x * offset_magnitude * layer_index,
-            normalized_direction.y * offset_magnitude * layer_index
+            direction.x * offset_magnitude * layer_index,
+            direction.y * offset_magnitude * layer_index
         )
 
     def draw_text(self, text, pos, small=False):
@@ -170,9 +187,38 @@ class SpriteStackTest:
 
         # Blit the dashed surface onto the main surface
         surface.blit(dashed_surface, (x, y))
+    
+    def get_surface_center(self, surface):
+        """
+        Returns the center (x, y) coordinates of a Pygame surface. Especially useful for positioning elements without rects.
 
-    def draw_point(self, pos):
-        pygame.draw.line(self.screen, (255, 0, 0), (pos[0], pos[1]), (pos[0], pos[1]))
+        :param surface: The Pygame surface to calculate the center for.
+        :return: A tuple (center_x, center_y) representing the center of the surface.
+        """
+        center_x = surface.get_width() // 2
+        center_y = surface.get_height() // 2
+        return center_x, center_y
+    
+    def draw_point(self, surface, pos=None, color=(255, 0, 0, 255)):
+        """
+        Draws a single point (1px) on the given screen at the specified position, considering alpha transparency.
+
+        :param surface: The Pygame surface to draw on.
+        :param pos: A tuple (x, y) representing the position of the point on the screen. Defaults to the center of the surface.
+        :param color: A tuple (R, G, B, A) representing the color and alpha transparency of the point.
+        """
+        # If pos is None, calculate the center of the surface
+        if pos is None:
+            pos = self.get_surface_center(surface)
+
+        # Create a 1x1 surface with an alpha channel
+        point_surface = pygame.Surface((1, 1), pygame.SRCALPHA)
+        
+        # Fill the surface with the color (including alpha)
+        point_surface.fill(color)
+        
+        # Blit the point surface onto the screen at the specified position
+        surface.blit(point_surface, pos)
 
     def draw_sprite_stack(self, x, y, sprite_sheet, angle, scale=1.0, height_spacing=1.0, perspective = 10):
         """
@@ -189,25 +235,32 @@ class SpriteStackTest:
         slices = self.get_slices(sprite_sheet)
         perspective_scale = math.cos(math.radians(perspective))
         height_offset = height_spacing * scale * perspective_scale
-        print (f'original position = {x, y}')
-        
 
         for i, layer in enumerate(slices):
             # Scale the layer
             original_width, original_height = layer.get_size()
             #layer_scale = scale
-            layer_scale = round(scale * 1 + (i * 0.02), 2) # Adjust the scaling factor for each layer
-            scaled_layer_width = original_width * layer_scale
-            scaled_layer_height = original_height * layer_scale
+            #layer_scale = round(scale + (i * 0.01), 2) # Adjust the scaling factor for each layer
+            scaled_layer_width = original_width + i
+            scaled_layer_height = original_height + i
             scaled_layer = pygame.transform.scale(layer, (scaled_layer_width, scaled_layer_height))
 
-            if i == 0:
-                print (f'position after scaling = {x, y}')
-
+            # Check if the larger surface for this layer is already cached
+            '''cache_key = i
+            if cache_key in self.larger_surface_cache:
+                larger_surface = self.larger_surface_cache[cache_key]
+            else:
+                # Create a larger surface to prevent shaking
+                max_dim = int(math.sqrt((scaled_layer_width ** 2) + (scaled_layer_height ** 2)))
+                larger_surface = pygame.Surface((max_dim, max_dim), pygame.SRCALPHA)
+                self.larger_surface_cache[cache_key] = larger_surface  # Cache the larger surface'''
+            
             # Create a larger surface to prevent shaking
             max_dim = int(math.sqrt((scaled_layer_width ** 2) + (scaled_layer_height ** 2)))
             larger_surface = pygame.Surface((max_dim, max_dim), pygame.SRCALPHA)
-
+            
+           
+            # print (f'cache total = {len(self.larger_surface_cache)}')
             # Rotate the layer
             rotated = pygame.transform.rotate(scaled_layer, angle)
             center_of_larger_surface = (
@@ -217,36 +270,36 @@ class SpriteStackTest:
 
             larger_surface.fill((170, 100, 150, 5))
             larger_surface.blit(rotated, center_of_larger_surface)
-            print (f'position after rotation = {x, y}, center of larger surface = {center_of_larger_surface}')
 
-            # Get the center of the larger surface           
-            base_center_x = larger_surface.get_width() // 2
-            base_center_y = larger_surface.get_height() // 2
-            base_center = (base_center_x, base_center_y)
-            self.draw_point(base_center)
-            #doesnt work correctly yet
+            rect = larger_surface.get_rect(center=(x, y))
+
+
+            # Cache the rect for this layer
             
 
+            # Get the center of the larger surface           
+            '''base_center_x = larger_surface.get_width() // 2
+            base_center_y = larger_surface.get_height() // 2
+            base_center = (base_center_x, base_center_y)'''
+
+            
             # Get perspective offset
             offset_x, offset_y = self.get_perspective_offset((x , y), 
-                                                             self.center, i, max_total_offset=10, total_layers=len(slices)
+                                                             self.center, i, stack_object_height = self.mod_stack_object_height, total_layers=len(slices)
                                                              )
-            # Final drawing position
-            if self.use_center_based:
-                # Center-based placement
-                draw_x = (x + offset_x) - base_center_x
-                draw_y = (y - i * height_offset + offset_y) - base_center_y
-            else:
-                draw_x = x + offset_x
-                draw_y = y - i * height_offset + offset_y  
+            
+
+            #draw_pos = (x + offset_x, y - height_offset + offset_y)
+            draw_pos = (x + i * offset_x, y + i * offset_y)
+            #print (f'offset = {offset_y} y offset = {y + (i + offset_y)}')
+            print (f'offset = {offset_x} y offset = {x + (i + offset_x)}')
+            rect.center = draw_pos  # Update the rect position based on the calculated draw position
+            #print (f'{i} offset = {offset_x} {offset_y}')
 
             # Blit to screen
-            self.screen.blit(larger_surface, (draw_x, draw_y))
-
-            # Draw a rectangle around the lowest layer
-            if i == 0:  # Lowest layer
-                rect = pygame.Rect(draw_x, draw_y, larger_surface.get_width(), larger_surface.get_height())
-                self.draw_dashed_rect(self.screen, (255, 0, 0), rect, dash_length=5, space_length=3, width=1, alpha=128)
+            self.screen.blit(larger_surface, rect.topleft)
+            #pygame.draw.rect(self.screen, (255,0,0), rect, width=1)
+            self.draw_dashed_rect(self.screen, (255, 0, 0, 20), rect, dash_length=5, space_length=3, width=1, alpha=128)
 
     def handle_input(self):
         """
@@ -260,9 +313,6 @@ class SpriteStackTest:
         :return: None
         """
         keys = pygame.key.get_pressed()
-                # Toggle to switch between top-left and center-based placement
-        if keys[pygame.K_c]:  # Press C to toggle between center-based and top-left-based
-            self.use_center_based = not self.use_center_based
         # CHANGED: Movement keys
         if keys[pygame.K_LEFT]:
             self.sprite_pos[0] -= 4
@@ -275,10 +325,10 @@ class SpriteStackTest:
 
         # CHANGED: Rotation with A / D
         if keys[pygame.K_a]:
-            self.mod_angle -= 1
+            self.mod_stack_object_height -= 1
         if keys[pygame.K_d]:
-            self.mod_angle += 1
-        self.mod_angle %= 360
+            self.mod_stack_object_height += 1
+        
 
         # CHANGED: Sprite switching on SPACE with cooldown
         current_time = pygame.time.get_ticks()
@@ -298,7 +348,8 @@ class SpriteStackTest:
 
             # Handle input with cooldown
             self.handle_input()
-            #self.mod_angle += 1 # Increment angle for rotation
+            self.mod_angle += 1 # Increment angle for rotation
+            self.mod_angle %= 360 # Keep angle within 0-359 degrees
 
             self.screen.fill((30, 30, 30))
             
@@ -313,10 +364,11 @@ class SpriteStackTest:
             # CHANGED: Use self.sprite_pos for positioning
             x, y = self.sprite_pos
             self.draw_sprite_stack(x, y, self.current_sprite, self.mod_angle, self.mod_scale, self.mod_spacing)
-            self.draw_point((x,y))
-            self.draw_point (self.center)
+            #self.draw_point((x,y))
+            self.draw_point (self.screen, self.center, color=(157, 255, 0, 255))
             self.draw_text(f"cen = {(x,y)}", (x + 64, y), True)
             self.draw_text(f'screen size = {self.screen_size}', (self.locations[1][0] - 50, self.locations[1][1]), small=True)
+            self.draw_text(f'object height = {self.mod_stack_object_height}', (self.locations[1][0] - 50, self.locations[1][1] + 10), small=True)
             pygame.display.flip()
             self.clock.tick(60)
 
