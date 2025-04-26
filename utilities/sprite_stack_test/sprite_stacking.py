@@ -45,7 +45,7 @@ class SpriteStackTest():
         self.mod_scale = 2.0
         self.mod_spacing = 0.05
         self.mod_angle = 0
-        self.mod_stack_object_height = 2
+        self.mod_stack_object_height = 1
         self.screen_divisor = 15 
         
 
@@ -115,14 +115,13 @@ class SpriteStackTest():
         if direction.length() == 0:    
             return (0, 0)
         
-        else : 
-            direction.normalize_ip()
 
         #print (f'draw position = {draw_pos} focus point = {focus_point} normalized direction = {normalized_direction}')
 
         # Calculate the offset magnitude
-        offset_magnitude = stack_object_height / total_layers
-        
+        offset_magnitude = (stack_object_height / total_layers) * direction.length() / (self.screen_size[0] / 2)
+
+        direction.normalize_ip()
         #print(f"Layer {layer_index}: direction = {direction}, offset = ({direction.x * offset_magnitude * layer_index}, {direction.y * offset_magnitude * layer_index})")
 
         # Apply the offset based on the layer index
@@ -354,17 +353,11 @@ class SpriteStackTest():
             self.screen.fill((30, 30, 30))
             
             
-            '''for location in self.locations:
+            for location in self.locations:
                 x, y = location
                 # Draw the stack with optional rotation
                 self.draw_sprite_stack(x, y, self.current_sprite, self.mod_angle, self.mod_scale, self.mod_spacing)
-                self.draw_point((x,y))
-            self.draw_text(f"cen = {self.use_center_based}", self.locations[3])'''
-
-            # CHANGED: Use self.sprite_pos for positioning
-            x, y = self.sprite_pos
-            self.draw_sprite_stack(x, y, self.current_sprite, self.mod_angle, self.mod_scale, self.mod_spacing)
-            #self.draw_point((x,y))
+                
             self.draw_point (self.screen, self.center, color=(157, 255, 0, 255))
             self.draw_text(f"cen = {(x,y)}", (x + 64, y), True)
             self.draw_text(f'screen size = {self.screen_size}', (self.locations[1][0] - 50, self.locations[1][1]), small=True)
