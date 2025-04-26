@@ -103,6 +103,8 @@ class SpriteStackTest:
             return (0, 0)
         normalized_direction = direction.normalize()
 
+        #print (f'draw position = {draw_pos} focus point = {focus_point} normalized direction = {normalized_direction}')
+
         # Calculate the offset magnitude
         offset_magnitude = max_total_offset / total_layers
 
@@ -187,6 +189,7 @@ class SpriteStackTest:
         slices = self.get_slices(sprite_sheet)
         perspective_scale = math.cos(math.radians(perspective))
         height_offset = height_spacing * scale * perspective_scale
+        print (f'original position = {x, y}')
         
 
         for i, layer in enumerate(slices):
@@ -197,6 +200,9 @@ class SpriteStackTest:
             scaled_layer_width = original_width * layer_scale
             scaled_layer_height = original_height * layer_scale
             scaled_layer = pygame.transform.scale(layer, (scaled_layer_width, scaled_layer_height))
+
+            if i == 0:
+                print (f'position after scaling = {x, y}')
 
             # Create a larger surface to prevent shaking
             max_dim = int(math.sqrt((scaled_layer_width ** 2) + (scaled_layer_height ** 2)))
@@ -211,6 +217,7 @@ class SpriteStackTest:
 
             larger_surface.fill((170, 100, 150, 5))
             larger_surface.blit(rotated, center_of_larger_surface)
+            print (f'position after rotation = {x, y}, center of larger surface = {center_of_larger_surface}')
 
             # Get the center of the larger surface           
             base_center_x = larger_surface.get_width() // 2
@@ -221,7 +228,7 @@ class SpriteStackTest:
             
 
             # Get perspective offset
-            offset_x, offset_y = self.get_perspective_offset((x +  base_center_x, y +  base_center_y), 
+            offset_x, offset_y = self.get_perspective_offset((x , y), 
                                                              self.center, i, max_total_offset=10, total_layers=len(slices)
                                                              )
             # Final drawing position
@@ -291,7 +298,7 @@ class SpriteStackTest:
 
             # Handle input with cooldown
             self.handle_input()
-            self.mod_angle += 1 # Increment angle for rotation
+            #self.mod_angle += 1 # Increment angle for rotation
 
             self.screen.fill((30, 30, 30))
             
@@ -307,6 +314,7 @@ class SpriteStackTest:
             x, y = self.sprite_pos
             self.draw_sprite_stack(x, y, self.current_sprite, self.mod_angle, self.mod_scale, self.mod_spacing)
             self.draw_point((x,y))
+            self.draw_point (self.center)
             self.draw_text(f"cen = {(x,y)}", (x + 64, y), True)
             self.draw_text(f'screen size = {self.screen_size}', (self.locations[1][0] - 50, self.locations[1][1]), small=True)
             pygame.display.flip()
