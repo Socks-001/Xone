@@ -1,0 +1,3 @@
+# Core runtime deps
+pygame-ce
+numpy

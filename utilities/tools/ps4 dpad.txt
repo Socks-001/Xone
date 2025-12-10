@@ -1,0 +1,20 @@
+ps4 controller inputs
+
+up = 11
+down = 12
+left = 13
+right = 14
+
+square = 2
+triangle = 3
+circle = 1
+x = 0
+
+l = 9
+r = 10
+
+
+axis 3, -1 is up 
+axis 3, 1 is down 
+axis 2, -1 left 
+axis 2, 1 is right

@@ -1,0 +1,68 @@
+///@desc drawSprite3DPersp(x,y,sprite, scale, hscale, rotation, perspective, alpha, HD)
+///@arg x
+///@arg y
+///@arg sprite
+///@arg scale
+///@arg height_scale
+///@arg rotation_angle
+///@arg perspective_degrees
+///@arg image_alpha
+///@arg HD
+
+
+//VERY messy and inefficient, probably better ways to do this
+
+var _xx = argument0;
+var _yy = argument1;
+var _sprite = argument2;
+var _scale = argument3;
+var _heightScale = argument4;
+var _imageAngle = argument5;
+var _perspective = argument6;
+var _alpha = argument7;
+
+//Need to be calcualted every frame
+var _perspectiveTop = dsin(_perspective);
+var _perspectiveFront = dcos(_perspective);
+
+// Getting the original 4 corners and angles for the corners from the origin
+var _spriteOriginX = sprite_get_xoffset(_sprite)*_scale;
+var _spriteOriginY = sprite_get_yoffset(_sprite)*_scale;
+var _spriteWidth = sprite_get_width(_sprite)*_scale;
+var _spriteHeight = sprite_get_height(_sprite)*_scale;
+
+var _corner1Dist = point_distance(_spriteOriginX, _spriteOriginY, 0, 0);
+var _corner2Dist = point_distance(_spriteOriginX, _spriteOriginY, _spriteWidth, 0);
+var _corner3Dist = point_distance(_spriteOriginX, _spriteOriginY, _spriteWidth, _spriteHeight);
+var _corner4Dist = point_distance(_spriteOriginX, _spriteOriginY, 0, _spriteHeight);
+
+var _corner1Dir = point_direction(_spriteOriginX, _spriteOriginY, 0, 0);
+var _corner2Dir = point_direction(_spriteOriginX, _spriteOriginY, _spriteWidth, 0);
+var _corner3Dir = point_direction(_spriteOriginX, _spriteOriginY, _spriteWidth, _spriteHeight);
+var _corner4Dir = point_direction(_spriteOriginX, _spriteOriginY, 0, _spriteHeight);
+
+//////////////////////////////////////////////////////////////////////////
+//Get new corner positions using the original 4 corners and angles
+
+var _x1 = _xx + lengthdir_x(_corner1Dist, _corner1Dir + _imageAngle);
+var _y1 = _yy + lengthdir_y(_corner1Dist * _perspectiveTop, _corner1Dir + _imageAngle);
+var _x2 = _xx + lengthdir_x(_corner2Dist, _corner2Dir + _imageAngle);
+var _y2 = _yy + lengthdir_y(_corner2Dist * _perspectiveTop, _corner2Dir + _imageAngle);
+var _x3 = _xx + lengthdir_x(_corner3Dist, _corner3Dir + _imageAngle);
+var _y3 = _yy + lengthdir_y(_corner3Dist * _perspectiveTop, _corner3Dir + _imageAngle);
+var _x4 = _xx + lengthdir_x(_corner4Dist, _corner4Dir + _imageAngle);
+var _y4 = _yy + lengthdir_y(_corner4Dist * _perspectiveTop, _corner4Dir + _imageAngle);
+
+//Draw the sprites
+if (argument8 == true){
+	var _layerHeight = 0.5;
+} else var _layerHeight = 1;
+
+for (var _i = 0; _i < sprite_get_number(_sprite); _i+=_layerHeight){
+	draw_sprite_pos(_sprite, floor(_i), 
+					_x1, _y1-_i*_heightScale*_perspectiveFront,
+					_x2, _y2-_i*_heightScale*_perspectiveFront, 
+					_x3, _y3-_i*_heightScale*_perspectiveFront, 
+					_x4, _y4-_i*_heightScale*_perspectiveFront,
+					_alpha);
+}
