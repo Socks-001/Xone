@@ -85,6 +85,13 @@ class GameEngine:
         self.obstacle_sprites.update()
         self.decor_sprites.update()
         self.light_sprites.update()
+        
+        dyn = level['current']['dynamic_index']
+        for spr in self.entity_sprites: dyn.update(spr)
+        for spr in self.weapon_sprites: dyn.update(spr)
+        for spr in self.light_sprites: dyn.update(spr)
+
+        
 
     def draw_text(self, screen, text, pos, small=False, align = 'center'):
         

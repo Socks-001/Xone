@@ -15,6 +15,9 @@ class RenderEngineEx():
         self.camera_angle = 0
         self.local_rotation = 0
         self.perspective_strength = 8
+        self.world_camera_rect = pygame.Rect(0, 0, self.screen_rect.w, self.screen_rect.h)
+        
+
 
         # Caches
         self.slice_cache: Dict[Tuple[int,int,int], List[pygame.Surface]] = {}
@@ -23,24 +26,14 @@ class RenderEngineEx():
         # Sprites
         self.group = sprite_group
         self.player = player
+        self.last_player_center = pygame.Vector2(0,0)
+        
         
         # --- Shadow setup ---
         self.shadow_layer = pygame.Surface(self.screen.get_size(), flags=pygame.SRCALPHA)
         self.shadow_blob_12 = self._make_shadow_blob(diameter=12, alpha=110)  # tweak alpha to taste
         self.shadow_radius = 6  # convenience (diameter // 2)
         
-        '''
-        # Shadows
-        self.enable_shadows = True
-        self.light_dir = pygame.Vector2(1, 1).normalize()  # 45° down-right
-        self.shadow_alpha = 110                             # opacity
-        self.shadow_flatten = 0.55                          # 0..1: “squash” the slice
-        self.shadow_px_per_layer = 2.0                      # how far each higher slice’s shadow moves
-        '''
-    
-
-    
-
     # ---------- Slicing (NO padding/overdraw) ----------
     def get_slices(self, sheet):
         slice_len = min(sheet.get_width(), sheet.get_height())
@@ -77,42 +70,38 @@ class RenderEngineEx():
     
     def visible(self, group):
 
-        sprite_group_visible = []  # init once
+        visible = []  # init once
 
-        for sprite in group:
-            sprite_compare_rect = self.world_rect_to_screen(sprite.hitbox)
+        for spr in group:
+            sprite_compare_rect = self.world_rect_to_screen(spr.hitbox)
             if self.screen_rect.colliderect(sprite_compare_rect):
-                sprite_group_visible.append(sprite)
+                visible.append(spr)
 
-        # Draw cast shadow for players and enemies 
-        if sprite_group_visible and sprite.sprite_type in ('player', 'enemy'):
-            blob = self.shadow_blob_12
-            r = self.shadow_radius
-            for spr in sprite_group_visible:
-                # world -> screen once; hitbox center is your anchor
+        # Draw cast shadow for players and enemies
+        blob = self.shadow_blob_12
+        r = self.shadow_radius
+        for spr in visible:
+            if spr.sprite_type in ('player','enemy'):
                 sx, sy = self.world_to_screen(spr.hitbox.center)
-                self.screen.blit(
-                    blob,
-                    (int(sx) - r, int(sy) - r),
-                    #special_flags=pygame.BLEND_RGBA_MULT  # overlap doesn't darken
-        )
+                self.screen.blit(blob, (int(sx)-r, int(sy)-r))
 
+        if visible:
+            self.sort_sprites_by_distance_from_center(visible)
 
-        if sprite_group_visible:
-            self.sort_sprites_by_distance_from_center(sprite_group_visible, sprite_type= sprite.sprite_type)
-
-    def sort_sprites_by_distance_from_center(self, sprite_group, overdraw_px=0, debug_hitbox=None, sprite_type='default'):
+    def sort_sprites_by_distance_from_center(self, sprites, overdraw_px=0, debug_hitbox=None, sprite_type='default'):
         # NOTE: overdraw_px kept in signature for compatibility; it does nothing now.
 
-        for sprite in sorted(sprite_group, key=self.depth_key):
+        for spr in sorted(sprites, key=self.depth_key):
 
-            dbg_hb = debug_hitbox if debug_hitbox is not None else getattr(sprite, "hitbox", None)
-            c = pygame.Vector2(sprite.hitbox.center)
+            dbg_hb = debug_hitbox if debug_hitbox is not None else getattr(spr, "hitbox", None)
+
+
+            c = pygame.Vector2(spr.hitbox.center)
             angle = self.local_rotation
             if sprite_type == 'player':
                 angle = -config['controls']['mouse_angle']
 
-            src = getattr(sprite, "image_master", None) or getattr(sprite, "sheet", None) or sprite.image
+            src = getattr(spr, "image_master", None) or getattr(spr, "sheet", None) or spr.image
             self.slice_and_stack(
                 c.x, c.y, src,
                 local_rotation_angle=angle,
@@ -151,10 +140,12 @@ class RenderEngineEx():
         return self.screen_to_world(self.screen_center)
 
     def get_current_offset(self):
-        if not self.player:
-            return
-        player_center = pygame.Vector2(self.player.hitbox.center)
-        self.camera_offset = player_center - self.world_space_origin
+        if self.player and hasattr(self.player, "hitbox"):
+            self.last_player_center = pygame.Vector2(self.player.hitbox.center)
+
+        # always compute from last known center
+        self.camera_offset = self.last_player_center - self.world_space_origin
+        self.world_camera_rect.center = (int(self.last_player_center.x), int(self.last_player_center.y))
 
     # ---------- Perspective (precompute once per sprite) ----------
     def _precompute_perspective(self, base_world_xy, total_layers, height, sprite_type = 'default'):
@@ -267,3 +258,4 @@ class RenderEngineEx():
                 ow, oh = layer.get_size()
                 render_hitbox.width, render_hitbox.height = ow, oh
                 render_hitbox.center = sprite_world
+                

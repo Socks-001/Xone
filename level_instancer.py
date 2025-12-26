@@ -10,6 +10,7 @@ from player_data import player_data
 from light import Light
 from light_data import light_types
 from pathfinding import make_grid
+from spatial_index import ChunkIndex
 
 
 class Game:
@@ -172,6 +173,23 @@ class Game:
        
         print(f"Visible sprites count: {len(self.visible_sprites)}")
         print(f"Entity sprites count: {len(self.entity_sprites)}")
+        
+        #after tiles/entities created:
+        self.static_index = ChunkIndex(self.tilesize, chunk_tiles=16)
+        self.dynamic_index = ChunkIndex(self.tilesize, chunk_tiles=16)
+
+        # build static buckets once
+        self.static_index.build_static(self.floor_sprites)
+        self.static_index.build_static(self.wall_sprites)
+        self.static_index.build_static(self.decor_sprites)
+
+        # build dynamic buckets initially
+        self.dynamic_index.build_static(self.entity_sprites)
+        self.dynamic_index.build_static(self.weapon_group)
+        self.dynamic_index.build_static(self.light_sprites)
+
+        level['current']['static_index'] = self.static_index
+        level['current']['dynamic_index'] = self.dynamic_index
 
     def create_player(self, pos, groups, controls):
         self.player = Player(pos, groups, controls)
