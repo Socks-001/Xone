@@ -2,7 +2,7 @@ from __future__ import annotations
 import csv
 import random
 from dataclasses import dataclass
-from typing import List, Tuple, Dict, Optional
+from typing import List, Tuple, Dict, Optional, Any
 import os
     
 
@@ -32,8 +32,8 @@ ENT_ITEM     = "200"
 ENT_HAZARD   = "300"
 LIGHT_POINT  = "400"
 
-#Decor
-DECOR_EMPTY = '-1'
+#set_dressing
+set_dressing_EMPTY = '-1'
 GRASS = "0"
 GRASS_ALT = '1'
 BARREL = '2'
@@ -59,7 +59,7 @@ DIRECTION_MASKS = [
     ( 1,  1,   8, 128), # lower-right: neighbor must connect upper-left
 ]
 
-def fill_decor_grass(rng: random.Random, floor: Grid, decor: Grid, p: float = 0.12):
+def fill_set_dressing_grass(rng: random.Random, floor: Grid, set_dressing: Grid, p: float = 0.12):
     """Scatter grass variants on SOLID tiles only; keep rooms/paths clean."""
     H = len(floor); W = len(floor[0])
     for y in range(H):
@@ -67,7 +67,7 @@ def fill_decor_grass(rng: random.Random, floor: Grid, decor: Grid, p: float = 0.
             if floor[y][x] == FLOOR_SOLID and rng.random() < p:
                 # biased pick: 0 most common, 1/2 rarer
                 r = rng.random()
-                decor[y][x] = GRASS if r < 0.7 else (GRASS_ALT)
+                set_dressing[y][x] = GRASS if r < 0.7 else (GRASS_ALT)
 
 def mask8(grid: Grid, x: int, y: int, is_wall, get_mask) -> int:
     """Return a valid 0–255 blob mask considering bidirectional compatibility, with safe corner rules."""
@@ -331,8 +331,9 @@ def derive_walls_from_floor(floor: Grid, wall: Grid):
                 # In practice, many blob sets place "wall" where neighbor is NOT walkable,
                 # so we compute mask of NOT-walk neighbors:
                 def not_walk(nx, ny): return not is_walk(nx, ny)
-                m = mask8(floor, x, y, not_walk)
-                wall[y][x] = str(m) if m != 0 else WALL_NONE
+                m = mask8(floor, x, y, not_walk, lambda nx, ny: "X")
+                wall[y][x] = str(m) if (m is not None and m != 0) else WALL_NONE
+
             else:
                 wall[y][x] = WALL_NONE
 
@@ -432,7 +433,7 @@ def build_level(seed: int,
     wall:  Grid = make_grid(grid_w, grid_h, WALL_NONE)
     ent:   Grid = make_grid(grid_w, grid_h, ENT_EMPTY)
     light: Grid = make_grid(grid_w, grid_h, ENT_EMPTY)  # keep as strings for CSV
-    decor: Grid = make_grid(grid_w, grid_h, DECOR_EMPTY)
+    set_dressing: Grid = make_grid(grid_w, grid_h, set_dressing_EMPTY)
 
     # Player start: centered near bottom (your “center-bottom” spec)
     player_cell = (grid_w // 2, grid_h - 3)
@@ -491,7 +492,7 @@ def build_level(seed: int,
     place_enemies(rng, floor, ent, player_cell)
 
      # NEW: Grass after floor is finalized
-    fill_decor_grass(rng, floor, decor, p=0.12)
+    fill_set_dressing_grass(rng, floor, set_dressing, p=0.12)
 
     return {
         "floor": floor,
@@ -502,7 +503,7 @@ def build_level(seed: int,
         "boss_cell": boss_cell,
         "rooms": rooms,
         "boss_rect": boss_rect,
-        "decor": decor
+        "set_dressing": set_dressing
     }
 
 def write_level_csvs(level: Dict[str, object], out_dir: str):
@@ -510,7 +511,7 @@ def write_level_csvs(level: Dict[str, object], out_dir: str):
     write_csv(f"{out_dir}/wall.csv", level["wall"])
     write_csv(f"{out_dir}/entities.csv", level["entities"])
     write_csv(f"{out_dir}/lights.csv", level["lights"])
-    write_csv(f"{out_dir}/decor.csv", level["decor"])
+    write_csv(f"{out_dir}/set_dressing.csv", level["set_dressing"])
 
 
 #from level_generator import build_level, write_level_csvs

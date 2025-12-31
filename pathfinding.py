@@ -27,12 +27,11 @@ def get_neighbors(current, grid, flying=False):
 
         if grid[ny][nx] != 0:
             continue  # Not walkable
-
+        
+        # Prevent corner clipping: both adjacent sides must be walkable
         if dx != 0 and dy != 0 and not flying:
-            # Prevent corner clipping: both adjacent sides must be walkable
-           if dx != 0 and dy != 0 and not flying:
-               if grid[y][x + dx] != 0 and grid[y + dy][x] != 0:
-                   continue
+            if grid[y][x + dx] != 0 and grid[y + dy][x] != 0:
+                continue
                
         neighbors.append((nx, ny))
 

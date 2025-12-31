@@ -4,6 +4,8 @@ from level_data import level
 from player_data import player_data
 from enemy_data import enemy_data
 from sfx import sfx
+from utilities import destroy_sprite
+from particles import AnimationPlayer
 
 class Entity(pygame.sprite.Sprite):
     def __init__(self, pos, groups, sprite_type, name):
@@ -12,7 +14,6 @@ class Entity(pygame.sprite.Sprite):
         self.sprite_type = sprite_type
         self.sprite_name = name
         self.collision_tolerance = 10
-        print (f"player sprite = {player_data['sprite']}")
         if self.sprite_type == 'player':
             self.sprite =  player_data['sprite']
         else:
@@ -25,6 +26,10 @@ class Entity(pygame.sprite.Sprite):
         self.hitbox = pygame.FRect(self.rect)
         self.direction = pygame.math.Vector2()
         self.obstacle_sprites = level['sprite_groups']['obstacle_sprites']
+        self.visible_sprites = level['sprite_groups']['visible_sprites']
+        self.weapon_sprites = level['sprite_groups']['weapons_sprites']
+        self.dynamic_sprites = level['sprite_groups']['dynamic_sprites']
+        self.animation_player = AnimationPlayer()
         self.hit_sound = sfx['entity']['hit']
         self.death_sound = sfx['entity']['death']
         # Set volume to 50%
@@ -92,7 +97,8 @@ class Entity(pygame.sprite.Sprite):
         self.hit_time = pygame.time.get_ticks()  # Set the time of the hit
         if self.health <= 0: #check death
             self.death_sound.play()
-            self.kill()
+            self.death_particles(self.rect.center, 'pop')
+            destroy_sprite(self)
 
     def display_health(self):
         health_bar = pygame.Surface((self.health * 2, 10))
@@ -100,6 +106,6 @@ class Entity(pygame.sprite.Sprite):
         health_bar.fill((255, 0, 0))
        
         
-    '''def death_particles(self,pos,particle_type):
-        self.animation_player.create_particles(particle_type,pos,self.weapon_sprites)'''
+    def death_particles(self,pos,particle_type):
+        self.animation_player.create_particles(particle_type,pos,[self.dynamic_sprites])
 

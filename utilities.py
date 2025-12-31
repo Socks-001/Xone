@@ -21,26 +21,26 @@ def str_to_int(text: str):
     digits = "".join(c for c in text if (ord('0') <= ord(c) <= ord('9')))
     return int(digits) if len(digits) > 0 else 0
 
-def import_folder (path, surface = True):
-    
-    surface_list = []
-
-    for root,__,img_files in os.walk(path): 
+def _collect_folder_paths(path, recursive):
+    paths = []
+    for root, __, img_files in os.walk(path):
         img_files = sorted(img_files)
         for image in img_files:
-            full_path = os.path.join(root, image)
-            
-            #print(full_path)
-            if surface:
-                image_surf = pygame.image.load(full_path).convert_alpha()
-                # Debug: Print loaded image paths
-                #print(f"Loaded image: {full_path}")  
-                surface_list.append(image_surf)
-                
-            else: 
-                surface_list.append(full_path)
-                
-        return surface_list
+            paths.append(os.path.join(root, image))
+        if not recursive:
+            break
+    return paths
+
+
+def import_folder_paths(path, recursive=False):
+    return _collect_folder_paths(path, recursive)
+
+
+def import_folder_surfaces(path, recursive=False):
+    surfaces = []
+    for full_path in _collect_folder_paths(path, recursive):
+        surfaces.append(pygame.image.load(full_path).convert_alpha())
+    return surfaces
 
 def counter (element):
     amount = 0 
@@ -82,7 +82,6 @@ def draw_point(surface, pos=None, color=(255, 0, 0, 255)):
     surface.blit(point_surface, pos)
 
 def quit():
-    print("Quitting game...")
     pygame.quit()
     exit()
 
@@ -100,7 +99,6 @@ def search_dict(d, key):
 
 def init_audio():
     pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=512)
-    print("Audio initialized.")
     #midi is available 
 
 def load_named_tile_dict(folder_path: str,
@@ -121,8 +119,38 @@ def load_named_tile_dict(folder_path: str,
             full_path = os.path.join(folder_path, filename)
             tile_dict[key] = load_fn(full_path)
         except ValueError:
-            print(f"Skipping non-numeric tile: {filename}")
+            continue
     return tile_dict
+
+
+def destroy_sprite(sprite):
+    """
+    Best-effort cleanup for any sprite-like object.
+
+    - Calls sprite.on_destroy() if present.
+    - Removes from spatial indices if available.
+    - Calls sprite.kill() if present.
+    """
+    if sprite is None:
+        return
+
+    if hasattr(sprite, "on_destroy"):
+        sprite.on_destroy()
+
+    try:
+        from level_data import level
+        current = level.get("current", {})
+        dynamic_index = current.get("dynamic_index")
+        static_index = current.get("static_index")
+        if dynamic_index:
+            dynamic_index.remove(sprite)
+        if static_index:
+            static_index.remove(sprite)
+    except Exception:
+        pass
+
+    if hasattr(sprite, "kill"):
+        sprite.kill()
 
 
 def load_image_with_proper_alpha(path: str) -> pygame.Surface:

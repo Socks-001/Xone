@@ -6,6 +6,7 @@ from level_data import level
 from config import config 
 from sfx import sfx
 from light import Light
+from utilities import destroy_sprite
 
 
 class Projectile(pygame.sprite.Sprite):
@@ -108,7 +109,7 @@ class Projectile(pygame.sprite.Sprite):
 
     def lifetime_check(self):
         if pygame.time.get_ticks() - self.lifetime > 5000:  # 1 second, lifetime of projectile
-            self.kill()
+            destroy_sprite(self)
 
     def check_collision(self):
         start = pygame.Vector2(self.previous_position)
@@ -136,10 +137,10 @@ class Projectile(pygame.sprite.Sprite):
                     if entity.hitbox.clipline(ray_start, ray_end):
                         if entity.vulnerable:
                             entity.take_damage(self.attack_damage)
-                            self.kill()
+                            destroy_sprite(self)
                         else:
                             entity.take_hit_no_damage()
-                            self.kill()
+                            destroy_sprite(self)
                         
                         return
 
@@ -147,7 +148,7 @@ class Projectile(pygame.sprite.Sprite):
         for sprite in self.obstacle_sprites:
             for ray_start, ray_end in ray_paths:
                 if sprite.rect.clipline(ray_start, ray_end):
-                    self.kill()
+                    destroy_sprite(self)
                     return
         '''
         # Check bounds
@@ -157,7 +158,7 @@ class Projectile(pygame.sprite.Sprite):
             self.hitbox.y > config['screen']['SCREEN_HEIGHT'] or
             self.hitbox.y < 0
         ):
-            self.kill()
+            destroy_sprite(self)
         '''
 
     

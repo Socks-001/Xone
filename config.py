@@ -136,70 +136,154 @@ def add_joystick_buttons(joystick):
     name = joystick.get_name()
     print(f"Detected Controller: {name}")
 
-    if "Xbox" in name:  # Xbox-style controller
+    # --- Xbox 360 Controller (pygame 2.x) ---
+    # Recognized as: "Xbox 360 Controller"
+    if "Xbox 360 Controller" in name:
+        print("Xbox 360 mapping loaded")
         config['joystick'] = {
-            'dpad_up': (0, 1),    # Xbox controllers typically use hat switches
+            # D-Pad (hat)
+            'dpad_up': (0, 1),
             'dpad_down': (0, -1),
             'dpad_left': (-1, 0),
             'dpad_right': (1, 0),
-            'x': 2,  # X on Xbox is different from PS4
-            'square': 3,  # Equivalent to Y
-            'triangle': 4,
-            'circle': 1  # Equivalent to B
+
+            # Face buttons (mapped into your PS-style action names)
+            'x': 0,         # A
+            'circle': 1,    # B
+            'square': 2,    # X
+            'triangle': 3,  # Y
+
+            # Start / Select / Guide
+            'share': 6,     # Back
+            'start': 7,     # Start
+            'ps': 10,       # Guide
+
+            # Thumbstick clicks
+            'l_stick_press': 8,
+            'r_stick_press': 9,
+
+            # Bumpers
+            'l1': 4,
+            'r1': 5,
+
+            # Analog axes
+            'left_stick_x': 0,   # Axis 0
+            'left_stick_y': 1,   # Axis 1
+            'right_stick_x': 3,  # Axis 3
+            'right_stick_y': 4,  # Axis 4
+            'l2_axis': 2,        # Axis 2 (LT)
+            'r2_axis': 5         # Axis 5 (RT)
         }
 
-    elif "PS4" in name or "DualShock" in name:  # PS4 controller
-        print("PS4 Input Loaded")
+    # --- PlayStation 5 Controller (pygame 2.x) ---
+    # Recognized as: "Sony Interactive Entertainment Wireless Controller"
+    elif "Sony Interactive Entertainment Wireless Controller" in name:
+        print("PS5 mapping loaded")
         config['joystick'] = {
-        # D-Pad (digital)
-        'dpad_up': 11,
-        'dpad_down': 12,
-        'dpad_left': 13,
-        'dpad_right': 14,
+            # D-Pad (hat)
+            'dpad_up': (0, 1),
+            'dpad_down': (0, -1),
+            'dpad_left': (-1, 0),
+            'dpad_right': (1, 0),
 
-        # Face Buttons
-        'x': 0,         # Cross
-        'circle': 1,
-        'square': 2,
-        'triangle': 3,
+            # Face Buttons
+            'x': 0,         # Cross
+            'circle': 1,
+            'square': 2,
+            'triangle': 3,
 
-        # Start / Options
-        'start': 6,     # Options
-        'share': 4,
-        'ps': 5,        # PS button
+            # Share / Options / PS
+            'share': 8,
+            'start': 9,
+            'ps': 10,
 
-        # Thumbstick Clicks
-        'l_stick_press': 7,
-        'r_stick_press': 8,
+            # Thumbstick Clicks
+            'l_stick_press': 11,
+            'r_stick_press': 12,
 
-        # Bumpers
-        'l1': 9,
-        'r1': 10,
+            # Bumpers
+            'l1': 4,
+            'r1': 5,
 
-        # Touchpad
-        'touchpad': 15,
+            # Analog axes
+            'left_stick_x': 0,   # Axis 0
+            'left_stick_y': 1,   # Axis 1
+            'right_stick_x': 3,  # Axis 3
+            'right_stick_y': 4,  # Axis 4
+            'l2_axis': 2,        # Axis 2
+            'r2_axis': 5         # Axis 5
+        }
 
-        # Analog Axes (these are accessed differently, not as buttons)
-        'left_stick_x': 0,  # Axis 0
-        'left_stick_y': 1,  # Axis 1
-        'right_stick_x': 2, # Axis 2
-        'right_stick_y': 3, # Axis 3
-        'l2_axis': 4,       # Left Trigger (analog)
-        'r2_axis': 5        # Right Trigger (analog)
-    }
-        
-    else:  # Default if unknown
-        print("Unknown joystick detected, using default layout.")
+    # --- PS4 Controller ---
+    # Name often contains "PS4" or "DualShock"
+    elif "PS4" in name or "DualShock" in name:
+        print("PS4 mapping loaded")
+        config['joystick'] = {
+            # D-Pad (digital)
+            'dpad_up': 11,
+            'dpad_down': 12,
+            'dpad_left': 13,
+            'dpad_right': 14,
+
+            # Face Buttons
+            'x': 0,         # Cross
+            'circle': 1,
+            'square': 2,
+            'triangle': 3,
+
+            # Start / Options
+            'start': 6,     # Options
+            'share': 4,
+            'ps': 5,        # PS button
+
+            # Thumbstick Clicks
+            'l_stick_press': 7,
+            'r_stick_press': 8,
+
+            # Bumpers
+            'l1': 9,
+            'r1': 10,
+
+            # Touchpad
+            'touchpad': 15,
+
+            # Analog Axes
+            'left_stick_x': 0,
+            'left_stick_y': 1,
+            'right_stick_x': 2,
+            'right_stick_y': 3,
+            'l2_axis': 4,
+            'r2_axis': 5
+        }
+
+    else:
+        # Default to PS4 so the game remains playable
+        print("Unknown controller: defaulting to PS4 layout.")
         config['joystick'] = {
             'dpad_up': 11,
             'dpad_down': 12,
             'dpad_left': 13,
             'dpad_right': 14,
             'x': 0,
+            'circle': 1,
             'square': 2,
             'triangle': 3,
-            'circle': 1
+            'start': 6,
+            'share': 4,
+            'ps': 5,
+            'l_stick_press': 7,
+            'r_stick_press': 8,
+            'l1': 9,
+            'r1': 10,
+            'touchpad': 15,
+            'left_stick_x': 0,
+            'left_stick_y': 1,
+            'right_stick_x': 2,
+            'right_stick_y': 3,
+            'l2_axis': 4,
+            'r2_axis': 5
         }
+
 
 def load_menu_sfx(): 
     config['menu']['menu_select'] = sfx['menu']['menu_select']

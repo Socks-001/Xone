@@ -14,6 +14,7 @@ class Player(Entity):
         self.controls = controls
         self.weapon_group = level['sprite_groups']['weapons_sprites']
         self.visible_sprites = level['sprite_groups']['visible_sprites']
+        self.dynamic_sprites = level['sprite_groups']['dynamic_sprites']
         self.weapon_name = 'test'
     
          # Cooldown Handling
@@ -46,7 +47,7 @@ class Player(Entity):
         Projectile(
             self,
             self.sprite_type,
-            [self.visible_sprites, self.weapon_group],
+            [self.visible_sprites, self.weapon_group, self.dynamic_sprites],
             dir_vec,
             self.weapon_name
         )

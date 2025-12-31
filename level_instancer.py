@@ -1,5 +1,5 @@
 import pygame
-from utilities import import_csv_layout, import_folder, search_dict
+from utilities import import_csv_layout, search_dict
 from config import config
 from tile import Tile
 from level_data import level
@@ -30,9 +30,8 @@ class Game:
         level['sprite_groups']['entity_sprites'] = self.entity_sprites = pygame.sprite.Group()
         level['sprite_groups']['weapons_sprites'] = self.weapon_group = pygame.sprite.Group()
         level['sprite_groups']['light_sprites'] = self.light_sprites = pygame.sprite.Group()
-        level['sprite_groups']['decor_sprites'] = self.decor_sprites = pygame.sprite.Group()
-
-        self.update_dicts_refs()
+        level['sprite_groups']['set_dressing_sprites'] = self.set_dressing_sprites = pygame.sprite.Group()
+        level['sprite_groups']['dynamic_sprites'] = self.dynamic_sprites = pygame.sprite.Group()
 
         # Initialize player and level
         self.player = None
@@ -46,7 +45,7 @@ class Game:
         self.enemy_gfx = graphics['enemies']
         self.wall_gfx = graphics['level']['wall']
         self.floor_gfx = graphics['level']['floor']
-        self.decor_gfx = graphics['level']['decor']
+        self.set_dressing_gfx = graphics['level']['set_dressing']
 
     def collect_visible_tile_blits(self, tilemap, tile_imgs, tilesize, camera_rect, out_list):
         """Fill out_list with (Surface, (x,y)) for visible tiles. Returns out_list."""
@@ -79,25 +78,13 @@ class Game:
                 append((tile_imgs[idx], (tx * tilesize - ox, sy)))
         return out_list
 
-    def update_dicts_refs(self):
-            level['sprite_groups']['visible_sprites'] = self.visible_sprites
-            level['sprite_groups']['floor_sprites'] = self.floor_sprites
-            level['sprite_groups']['wall_sprites'] = self.wall_sprites
-            level['sprite_groups']['player_sprites'] = self.player_sprites
-            level['sprite_groups']['enemy_sprites'] = self.enemy_sprites
-            level['sprite_groups']['obstacle_sprites'] = self.obstacle_sprites
-            level['sprite_groups']['entity_sprites'] = self.entity_sprites
-            level['sprite_groups']['weapons_sprites'] = self.weapon_group
-            level['sprite_groups']['light_sprites'] = self.light_sprites
-            level['sprite_groups']['decor_sprites'] = self.decor_sprites
 
-    
     def _clear_runtime_groups(self):
         # Useful when changing levels / restarting
         for g in (
             self.visible_sprites, self.floor_sprites, self.wall_sprites,
             self.player_sprites, self.enemy_sprites, self.obstacle_sprites,
-            self.entity_sprites, self.weapon_group, self.light_sprites, self.decor_sprites
+            self.entity_sprites, self.weapon_group, self.light_sprites, self.set_dressing_sprites, self.dynamic_sprites
         ):
             g.empty()
 
@@ -106,7 +93,7 @@ class Game:
         layouts = {
             'floor': level[self.current_level]['floor_layout'],
             'wall':  level[self.current_level]['wall_layout'],
-            'decor': level[self.current_level]['decor_layout'],
+            'set_dressing': level[self.current_level]['set_dressing_layout'],
             'entities':  level[self.current_level]['entity_layout'],
             'lights':  level[self.current_level]['lights_layout']
         }
@@ -115,7 +102,7 @@ class Game:
             'floor': self.floor_gfx,
             'wall':  self.wall_gfx,
             'entities': self.enemy_gfx,
-            'decor': self.decor_gfx
+            'set_dressing': self.set_dressing_gfx
         }
 
             # First pass: Create floor and walls
@@ -123,15 +110,16 @@ class Game:
             for row_index, row in enumerate(layout):
                 for col_index, col in enumerate(row):
                     if col != "-1":
-                        x = col_index * self.tilesize
-                        y = row_index * self.tilesize
+                        x = col_index * self.tilesize + self.tilesize//2
+                        y = row_index * self.tilesize + self.tilesize//2
+
 
                         if style == 'floor':
                             surf = graphics['floor'][int(col)]
                             Tile((x, y), [self.floor_sprites, self.visible_sprites], 'floor', surf)
-                        elif style == 'decor':
-                            surf = graphics['decor'][int(col)]
-                            Tile((x, y), [ self.decor_sprites, self.visible_sprites], 'decor', surf)
+                        elif style == 'set_dressing':
+                            surf = graphics['set_dressing'][int(col)]
+                            Tile((x, y), [ self.set_dressing_sprites, self.visible_sprites], 'set_dressing', surf)
                         elif style == 'wall':
                             surf = graphics['wall'][int(col)]
                             Tile((x, y), [self.wall_sprites, self.visible_sprites, self.obstacle_sprites], 'wall', surf)
@@ -140,53 +128,50 @@ class Game:
         
         # Second pass: Create the player FIRST
         origin = pygame.Vector2(self.game_surface.get_size()) / 2
-        self.create_player((origin), [self.player_sprites, self.visible_sprites,  self.entity_sprites], self.controls)
+        self.create_player((origin), [self.player_sprites, self.visible_sprites,  self.entity_sprites, self.dynamic_sprites], self.controls)
         #print (x,y)
 
         # Third pass: Create enemies AFTER the player
         for row_index, row in enumerate(layouts['entities']):
             for col_index, col in enumerate(row):
-                x = col_index * self.tilesize
-                y = row_index * self.tilesize
+                x = col_index * self.tilesize + self.tilesize // 2
+                y = row_index * self.tilesize + self.tilesize // 2
+
 
                 if col == '29':  # Enemy
                     enemy_name = 'demos'
-                    self.create_enemy(enemy_name, (x, y), [self.enemy_sprites, self.visible_sprites, self.entity_sprites],  'enemy')
+                    self.create_enemy(enemy_name, (x, y), [self.enemy_sprites, self.visible_sprites, self.entity_sprites, self.dynamic_sprites],  'enemy')
                     #print (x,y)
         
         # Fourth pass: Create lights 
         for row_index, row in enumerate(layouts['lights']):
             for col_index, col in enumerate(row):
-                x = col_index * self.tilesize
-                y = row_index * self.tilesize
+                x = col_index * self.tilesize + self.tilesize//2
+                y = row_index * self.tilesize + self.tilesize//2
+
 
                 if col in light_types:
                     light_config = light_types[col]
-                    self.create_light((x, y), [self.visible_sprites, self.light_sprites], col)
+                    self.create_light((x, y), [self.visible_sprites, self.light_sprites, self.dynamic_sprites], col)
 
                 '''if col == '50':  # Enemy
                     
                     self.create_light((x, y), [self.visible_sprites, self.light_sprites], 'light', 8)'''
                     
         
-        self.update_dicts_refs()
-       
-        print(f"Visible sprites count: {len(self.visible_sprites)}")
-        print(f"Entity sprites count: {len(self.entity_sprites)}")
-        
         #after tiles/entities created:
         self.static_index = ChunkIndex(self.tilesize, chunk_tiles=16)
         self.dynamic_index = ChunkIndex(self.tilesize, chunk_tiles=16)
 
         # build static buckets once
-        self.static_index.build_static(self.floor_sprites)
-        self.static_index.build_static(self.wall_sprites)
-        self.static_index.build_static(self.decor_sprites)
+        all_static = list(self.floor_sprites) + list(self.wall_sprites) + list(self.set_dressing_sprites)
+        self.static_index.build_static(all_static)
+
 
         # build dynamic buckets initially
-        self.dynamic_index.build_static(self.entity_sprites)
-        self.dynamic_index.build_static(self.weapon_group)
-        self.dynamic_index.build_static(self.light_sprites)
+        all_dynamic = list(self.dynamic_sprites) + list(self.weapon_group)
+        self.dynamic_index.build_static(all_dynamic)
+
 
         level['current']['static_index'] = self.static_index
         level['current']['dynamic_index'] = self.dynamic_index
@@ -205,3 +190,4 @@ class Game:
     
     
         
+

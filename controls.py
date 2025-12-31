@@ -27,15 +27,13 @@ class Controls:
             if pygame.joystick.get_count() > 0:
                 self.controller_1 = pygame.joystick.Joystick(0)
                 self.controller_1.init()
-                print(f"Joystick found: {self.controller_1.get_name()}")
                 add_joystick_buttons(self.controller_1)
                 self._load_joystick_config()
                 self.has_controller = True
             else:
-                print("No joystick found")
-                
+                self.has_controller = False
         except pygame.error as e:
-            print(f"Joystick initialization failed: {e}")
+            self.has_controller = False
 
     def _load_joystick_config(self):
         
@@ -61,8 +59,8 @@ class Controls:
         self.r_stick_press = search_dict(config, 'r_stick_press')
 
         # bumpers
-        self.l_bumper = search_dict(config, 'l_1')
-        self.r_bumper = search_dict(config, 'r_1')
+        self.l_bumper = search_dict(config, 'l1')
+        self.r_bumper = search_dict(config, 'r1')
 
         # touchpad
         self.touchpad = search_dict(config, 'touchpad')
@@ -92,7 +90,6 @@ class Controls:
         current_time = pygame.time.get_ticks()
         if not self.can_press_start:
             if (current_time - self.start_time) >= self.button_cooldown:
-                print(f"Cooldown finished, allowing press again at {current_time}")
                 self.can_press_start = True
 
     def apply_deadzone(self, value, threshold=0.10, upper_limit=1.0):
@@ -208,7 +205,6 @@ class Controls:
             config['menu']['menu'].resume_menu()
         elif config['menu']['menu_running'] is True:
             config['menu']['menu'].resume_game()
-        print(f"Menu Running = {config['menu']['menu_running']}")
         
     def _update_fire_flags(self):
         # Mouse LMB

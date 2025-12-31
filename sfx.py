@@ -22,7 +22,6 @@ def populate_sfx(type, name):
         sfx_path = f'audio/sfx/{name}.wav'
         sound_effect = pygame.mixer.Sound(sfx_path)
         sfx[type][name] = sound_effect
-        print (f'{name} loaded sucessfully')
     except pygame.error as e:
         print(f'Error loading sfx {type}/{name}: {e}')
 

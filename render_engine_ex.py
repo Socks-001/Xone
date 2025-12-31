@@ -31,8 +31,8 @@ class RenderEngineEx():
         
         # --- Shadow setup ---
         self.shadow_layer = pygame.Surface(self.screen.get_size(), flags=pygame.SRCALPHA)
-        self.shadow_blob_12 = self._make_shadow_blob(diameter=12, alpha=110)  # tweak alpha to taste
-        self.shadow_radius = 6  # convenience (diameter // 2)
+        self.shadow_blob_12 = self._make_shadow_blob(diameter=24, alpha=110)  # tweak alpha to taste
+        self.shadow_radius = 12  # convenience (diameter // 2)
         
     # ---------- Slicing (NO padding/overdraw) ----------
     def get_slices(self, sheet):
@@ -95,10 +95,9 @@ class RenderEngineEx():
 
             dbg_hb = debug_hitbox if debug_hitbox is not None else getattr(spr, "hitbox", None)
 
-
             c = pygame.Vector2(spr.hitbox.center)
             angle = self.local_rotation
-            if sprite_type == 'player':
+            if getattr(spr, "sprite_type", None) == 'player':
                 angle = -config['controls']['mouse_angle']
 
             src = getattr(spr, "image_master", None) or getattr(spr, "sheet", None) or spr.image
@@ -111,7 +110,7 @@ class RenderEngineEx():
                 debug_hitbox=dbg_hb,
                 fixed_canvas=None,
                 rotating=0,
-                sprite_type=sprite_type
+                sprite_type=getattr(spr, "sprite_type", "default")
             )
 
     # ---------- Space transforms ----------

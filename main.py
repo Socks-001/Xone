@@ -11,7 +11,6 @@ from utilities import init_audio
 
 def initialize(): 
     """Initialize Pygame, screen, and load assets."""
-    print("Initializing Pygame...")
     pygame.init()
     init_audio()
 
@@ -27,7 +26,6 @@ def initialize():
     config['screen']['game_surface'] = game_surface
 
     # Load Graphics Assetssd
-    print("Loading assets...")    
     load_graphics()
     load_player_images()
     load_enemy_images()

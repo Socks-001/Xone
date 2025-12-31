@@ -101,13 +101,11 @@ class Menu:
             self.menu_stack.pop()
             self.selection_index = 0
 
-        print("RESUME MENU CALLED")
 
     
     def resume_game(self):
         config['menu']['menu_running'] = False
         self.menu_running = config['menu']['menu_running']
-        print("RESUME GAME CALLED")
 
     def update(self, action_map, surface):
         self.input(action_map)
@@ -138,31 +136,23 @@ class Menu:
     def toggle_debug(self, index):
         if index == 0 :
             config['debug']['debug'] = not config['debug']['debug']
-            if config['debug']['debug']:
-                print("Debug mode enabled")
-            else:
-                print("Debug mode disabled")
 
         if index == 1 : 
             config['debug']['walls_debug'] = not config['debug']['walls_debug']
             walls_debug = config['debug']['walls_debug']
-            print(f'weapons_debug = {walls_debug}')
         
         if index == 2 : 
             config['debug']['player_debug'] = not config['debug']['player_debug']
             player_debug = config['debug']['player_debug']
-            print(f'weapons_debug = {player_debug}')
         
         if index == 3 : 
             config['debug']['enemies_debug'] = not config['debug']['enemies_debug']
             enemies_debug = config['debug']['enemies_debug']
-            print(f'weapons_debug = {enemies_debug}')
         
         if index == 4 :
             config['debug']['weapons_debug'] = not config['debug']['weapons_debug']
             config['debug']['projectile_lines'] = not config['debug']['projectile_lines']
             weapons_debug = config['debug']['weapons_debug']
-            print(f'weapons_debug = {weapons_debug}')
 
             
 

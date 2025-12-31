@@ -1,5 +1,5 @@
 import pygame
-from utilities import import_folder, load_image_with_proper_alpha, load_named_tile_dict
+from utilities import import_folder_paths, load_image_with_proper_alpha, load_named_tile_dict
 
 graphics = {
     'player': {
@@ -17,19 +17,52 @@ graphics = {
     'level': {
         'floor': None,
         'wall': None,
-        'decor':None
+        'set_dressing':None
+    },
+    'particles': {
+        'pop': None
+    }
+}
+
+GRAPHICS_SOURCES = {
+    'player': {
+        'sprite': ('single', 'graphics/player/sprite.png')
+    },
+    'enemies': {
+        'goblin': ('single', 'graphics/enemies/goblin.png'),
+        'knight': ('single', 'graphics/enemies/knight.png'),
+        'skeleton': ('single', 'graphics/enemies/skeleton.png'),
+        'demos': ('single', 'graphics/enemies/demos.png'),
+    },
+    'projectiles': {
+        'test': ('single', 'graphics/projectiles/test.png')
+    },
+    'level': {
+        'floor': ('folder_list', 'graphics/level/floor'),
+        'set_dressing': ('folder_list', 'graphics/level/set_dressing'),
+        'wall': ('folder_dict', 'graphics/level/wall')
+    },
+    'particles': {
+        'pop': ('folder_list', 'graphics/pop')
     }
 }
 
 def populate_graphics_images(type, name):
-    if type != 'level':
-        try:
-            image_path = f'graphics/{type}/{name}.png'
-            image = load_image_with_proper_alpha(image_path)
-            graphics[type][name] = image
-            print (f'{name} loaded successfully')
-        except pygame.error as e:
-            print(f'Error loading image {type}/{name}: {e}')
+    source = GRAPHICS_SOURCES.get(type, {}).get(name)
+    if source is None:
+        return
+
+    kind, path = source
+    try:
+        if kind == 'single':
+            graphics[type][name] = load_image_with_proper_alpha(path)
+        elif kind == 'folder_list':
+            files = import_folder_paths(path)
+            graphics[type][name] = [load_image_with_proper_alpha(p) for p in files]
+        elif kind == 'folder_dict':
+            graphics[type][name] = load_named_tile_dict(path, load_image_with_proper_alpha)
+    except pygame.error as e:
+        print(f'Error loading image {type}/{name}: {e}')
 
 def print_all_graphics():
     for type in graphics:
@@ -38,28 +71,7 @@ def print_all_graphics():
             print(f"  {name} => {surface}")
 
 def load_graphics () : 
-    load_level_graphics()
     for type in graphics:
         for name in graphics[type]:
             populate_graphics_images(type, name)
-    
 
-def load_level_graphics():
-    floor_graphics_path = f'graphics/level/floor'
-    wall_graphics_path = f'graphics/level/wall'
-    decor_graphics_path = f'graphics/level/decor'
-
-    # Get list of image filenames in each folder
-    floor_files = import_folder(floor_graphics_path, surface = False)
-    decor_files = import_folder(decor_graphics_path, surface = False)
-    
-    # Load them with your function
-    graphics[f'level']['floor'] = [
-        load_image_with_proper_alpha(image) for image in floor_files
-    ]
-    graphics[f'level']['decor'] = [
-        load_image_with_proper_alpha(image) for image in decor_files
-    ]
-
-    graphics[f'level']['wall'] = load_named_tile_dict(
-    wall_graphics_path, load_image_with_proper_alpha)

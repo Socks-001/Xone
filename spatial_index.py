@@ -61,7 +61,7 @@ class ChunkIndex:
         self._sprite_bucket[sprite] = new_key
 
     def build_static(self, group):
-        # for tiles/walls/decor that never move
+        # for tiles/walls/set_dressing that never move
         for spr in group:
             self.add(spr)
 
@@ -74,3 +74,4 @@ class ChunkIndex:
                 for spr in self.buckets.get((cx, cy), ()):
                     append(spr)
         return out
+
