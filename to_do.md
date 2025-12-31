@@ -79,9 +79,9 @@ XX It returns on first walk iteration; if you expect nested folders, this is a b
 
 XX If you only want top‑level, leave it.
 
-Move remaining particle assets into graphics_data.py (optional)
+XX Move remaining particle assets into graphics_data.py (optional)
 
-Keep all art loading in one place for maintainability.
+XX Keep all art loading in one place for maintainability.
 
 Pathfinding cadence + caching (A*)
 

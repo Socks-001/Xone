@@ -17,6 +17,9 @@ class Tile(pygame.sprite.Sprite):
         self.rect = pygame.Rect(0,0,d,d)
         self.rect.center = pos
         self.hitbox = pygame.FRect(self.rect)
+        self.z = 0.0
+        stack_layers = max(1, int(self.image.get_width() // d))
+        self.z_height = config['render']['Z_UNIT'] * stack_layers
 
         # Place by topleft or center to match your world semantics
         '''if pos_is_center:

@@ -55,10 +55,11 @@ class Player(Entity):
 
         
 
-    def update(self):
+    def update(self, dt=0.0):
         if not config['menu']['menu_running']:
             self.direction = self.controls.direction #??
             self.shoot()  # Call shoot method
-            self.move(self.speed)
+            dt_scale = dt * config['screen']['LOGIC_FPS']
+            self.move(self.speed * dt_scale)
             self.vulnerability_cooldown()
             #print (f'pos = {self.hitbox.center}')

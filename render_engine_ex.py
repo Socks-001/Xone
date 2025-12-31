@@ -21,12 +21,16 @@ class RenderEngineEx():
 
         # Caches
         self.slice_cache: Dict[Tuple[int,int,int], List[pygame.Surface]] = {}
+        self.scaled_slice_cache: Dict[Tuple[int,int,int,int], List[pygame.Surface]] = {}
         self.total_layers = None
 
         # Sprites
         self.group = sprite_group
         self.player = player
         self.last_player_center = pygame.Vector2(0,0)
+        self.last_player_z = 0.0
+        self.camera_z = 0.0
+        self.camera_plane_z = 0.0
         
         
         # --- Shadow setup ---
@@ -54,6 +58,22 @@ class RenderEngineEx():
             self.slice_cache[key] = cached
         return cached
 
+    def get_scaled_slices_cached(self, sheet, scale: int):
+        if scale == 1:
+            return self.get_slices_cached(sheet)
+        key = (id(sheet), sheet.get_width(), sheet.get_height(), scale)
+        cached = self.scaled_slice_cache.get(key)
+        if cached is None:
+            base = self.get_slices_cached(sheet)
+            cached = [
+                pygame.transform.scale(
+                    s, (s.get_width() * scale, s.get_height() * scale)
+                )
+                for s in base
+            ]
+            self.scaled_slice_cache[key] = cached
+        return cached
+
     def is_surface_empty(self, s: pygame.Surface) -> bool:
         return s.get_bounding_rect().width == 0
 
@@ -67,6 +87,10 @@ class RenderEngineEx():
         dx = scx - cx
         dy = scy - cy
         return -(dx*dx + dy*dy)
+
+    def z_depth_key(self, sprite):
+        z = getattr(sprite, "z", 0.0)
+        return (z, self.depth_key(sprite))
     
     def visible(self, group):
 
@@ -91,7 +115,7 @@ class RenderEngineEx():
     def sort_sprites_by_distance_from_center(self, sprites, overdraw_px=0, debug_hitbox=None, sprite_type='default'):
         # NOTE: overdraw_px kept in signature for compatibility; it does nothing now.
 
-        for spr in sorted(sprites, key=self.depth_key):
+        for spr in sorted(sprites, key=self.z_depth_key):
 
             dbg_hb = debug_hitbox if debug_hitbox is not None else getattr(spr, "hitbox", None)
 
@@ -101,6 +125,9 @@ class RenderEngineEx():
                 angle = -config['controls']['mouse_angle']
 
             src = getattr(spr, "image_master", None) or getattr(spr, "sheet", None) or spr.image
+            scale = self.get_scale_for_sprite(spr)
+            if scale == 0:
+                continue
             self.slice_and_stack(
                 c.x, c.y, src,
                 local_rotation_angle=angle,
@@ -110,7 +137,8 @@ class RenderEngineEx():
                 debug_hitbox=dbg_hb,
                 fixed_canvas=None,
                 rotating=0,
-                sprite_type=getattr(spr, "sprite_type", "default")
+                sprite_type=getattr(spr, "sprite_type", "default"),
+                scale=scale
             )
 
     # ---------- Space transforms ----------
@@ -141,10 +169,26 @@ class RenderEngineEx():
     def get_current_offset(self):
         if self.player and hasattr(self.player, "hitbox"):
             self.last_player_center = pygame.Vector2(self.player.hitbox.center)
+            self.last_player_z = getattr(self.player, "z", self.last_player_z)
 
         # always compute from last known center
         self.camera_offset = self.last_player_center - self.world_space_origin
         self.world_camera_rect.center = (int(self.last_player_center.x), int(self.last_player_center.y))
+        speed = 0.0
+        if self.player:
+            dir_vec = getattr(self.player, "direction", pygame.Vector2())
+            speed = getattr(self.player, "speed", 0.0) * dir_vec.length()
+        speed_boost = speed * config['render']['CAMERA_Z_SPEED_K']
+        self.camera_z = self.last_player_z + config['render']['CAMERA_Z_OFFSET'] + speed_boost
+        self.camera_plane_z = self.camera_z - config['render']['CAMERA_Z_OFFSET']
+
+    def get_scale_for_sprite(self, sprite) -> int:
+        z = getattr(sprite, "z", 0.0)
+        z_rel = z - self.camera_plane_z
+        scale = 1.0 + (z_rel * config['render']['Z_SCALE_K'])
+        if scale <= 0.0:
+            return 0
+        return max(1, int(round(scale)))
 
     # ---------- Perspective (precompute once per sprite) ----------
     def _precompute_perspective(self, base_world_xy, total_layers, height, sprite_type = 'default'):
@@ -202,10 +246,11 @@ class RenderEngineEx():
         debug_hitbox=None,
         fixed_canvas: pygame.Surface | None = None,  # kept for compatibility; unused
         rotating=0, 
-        sprite_type='default'
+        sprite_type='default',
+        scale: int = 1
     ):
    
-        slices = self.get_slices_cached(sprite_image)
+        slices = self.get_scaled_slices_cached(sprite_image, scale)
         total_layers = len(slices)
         if total_layers == 0:
             return
@@ -215,7 +260,7 @@ class RenderEngineEx():
         # Early whole-sprite cull (cheap) using base position + a small padding.
         base_sp = self.world_to_screen(sprite_world)
         # half-diagonal of one slice as cheap radius
-        slice_len = min(sprite_image.get_width(), sprite_image.get_height())
+        slice_len = min(sprite_image.get_width(), sprite_image.get_height()) * scale
         approx_radius = int(slice_len * 0.7071)
         if not self.screen_rect.inflate(approx_radius * 2, approx_radius * 2).collidepoint(base_sp.x, base_sp.y):
             return  # nothing to draw

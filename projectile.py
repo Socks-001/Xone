@@ -6,7 +6,7 @@ from level_data import level
 from config import config 
 from sfx import sfx
 from light import Light
-from utilities import destroy_sprite
+from utilities import destroy_sprite, z_ranges_overlap
 
 
 class Projectile(pygame.sprite.Sprite):
@@ -33,6 +33,9 @@ class Projectile(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.sprite, angle)
         self.rect = self.image.get_rect(center=self.owner.rect.center)
         self.hitbox = pygame.FRect(self.rect)
+        self._moved = True
+        self.z = getattr(self.owner, "z", 0.0)
+        self.z_height = config['render']['Z_UNIT']
         #movement varialbles
         self.previous_position = (0,0)
         self.current_position = (0,0)
@@ -79,6 +82,8 @@ class Projectile(pygame.sprite.Sprite):
         self.hitbox.y += self.direction.y * velocity
         self.rect.center = self.hitbox.center
         self.current_position = tuple(self.hitbox.center)
+        moved = (self.current_position != self.previous_position)
+        self._moved = self._moved or moved
 
                 # Update trail
         self.trail_positions.insert(0, self.rect.center)
@@ -133,6 +138,8 @@ class Projectile(pygame.sprite.Sprite):
         # Check entity collisions
         for entity in self.entity_sprites:
             if entity.sprite_type != self.owner_sprite_type:
+                if not z_ranges_overlap(self, entity):
+                    continue
                 for ray_start, ray_end in ray_paths:
                     if entity.hitbox.clipline(ray_start, ray_end):
                         if entity.vulnerable:
@@ -146,6 +153,8 @@ class Projectile(pygame.sprite.Sprite):
 
         # Check obstacle collisions
         for sprite in self.obstacle_sprites:
+            if not z_ranges_overlap(self, sprite):
+                continue
             for ray_start, ray_end in ray_paths:
                 if sprite.rect.clipline(ray_start, ray_end):
                     destroy_sprite(self)
@@ -190,13 +199,14 @@ class Projectile(pygame.sprite.Sprite):
             for ray_start, ray_end in self.debug_ray_paths:
                 pygame.draw.line(surface, color, ray_start, ray_end, 1)
 
-    def update(self):
+    def update(self, dt=0.0):
         # Update obstacle and entity references
         self.obstacle_sprites = level['sprite_groups']['obstacle_sprites']
         self.entity_sprites = level['sprite_groups']['entity_sprites']
         if self.offset_applied is False:
             self.calculate_angle_offset()
-        self.move_projectile(self.velocity)
+        dt_scale = dt * config['screen']['LOGIC_FPS']
+        self.move_projectile(self.velocity * dt_scale)
         self.check_collision()
         self.lifetime_check()
 

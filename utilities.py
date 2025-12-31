@@ -160,3 +160,11 @@ def load_image_with_proper_alpha(path: str) -> pygame.Surface:
     if img.get_alpha() is not None or img.get_masks()[3] != 0:
         return img.convert_alpha()
     return img.convert()
+
+
+def z_ranges_overlap(a, b) -> bool:
+    az0 = getattr(a, "z", 0.0)
+    az1 = az0 + getattr(a, "z_height", 0.0)
+    bz0 = getattr(b, "z", 0.0)
+    bz1 = bz0 + getattr(b, "z_height", 0.0)
+    return not (az1 < bz0 or bz1 < az0)

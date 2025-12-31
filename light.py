@@ -17,7 +17,6 @@ class Light(pygame.sprite.Sprite):
         self.radius = self.light_type['radius']
         self.color = self.light_type['color']
         self.time = 0.0
-        self.delta_time = config['screen']['FPS']  # Assuming you have a delta_time in your config
         self.follow = follow_target
         
         self.flicker = self.light_type.get('flicker', False)
@@ -44,6 +43,9 @@ class Light(pygame.sprite.Sprite):
         # set position on map
         self.rect = self.image.get_rect(topleft = pos)
         self.hitbox = pygame.FRect(self.rect)
+        self._moved = True
+        self.z = 0.0
+        self.z_height = config['render']['Z_UNIT']
 
     def generate_radial_gradient(self, radius, color, alpha):
             surf = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA)  # Create a transparent surface
@@ -63,17 +65,22 @@ class Light(pygame.sprite.Sprite):
         
         
     
-    def update(self):
+    def update(self, dt=0.0):
+        dt_scale = dt * config['screen']['LOGIC_FPS']
         if self.shift and self.shift != (0, 0):
-            self.rect.topleft = (self.rect.topleft[0] + self.shift[0], self.rect.topleft[1] + self.shift[1])
+            self.rect.topleft = (self.rect.topleft[0] + self.shift[0] * dt_scale,
+                                 self.rect.topleft[1] + self.shift[1] * dt_scale)
+            self._moved = True
         
         if self.follow:
             self.hitbox.center = self.follow.hitbox.center
             self.rect.center = self.hitbox.center
+            self.z = getattr(self.follow, "z", self.z)
+            self._moved = True
 
         # Flicker behavior
         if self.flicker:
-            self.flicker_timer += 1 / self.delta_time  # Assuming 60 FPS; replace with actual delta time if available
+            self.flicker_timer += dt
             if self.flicker_timer >= self.flicker_interval:
                 self.flicker_timer = 0.0
                 self.flicker_interval = random.uniform(0.05, 0.5)
@@ -91,7 +98,7 @@ class Light(pygame.sprite.Sprite):
             ebb_color = tuple(int(50 + (c - 50) * wave) for c in self.color)
             self.image.fill((0, 0, 0, 0))  # Clear surface
             self.image = self.generate_radial_gradient (self.radius, ebb_color, ebb_alpha)
-            self.time += 1 / self.delta_time # Again, replace with actual delta time
+            self.time += dt
 
         # If no flicker or ebb, static light
         else:

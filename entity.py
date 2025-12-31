@@ -4,7 +4,7 @@ from level_data import level
 from player_data import player_data
 from enemy_data import enemy_data
 from sfx import sfx
-from utilities import destroy_sprite
+from utilities import destroy_sprite, z_ranges_overlap
 from particles import AnimationPlayer
 
 class Entity(pygame.sprite.Sprite):
@@ -25,6 +25,10 @@ class Entity(pygame.sprite.Sprite):
         self.rect.center = pos
         self.hitbox = pygame.FRect(self.rect)
         self.direction = pygame.math.Vector2()
+        self.z = 0.0
+        stack_layers = max(1, int(self.image.get_width() // d))
+        self.z_height = config['render']['Z_UNIT'] * stack_layers
+        self._moved = True
         self.obstacle_sprites = level['sprite_groups']['obstacle_sprites']
         self.visible_sprites = level['sprite_groups']['visible_sprites']
         self.weapon_sprites = level['sprite_groups']['weapons_sprites']
@@ -52,6 +56,7 @@ class Entity(pygame.sprite.Sprite):
                 self.vulnerable = True  # Entity becomes vulnerable again after the cooldown period
 
     def move(self, speed):
+        prev_center = self.hitbox.center
         if self.direction.magnitude() != 0:
             self.direction = self.direction.normalize()
 
@@ -65,10 +70,14 @@ class Entity(pygame.sprite.Sprite):
 
         # Update rect position after movement
         self.rect.center = self.hitbox.center
+        moved = (self.hitbox.center != prev_center)
+        self._moved = self._moved or moved
 
     def collision(self, direction):
         """Handles collision detection and prevents movement through obstacles."""
         for sprite in self.obstacle_sprites:
+            if not z_ranges_overlap(self, sprite):
+                continue
             if sprite.rect.colliderect(self.hitbox):
                 if direction == 'horizontal':
                     if self.direction.x > 0:  # Moving right
@@ -107,5 +116,10 @@ class Entity(pygame.sprite.Sprite):
        
         
     def death_particles(self,pos,particle_type):
-        self.animation_player.create_particles(particle_type,pos,[self.dynamic_sprites])
+        self.animation_player.create_particles(
+            particle_type,
+            pos,
+            [self.dynamic_sprites],
+            z=self.z,
+        )
 

@@ -29,7 +29,7 @@ config = {
     'screen': {
         'SCREEN_WIDTH': 512,    
         'SCREEN_HEIGHT': 256,
-        'FPS': 1200,
+        'LOGIC_FPS': 60,
         'TILESIZE': 16,
         'screen': None,
         'fullscreen_trigger': False,
@@ -129,6 +129,15 @@ config = {
         'fire_down': False,
         'fire_pressed_once': False,
         'fire_released': False,
+    },
+    'physics': {
+        'gravity': 0.5
+    },
+    'render': {
+        'Z_UNIT': 16,
+        'CAMERA_Z_OFFSET': 30,
+        'Z_SCALE_K': 0.125,
+        'CAMERA_Z_SPEED_K': 0.5
     }
 }
 

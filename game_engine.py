@@ -22,7 +22,6 @@ class GameEngine:
 
         # Clock
         self.clock = pygame.time.Clock()
-        self.fps = config['screen']['FPS']
         pygame.display.set_caption('DC')
 
         # Game
@@ -77,12 +76,16 @@ class GameEngine:
         self.dynamic_sprites = level['sprite_groups']['dynamic_sprites']
         
     
-    def update_sprite_groups(self):
-        self.dynamic_sprites.update()
+    def update_sprite_groups(self, dt):
+        self.dynamic_sprites.update(dt)
         
         dyn = level['current']['dynamic_index']
         for spr in self.dynamic_sprites:
-            dyn.update(spr)
+            moved = getattr(spr, "_moved", True)
+            if moved:
+                dyn.update(spr)
+                if hasattr(spr, "_moved"):
+                    spr._moved = False
 
         
 
@@ -103,7 +106,7 @@ class GameEngine:
 
         screen.blit(text_surface, text_rect)
 
-    def draw_game_scene(self, debug):
+    def draw_game_scene(self, debug, dt):
         # --- in draw_game_scene() at the very top ---
         
         self.get_sprite_groups_from_dict()
@@ -118,7 +121,7 @@ class GameEngine:
             return  # no player yet; skip this frame cleanly
         
         self.game_surface.fill(config['ui']['colors']['BG_COLOR'])
-        self.update_sprite_groups()
+        self.update_sprite_groups(dt)
         self.debug_bool = config['debug']['projectile_lines']
 
         # Get offset, camera, then query buckets against camera
@@ -187,10 +190,17 @@ class GameEngine:
             while self.game_running:
                 self.controls.update()
                 action_map = self.controls.get_action_map()
+                
+				# Compute delta time
+                self.clock.tick(0)
+                frame_dt = self.clock.get_rawtime() / 1000.0
+                if frame_dt > 0.05:
+                    frame_dt = 0.05
+
                 if config['menu']['menu_running']:
                     self.menu.update(action_map, self.game_surface)
                 else:
-                   self.draw_game_scene( debug=config['debug']['debug'])
+                   self.draw_game_scene(debug=config['debug']['debug'], dt=frame_dt)
 
                 # Handle scaling and fullscreen changes
                 self.handle_fullscreen()
@@ -200,6 +210,8 @@ class GameEngine:
 
                 pygame.display.flip()
                 pygame.event.pump()
-                self.clock.tick(self.fps)
-                pygame.display.set_caption(f'DC {self.clock.get_fps():.2f}')
+                inst_fps = (1.0 / frame_dt) if frame_dt > 0 else 0.0
+                pygame.display.set_caption(
+                    f'DC avg {self.clock.get_fps():.1f} | inst {inst_fps:.1f}'
+                )
 

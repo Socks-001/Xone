@@ -72,7 +72,7 @@ class Enemy(Entity):
         current_time = pygame.time.get_ticks()
         return current_time - self.last_shot_time >= self.fire_rate
     
-    def follow_path_to_player(self, player):
+    def follow_path_to_player(self, player, dt):
         TILESIZE = config['screen']['TILESIZE']
         start = (int(self.rect.centerx // TILESIZE), int(self.rect.centery // TILESIZE))
         goal = (int(player.rect.centerx // TILESIZE), int(player.rect.centery // TILESIZE))
@@ -87,7 +87,8 @@ class Enemy(Entity):
                                         (next_tile[1] * TILESIZE) + TILESIZE // 2)
             direction_to_player = (next_pos - pygame.math.Vector2(self.rect.center)).normalize()
             self.direction = direction_to_player
-            self.move(self.speed)
+            dt_scale = dt * config['screen']['LOGIC_FPS']
+            self.move(self.speed * dt_scale)
 
         # Optional: smooth follow
         if self.path_index < len(self.path) - 1:
@@ -97,7 +98,7 @@ class Enemy(Entity):
                 self.direction = pygame.math.Vector2()  # Stop if at destination
 
         
-    def enemy_behavior(self, player):
+    def enemy_behavior(self, player, dt):
         """ Updates enemy status and behavior based on distance and action type. """
         distance_to_target, direction = self.get_target_distance_direction(player)
         
@@ -107,7 +108,7 @@ class Enemy(Entity):
         
         elif distance_to_target < 120:
             self.status = 'hunt'
-            self.follow_path_to_player(player)
+            self.follow_path_to_player(player, dt)
         
         else:
             self.status = 'idle'
@@ -133,8 +134,8 @@ class Enemy(Entity):
              
             self.last_shot_time = pygame.time.get_ticks()  # Update last shot time
     
-    def update(self,):
-        self.enemy_behavior(self.player)
+    def update(self, dt=0.0):
+        self.enemy_behavior(self.player, dt)
         self.vulnerability_cooldown()
         
             

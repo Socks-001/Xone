@@ -5,6 +5,7 @@ from tile import Tile
 from level_data import level
 from enemy import Enemy
 from graphics_data import graphics
+from z_test import ZBounceTest
 from player import Player
 from player_data import player_data
 from light import Light
@@ -130,6 +131,18 @@ class Game:
         origin = pygame.Vector2(self.game_surface.get_size()) / 2
         self.create_player((origin), [self.player_sprites, self.visible_sprites,  self.entity_sprites, self.dynamic_sprites], self.controls)
         #print (x,y)
+        if self.wall_gfx:
+            wall_id = sorted(self.wall_gfx.keys())[0]
+            wall_surf = self.wall_gfx[wall_id]
+            ZBounceTest(
+                (origin.x + 40, origin.y),
+                wall_surf,
+                [self.visible_sprites, self.dynamic_sprites],
+                z_min=0.0,
+                z_max=config['render']['Z_UNIT'] * 4,
+                z_vel=10.0,
+                shadow_surface=wall_surf,
+            )
 
         # Third pass: Create enemies AFTER the player
         for row_index, row in enumerate(layouts['entities']):
