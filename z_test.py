@@ -42,14 +42,24 @@ class ZTestShadow(pygame.sprite.Sprite):
         super().__init__()
         self.sprite_type = 'z_test_shadow'
         self.target = target
-        self.base_image = surface.copy()
-        self.base_image.fill((0, 0, 0, 140), special_flags=pygame.BLEND_RGBA_MULT)
-        self.image = surface
+        w = max(1, target.rect.width)
+        self.base_radius = max(4, w // 4)
+        self._cache = {}
+        self.image = self._get_blob(self.base_radius)
         self.rect = self.image.get_rect(center=target.rect.center)
         self.hitbox = pygame.FRect(self.rect)
         self.z = -1.0
         self.z_height = config['render']['Z_UNIT']
         self._moved = True
+
+    def _get_blob(self, radius):
+        blob = self._cache.get(radius)
+        if blob is None:
+            size = radius * 2
+            blob = pygame.Surface((size, size), pygame.SRCALPHA)
+            pygame.draw.ellipse(blob, (0, 0, 0, 110), blob.get_rect())
+            self._cache[radius] = blob
+        return blob
 
     def update(self, dt=0.0):
         z = getattr(self.target, "z", 0.0)
@@ -58,11 +68,9 @@ class ZTestShadow(pygame.sprite.Sprite):
             t = max(0.0, min(1.0, z / max_z))
         else:
             t = 0.0
-        scale = max(1, int(round(1 + (1.0 - t) * 2)))
-        self.image = pygame.transform.scale(
-            self.base_image,
-            (self.base_image.get_width() * scale, self.base_image.get_height() * scale),
-        )
+        scale = max(0.3, 1.0 - t * 0.7)
+        radius = max(2, int(round(self.base_radius * scale)))
+        self.image = self._get_blob(radius)
         center = self.target.hitbox.center
         self.rect = self.image.get_rect(center=center)
         self.hitbox = pygame.FRect(self.rect)

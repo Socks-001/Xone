@@ -28,7 +28,9 @@ class Entity(pygame.sprite.Sprite):
         self.z = 0.0
         stack_layers = max(1, int(self.image.get_width() // d))
         self.z_height = config['render']['Z_UNIT'] * stack_layers
+        self.z_vel = 0.0
         self._moved = True
+        self._ground_z_cached = None
         self.obstacle_sprites = level['sprite_groups']['obstacle_sprites']
         self.visible_sprites = level['sprite_groups']['visible_sprites']
         self.weapon_sprites = level['sprite_groups']['weapons_sprites']
@@ -47,7 +49,25 @@ class Entity(pygame.sprite.Sprite):
     def stack_slice_len(self, surface: pygame.Surface) -> int:
         """Square base size (px) assumed by stacked sheets (min of w/h)."""
         return min(surface.get_width(), surface.get_height())
-        
+    
+    def get_ground_z(self):
+        if not self._moved and self._ground_z_cached is not None:
+            return self._ground_z_cached
+        static_index = level['current'].get('static_index')
+        if static_index is None:
+            return None
+        candidates = static_index.query_rect(self.hitbox)
+        floor_z = None
+        for spr in candidates:
+            if getattr(spr, "sprite_type", None) != "floor":
+                continue
+            if not spr.rect.colliderect(self.hitbox):
+                continue
+            z = getattr(spr, "z", 0.0)
+            if floor_z is None or z > floor_z:
+                floor_z = z
+        self._ground_z_cached = floor_z
+        return floor_z
 
     def vulnerability_cooldown(self):
         """Handles the cooldown for vulnerability."""
@@ -55,18 +75,35 @@ class Entity(pygame.sprite.Sprite):
             if pygame.time.get_ticks() - self.hit_time > self.invulnerability_duration:
                 self.vulnerable = True  # Entity becomes vulnerable again after the cooldown period
 
+    def apply_gravity(self, dt_scale, ground_z=None):
+        if ground_z is None:
+            ground_z = self.get_ground_z()
+
+        if config['physics']['gravity'] != 0.0:
+            self.z_vel -= config['physics']['gravity'] * dt_scale
+
+        self.z += self.z_vel * dt_scale
+        if ground_z is not None and self.z < ground_z:
+            self.z = ground_z
+            self.z_vel = 0.0
+
     def move(self, speed):
         prev_center = self.hitbox.center
         if self.direction.magnitude() != 0:
             self.direction = self.direction.normalize()
 
-        # Horizontal movement and collision check
-        self.hitbox.x += self.direction.x * speed
-        self.collision('horizontal')
+        max_step = config['physics']['max_step']
+        steps = max(1, int(max(abs(self.direction.x * speed), abs(self.direction.y * speed)) // max_step) + 1)
+        step_speed = speed / steps
 
-        # Vertical movement and collision check
-        self.hitbox.y += self.direction.y * speed
-        self.collision('vertical')
+        for _ in range(steps):
+            # Horizontal movement and collision check
+            self.hitbox.x += self.direction.x * step_speed
+            self.collision('horizontal')
+
+            # Vertical movement and collision check
+            self.hitbox.y += self.direction.y * step_speed
+            self.collision('vertical')
 
         # Update rect position after movement
         self.rect.center = self.hitbox.center

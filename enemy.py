@@ -1,3 +1,4 @@
+import math
 import pygame
 from config import config
 from enemy_data import enemy_data
@@ -8,6 +9,7 @@ from level_data import level
 from projectile import Projectile
 from weapon_data import weapons
 import pathfinding
+from utilities import z_ranges_overlap
 
 
 class Enemy(Entity):
@@ -50,6 +52,14 @@ class Enemy(Entity):
         self.path = []
         self.path_index = 0
         self.grid = level['current']['pathfinding_grid']
+        self.repath_interval = 0.3
+        self.repath_timer = 0.0
+        self.last_goal_tile = None
+        self.last_known_pos = None
+        self.facing_dir = pygame.math.Vector2(0, 1)
+        self.vision_range = self.notice_radius * config['screen']['TILESIZE']
+        self.vision_base_radius = enemy_info.get('vision_base_diameter', 16) * 0.5
+        self.vision_min_range = config['ai']['VISION_MIN_RANGE']
      
     def get_target_distance_direction(self, target):
         target_location = pygame.math.Vector2(target.hitbox.center)
@@ -71,24 +81,63 @@ class Enemy(Entity):
         """Returns True if the enemy can shoot based on cooldown."""
         current_time = pygame.time.get_ticks()
         return current_time - self.last_shot_time >= self.fire_rate
-    
-    def follow_path_to_player(self, player, dt):
+
+    def _update_facing(self, direction):
+        if direction.length_squared() > 0:
+            self.facing_dir = direction.normalize()
+
+    def can_see_target(self, target):
+        if not z_ranges_overlap(self, target):
+            return False
+
+        origin = pygame.math.Vector2(self.hitbox.center)
+        to_target = pygame.math.Vector2(target.hitbox.center) - origin
+        distance = to_target.length()
+        if distance == 0:
+            return True
+        if distance > self.vision_range:
+            return False
+
+        vision_range = max(self.vision_min_range, self.vision_range)
+        half_angle = math.atan2(self.vision_base_radius, vision_range)
+        dir_norm = to_target / distance
+        face = self.facing_dir
+        if face.length_squared() == 0:
+            face = dir_norm
+        else:
+            face = face.normalize()
+        return face.dot(dir_norm) >= math.cos(half_angle)
+
+    def follow_path_to_target(self, target_pos, dt):
         TILESIZE = config['screen']['TILESIZE']
         start = (int(self.rect.centerx // TILESIZE), int(self.rect.centery // TILESIZE))
-        goal = (int(player.rect.centerx // TILESIZE), int(player.rect.centery // TILESIZE))
+        goal = (int(target_pos[0] // TILESIZE), int(target_pos[1] // TILESIZE))
         
-        # Always recalculate path each update for responsiveness
-        self.path = pathfinding.astar(self.grid, start, goal)
-        self.path_index = 0
+        self.repath_timer += dt
+        if self.last_goal_tile is None:
+            self.last_goal_tile = goal
 
-        if self.path:
-            next_tile = self.path[self.path_index]
-            next_pos = pygame.math.Vector2((next_tile[0] * TILESIZE) + TILESIZE // 2,
-                                        (next_tile[1] * TILESIZE) + TILESIZE // 2)
-            direction_to_player = (next_pos - pygame.math.Vector2(self.rect.center)).normalize()
-            self.direction = direction_to_player
-            dt_scale = dt * config['screen']['LOGIC_FPS']
-            self.move(self.speed * dt_scale)
+        if self.repath_timer >= self.repath_interval or goal != self.last_goal_tile or not self.path:
+            self.path = pathfinding.astar(self.grid, start, goal)
+            self.path_index = 0
+            self.repath_timer = 0.0
+            self.last_goal_tile = goal
+
+        if not self.path:
+            self.direction = pygame.math.Vector2()
+            return
+
+        next_tile = self.path[self.path_index]
+        next_pos = pygame.math.Vector2((next_tile[0] * TILESIZE) + TILESIZE // 2,
+                                    (next_tile[1] * TILESIZE) + TILESIZE // 2)
+        direction_vec = (next_pos - pygame.math.Vector2(self.rect.center))
+        if direction_vec.length_squared() == 0:
+            self.direction = pygame.math.Vector2()
+        else:
+            self.direction = direction_vec.normalize()
+        self._update_facing(self.direction)
+        dt_scale = dt * config['screen']['LOGIC_FPS']
+        self.move(self.speed * dt_scale)
 
         # Optional: smooth follow
         if self.path_index < len(self.path) - 1:
@@ -101,15 +150,28 @@ class Enemy(Entity):
     def enemy_behavior(self, player, dt):
         """ Updates enemy status and behavior based on distance and action type. """
         distance_to_target, direction = self.get_target_distance_direction(player)
+        can_see = self.can_see_target(player)
         
-        if distance_to_target <= self.attack_radius and distance_to_target > 0:
+        if can_see:
+            self.last_known_pos = pygame.math.Vector2(player.hitbox.center)
+            self._update_facing(direction)
+
+        if can_see and distance_to_target <= self.attack_radius and distance_to_target > 0:
             self.status = 'attack'
             self.shoot(direction)
         
-        elif distance_to_target < 120:
+        elif can_see and distance_to_target < self.vision_range:
             self.status = 'hunt'
-            self.follow_path_to_player(player, dt)
+            self.follow_path_to_target(player.hitbox.center, dt)
         
+        elif self.last_known_pos is not None:
+            self.status = 'search'
+            self.follow_path_to_target(self.last_known_pos, dt)
+            if pygame.math.Vector2(self.rect.center).distance_to(self.last_known_pos) < 8:
+                self.last_known_pos = None
+                self.path = []
+                self.direction = pygame.math.Vector2()
+
         else:
             self.status = 'idle'
             self.direction = pygame.math.Vector2()  # Stop moving
@@ -136,6 +198,8 @@ class Enemy(Entity):
     
     def update(self, dt=0.0):
         self.enemy_behavior(self.player, dt)
+        dt_scale = dt * config['screen']['LOGIC_FPS']
+        self.apply_gravity(dt_scale)
         self.vulnerability_cooldown()
         
             

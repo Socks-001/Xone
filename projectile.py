@@ -6,7 +6,7 @@ from level_data import level
 from config import config 
 from sfx import sfx
 from light import Light
-from utilities import destroy_sprite, z_ranges_overlap
+from utilities import destroy_sprite, z_ranges_overlap, swept_rect
 
 
 class Projectile(pygame.sprite.Sprite):
@@ -90,27 +90,7 @@ class Projectile(pygame.sprite.Sprite):
         if len(self.trail_positions) > self.trail_length:  # Limit trail length
             self.trail_positions.pop()
 
-        """Returns a rect representing the swept path of the projectile (covers tunneling)."""
-        start = pygame.math.Vector2(self.previous_position)
-        end = pygame.math.Vector2(self.current_position)
-        direction = end - start
-        length = direction.length()
-
-        if length == 0:
-            return pygame.Rect(start.x, start.y, 1, 1)
-
-        width = self.rect.width  # Use projectile's width
-        center = start.lerp(end, 0.5)
-
-        # Create an axis-aligned rect spanning the movement with width
-        # We'll align it horizontally or vertically based on the greater axis
-        if abs(direction.x) > abs(direction.y):
-            motion_rect = pygame.Rect(0, 0, length, width)
-        else:
-            motion_rect = pygame.Rect(0, 0, width, length)
-
-        motion_rect.center = center
-        return motion_rect
+        # Swept rect available via utilities.swept_rect if needed for tunneling.
 
     def lifetime_check(self):
         if pygame.time.get_ticks() - self.lifetime > 5000:  # 1 second, lifetime of projectile
@@ -119,7 +99,10 @@ class Projectile(pygame.sprite.Sprite):
     def check_collision(self):
         start = pygame.Vector2(self.previous_position)
         end = pygame.Vector2(self.current_position)
-        direction = (end - start).normalize()
+        delta = end - start
+        if delta.length_squared() == 0:
+            return
+        direction = delta.normalize()
         normal = pygame.Vector2(-direction.y, direction.x)  # Perpendicular vector
 
         # Adjust this to increase/decrease thickness

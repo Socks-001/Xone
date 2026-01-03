@@ -57,78 +57,42 @@ If you want, I can dive deeper into any module (e.g., level_generator.py or rend
 
 XX Remove runtime debug prints and obvious noise
 
-XX Example: print in entity.py during init.
-
-XX Impact: small performance win, reduces spam.
-
 XX Centralize destroy/death cleanup in Entity
-
-XX Add a destroy()/die() pipeline: particles, sound, index removal, kill.
-
-XX Reduces duplication across player/enemy/projectile.
 
 XX Make particle render group explicit + consistent
 
-XX You already fixed hitbox; just ensure particle group usage is consistent with render (dynamic index).
-
-XX Stabilizes visuals and avoids “invisible” particles.
-
 XX Fix import_folder behavior or confirm intent
-
-XX It returns on first walk iteration; if you expect nested folders, this is a bug.
-
-XX If you only want top‑level, leave it.
 
 XX Move remaining particle assets into graphics_data.py (optional)
 
-XX Keep all art loading in one place for maintainability.
+XX Frame-rate decoupling (delta time)
+
+XX Dynamic index update policy (dirty flag)
 
 Pathfinding cadence + caching (A*)
 
-Don’t recompute every frame.
-
-Use: “repath every N ms” + “repath on event” (player moved enough, obstacle changed, enemy stuck).
-
-Still allow different tile weights per enemy type.
-
-Frame‑rate decoupling (delta time)
-
-Apply to movement, cooldowns, AI timing.
-
-Stops speed changes at high/low FPS.
-
-Dynamic index update policy
-
-Right now you update every dynamic sprite every frame.
-
-Improve with dirty flags or spatial index update only when something moved.
-
 Enemy architecture (data + behavior modules)
-
-Keep stats in enemy_data.py.
-
-Add behavior variants (flying/armored/swimmer) as small behavior classes or flags.
-
-Avoid a class explosion while keeping flexibility.
 
 Level generator redesign
 
-Formalize room types, path rules, bounds, “off‑world” walls.
-
-This shapes everything downstream.
-
-Height / pseudo‑3D / z‑layer (jetpack + scaling)
-
-Introduce 2–3 height tiers first, then expand.
+Height / pseudo-3D / z-layer (jetpack + scaling)
 
 Lighting overhaul (occlusion/normal maps)
 
-Depends on z‑layer decisions and render structure.
-
 Weapon system expansion (attachments, ammo, animations)
-
-Big system; do after core movement/world rules stabilize.
 
 - Issues / Bugs
 
 Prevent entity tunneling through walls (continuous collision / swept collision).
+
+Guard enemy pathing when A* returns no path (avoid unbound next_pos).
+
+Guard projectile collision normalization when movement length is zero.
+
+Cap or prune scaled_slice_cache to avoid unbounded growth with z-scaling.
+
+Reduce ground_z query overhead for many entities (cache or throttle).
+
+Gate ZBounceTest spawn behind a debug flag.
+
+Remove dead swept-rect return in projectile.move_projectile (unused).

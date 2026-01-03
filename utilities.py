@@ -168,3 +168,29 @@ def z_ranges_overlap(a, b) -> bool:
     bz0 = getattr(b, "z", 0.0)
     bz1 = bz0 + getattr(b, "z_height", 0.0)
     return not (az1 < bz0 or bz1 < az0)
+
+
+def swept_rect(prev_pos, curr_pos, size) -> pygame.Rect:
+    """
+    Returns a rect representing the swept path from prev_pos to curr_pos,
+    expanded to the given size (width/height).
+    """
+    start = pygame.math.Vector2(prev_pos)
+    end = pygame.math.Vector2(curr_pos)
+    direction = end - start
+    length = direction.length()
+
+    if length == 0:
+        return pygame.Rect(start.x, start.y, size[0], size[1])
+
+    width = size[0]
+    height = size[1]
+    center = start.lerp(end, 0.5)
+
+    if abs(direction.x) > abs(direction.y):
+        motion_rect = pygame.Rect(0, 0, length, height)
+    else:
+        motion_rect = pygame.Rect(0, 0, width, length)
+
+    motion_rect.center = center
+    return motion_rect

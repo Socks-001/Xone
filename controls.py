@@ -14,6 +14,7 @@ class Controls:
         self.menu_navigation = pygame.math.Vector2()
         self.menu_select = False  # Initialize menu selection state
         self._fire_down_prev = False
+        self._jump_down_prev = False
 
         # Cooldown for the start button
         self.button_cooldown = 500  # Cooldown in milliseconds (e.g., 500ms)
@@ -187,6 +188,8 @@ class Controls:
                 self.menu_select = True
             if event.key == pygame.K_ESCAPE:
                 self.start_pressed = True
+            if event.key == pygame.K_F6:
+                pass
 
         # Detect KEYUP Events
         if event.type == pygame.KEYUP:
@@ -226,11 +229,7 @@ class Controls:
             # tweak threshold if needed (0.5 is a good start)
             pad_fire = (abs(r2_val) > 0.5) or r1_btn
 
-        # Optional keyboard fallback
-        keys = pygame.key.get_pressed()
-        kb_fire = bool(keys[pygame.K_SPACE])
-
-        fire_now = mouse_left or pad_fire or kb_fire
+        fire_now = mouse_left or pad_fire
 
         # Edges + hold
         config['controls']['fire_down'] = fire_now
@@ -240,6 +239,17 @@ class Controls:
             config['controls']['fire_released'] = True
 
         self._fire_down_prev = fire_now
+
+        # Keyboard jump (space)
+        keys = pygame.key.get_pressed()
+        jump_now = bool(keys[pygame.K_SPACE])
+
+        config['controls']['jump_down'] = jump_now
+        if jump_now and not self._jump_down_prev:
+            config['controls']['jump_pressed_once'] = True
+        if (not jump_now) and self._jump_down_prev:
+            config['controls']['jump_released'] = True
+        self._jump_down_prev = jump_now
 
 
     def update(self):
@@ -254,6 +264,8 @@ class Controls:
         # --- reset one-shot flags at start of frame ---
         config['controls']['fire_pressed_once'] = False
         config['controls']['fire_released'] = False
+        config['controls']['jump_pressed_once'] = False
+        config['controls']['jump_released'] = False
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

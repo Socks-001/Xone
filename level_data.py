@@ -19,7 +19,10 @@ level = {
     'current' : {
         'pathfinding_grid' : None,
         'static_index' : None, 
-        'dynamic_index' : None
+        'dynamic_index' : None,
+        'ground_z': 0.0,
+        'floor_surface': None,
+        'floor_surface_cache': {}
     },
 
     'level_0': {  

@@ -106,7 +106,7 @@ class Game:
             'set_dressing': self.set_dressing_gfx
         }
 
-            # First pass: Create floor and walls
+        # First pass: Create floor and walls
         for style, layout in layouts.items():
             for row_index, row in enumerate(layout):
                 for col_index, col in enumerate(row):
@@ -125,13 +125,32 @@ class Game:
                             surf = graphics['wall'][int(col)]
                             Tile((x, y), [self.wall_sprites, self.visible_sprites, self.obstacle_sprites], 'wall', surf)
 
+        # Build a flat floor surface for fast rendering
+        rows = len(layouts['floor'])
+        cols = len(layouts['floor'][0]) if rows else 0
+        floor_surface = pygame.Surface(
+            (cols * self.tilesize, rows * self.tilesize),
+            pygame.SRCALPHA,
+        )
+        for row_index, row in enumerate(layouts['floor']):
+            for col_index, col in enumerate(row):
+                if col == "-1":
+                    continue
+                surf = graphics['floor'][int(col)]
+                x = col_index * self.tilesize
+                y = row_index * self.tilesize
+                floor_surface.blit(surf, (x, y))
+        level['current']['floor_surface'] = floor_surface
+        level['current']['floor_surface_cache'] = {}
+
+        level['current']['ground_z'] = 0.0
         make_grid()
         
         # Second pass: Create the player FIRST
         origin = pygame.Vector2(self.game_surface.get_size()) / 2
         self.create_player((origin), [self.player_sprites, self.visible_sprites,  self.entity_sprites, self.dynamic_sprites], self.controls)
         #print (x,y)
-        if self.wall_gfx:
+        if self.wall_gfx and config['debug'].get('z_test'):
             wall_id = sorted(self.wall_gfx.keys())[0]
             wall_surf = self.wall_gfx[wall_id]
             ZBounceTest(

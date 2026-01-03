@@ -1,3 +1,4 @@
+import math
 import pygame
 from level_instancer import Game
 from menu import Menu
@@ -146,10 +147,10 @@ class GameEngine:
                 static_other.append(s)
 
         # --- Render order ---
-        # 1) floor
+        # 1) floor surface
         # 2) foliage (current set_dressing/grass)
         # 3) everything else together (walls + entities + projectiles + lights)
-        self.render_engine.visible(floors)
+        self.draw_floor_surface()
         self.render_engine.visible(foliage)
 
         combined = static_other + dynamic_candidates
@@ -177,6 +178,80 @@ class GameEngine:
             # Highlight weapons
             if config['debug']['weapons_debug']:
                 sprite_group_highlight(self.weapon_sprites, self.game_surface, 4, 1)
+
+        if debug == True and config['debug'].get('vision_cones', False):
+            self.draw_vision_cones()
+
+        self.draw_scale_mode()
+
+    def draw_scale_mode(self):
+        self.font = pygame.font.SysFont("atkinsonhyperlegiblemonoextralight", 12)
+        color = (255, 20, 147)
+        label = "scale: linear"
+        text_surface = self.font.render(label, True, color)
+        text_rect = text_surface.get_rect(bottomright=(self.game_surface.get_width() - 6,
+                                                       self.game_surface.get_height() - 6))
+        self.game_surface.blit(text_surface, text_rect)
+
+        cam_z = getattr(self.render_engine, "camera_z", 0.0)
+        cam_label = f"cam_z: {cam_z:.2f}"
+        cam_surface = self.font.render(cam_label, True, color)
+        cam_rect = cam_surface.get_rect(bottomright=(self.game_surface.get_width() - 6,
+                                                     self.game_surface.get_height() - 22))
+        self.game_surface.blit(cam_surface, cam_rect)
+
+    def draw_vision_cones(self):
+        overlay = getattr(self, "_vision_overlay", None)
+        if overlay is None or overlay.get_size() != self.game_surface.get_size():
+            self._vision_overlay = pygame.Surface(self.game_surface.get_size(), flags=pygame.SRCALPHA)
+            overlay = self._vision_overlay
+
+        overlay.fill((0, 0, 0, 0))
+        color = (255, 20, 147, 80)
+
+        for enemy in self.enemy_sprites:
+            if not enemy.alive():
+                continue
+            forward = getattr(enemy, "facing_dir", pygame.Vector2())
+            if forward.length_squared() == 0:
+                continue
+            forward = forward.normalize()
+
+            vision_range = max(getattr(enemy, "vision_range", 0.0), getattr(enemy, "vision_min_range", 1.0))
+            base_radius = getattr(enemy, "vision_base_radius", 8.0)
+            half_angle = math.atan2(base_radius, vision_range)
+            angle_deg = math.degrees(half_angle)
+            left = forward.rotate(angle_deg)
+            right = forward.rotate(-angle_deg)
+
+            origin = pygame.Vector2(enemy.hitbox.center)
+            p1 = origin + (left * vision_range)
+            p2 = origin + (right * vision_range)
+
+            scale = self.render_engine.get_scale_for_sprite(enemy)
+            o_sp = self.render_engine.world_to_screen_scaled(origin, scale)
+            p1_sp = self.render_engine.world_to_screen_scaled(p1, scale)
+            p2_sp = self.render_engine.world_to_screen_scaled(p2, scale)
+
+            pygame.draw.polygon(overlay, color, [o_sp, p1_sp, p2_sp])
+
+        self.game_surface.blit(overlay, (0, 0))
+
+    def draw_floor_surface(self):
+        floor_surface = level['current'].get('floor_surface')
+        if floor_surface is None:
+            return
+        scale = self.render_engine.get_scale_for_z(0.0)
+        cache = level['current'].get('floor_surface_cache', {})
+        scaled = cache.get(scale)
+        if scaled is None:
+            w = max(1, int(round(floor_surface.get_width() * scale)))
+            h = max(1, int(round(floor_surface.get_height() * scale)))
+            scaled = pygame.transform.scale(floor_surface, (w, h))
+            cache[scale] = scaled
+            level['current']['floor_surface_cache'] = cache
+        top_left = self.render_engine.world_to_screen_scaled((0, 0), scale)
+        self.game_surface.blit(scaled, top_left)
             
     def debug_world_dot(self, world_pos, color=(255,0,0)):
         sp = self.render_engine.world_to_screen(world_pos)

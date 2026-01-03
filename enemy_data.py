@@ -15,6 +15,7 @@ enemy_data = {
         'notice_radius': 5,
         'resistance': 10,
         'speed': 1.5,
+        'vision_base_diameter': 16,
         'sprite': graphics['enemies']['goblin']},
     'demos': {
         'enemy_type': 'crasher',
@@ -27,6 +28,7 @@ enemy_data = {
         'notice_radius': 5,
         'resistance': 10,
         'speed': 1.5,
+        'vision_base_diameter': 80,
         'sprite': graphics['enemies']['demos']}          
     	}
 

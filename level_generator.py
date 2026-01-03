@@ -492,7 +492,7 @@ def build_level(seed: int,
     place_enemies(rng, floor, ent, player_cell)
 
      # NEW: Grass after floor is finalized
-    fill_set_dressing_grass(rng, floor, set_dressing, p=0.12)
+    fill_set_dressing_grass(rng, floor, set_dressing, p=0.02)
 
     return {
         "floor": floor,

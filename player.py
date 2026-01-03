@@ -61,5 +61,13 @@ class Player(Entity):
             self.shoot()  # Call shoot method
             dt_scale = dt * config['screen']['LOGIC_FPS']
             self.move(self.speed * dt_scale)
+            self.update_jump(dt_scale)
             self.vulnerability_cooldown()
             #print (f'pos = {self.hitbox.center}')
+
+    def update_jump(self, dt_scale):
+        ground_z = self.get_ground_z()
+        if config['controls']['jump_pressed_once'] and ground_z is not None and self.z <= ground_z:
+            self.z_vel = player_data['jump_velocity']
+
+        self.apply_gravity(dt_scale, ground_z)

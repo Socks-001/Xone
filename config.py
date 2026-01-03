@@ -40,6 +40,8 @@ config = {
     
     'debug': {
         'debug': True,  # Set to True to enable debug mode
+        'z_test': False,
+        'vision_cones': True,
         'DEBUG_LINE_WIDTH': 10,
         'walls_debug' : True,
         'player_debug' : True,
@@ -129,15 +131,26 @@ config = {
         'fire_down': False,
         'fire_pressed_once': False,
         'fire_released': False,
+        'jump_down': False,
+        'jump_pressed_once': False,
+        'jump_released': False,
     },
     'physics': {
-        'gravity': 0.5
+        'gravity': 0.5,
+        'max_step': 4.0
+    },
+    'ai': {
+        'VISION_BASE_DIAMETER': 16,
+        'VISION_MIN_RANGE': 8
     },
     'render': {
         'Z_UNIT': 16,
-        'CAMERA_Z_OFFSET': 30,
-        'Z_SCALE_K': 0.125,
-        'CAMERA_Z_SPEED_K': 0.5
+        'CAMERA_Z_OFFSET': 160,
+        'Z_SCALE_K': 0.2,
+        'Z_REL_STEP': 0.8,
+        'CAMERA_Z_SPEED_K': 0.1,
+        'CAMERA_Z_MAX': 240,
+        'MAX_SCALED_CACHE': 512
     }
 }
 
