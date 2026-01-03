@@ -81,6 +81,8 @@ Lighting overhaul (occlusion/normal maps)
 
 Weapon system expansion (attachments, ammo, animations)
 
+Tile definitions registry (move tile IDs/semantics into `tile_defs.py` once more tile types exist)
+
 - Issues / Bugs
 
 Prevent entity tunneling through walls (continuous collision / swept collision).

@@ -137,6 +137,7 @@ class RenderEngineEx():
             scale = self.get_scale_for_sprite(spr)
             if scale == 0:
                 continue
+            alpha = self.get_sprite_alpha(spr)
             self.slice_and_stack(
                 c.x, c.y, src,
                 local_rotation_angle=angle,
@@ -147,7 +148,8 @@ class RenderEngineEx():
                 fixed_canvas=None,
                 rotating=0,
                 sprite_type=getattr(spr, "sprite_type", "default"),
-                scale=scale
+                scale=scale,
+                alpha=alpha
             )
 
     # ---------- Space transforms ----------
@@ -165,6 +167,9 @@ class RenderEngineEx():
     def get_scale_for_z(self, z) -> float:
         z_rel = z - self.camera_plane_z
         k = config['render'].get('Z_SCALE_K', 0.05)
+        z_unit = config['render'].get('Z_UNIT', 16)
+        if z_unit:
+            z_rel = z_rel / z_unit
         step = config['render'].get('Z_REL_STEP', 0.0)
         if step and step > 0:
             z_rel = round(z_rel / step) * step
@@ -228,6 +233,14 @@ class RenderEngineEx():
     def get_scale_for_sprite(self, sprite):
         z = getattr(sprite, "z", 0.0)
         return self.get_scale_for_z(z)
+
+    def get_sprite_alpha(self, sprite):
+        if getattr(sprite, "upper_layer", False) and self.player:
+            if getattr(self.player, "z", 0.0) < config['render']['Z_UNIT']:
+                alpha_min = config['render'].get('UPPER_LAYER_ALPHA_MIN', 80)
+                alpha_max = config['render'].get('UPPER_LAYER_ALPHA_MAX', 180)
+                return (alpha_min, alpha_max)
+        return 255
 
     # ---------- Perspective (precompute once per sprite) ----------
     def _precompute_perspective(self, base_world_xy, total_layers, height, sprite_type = 'default'):
@@ -295,7 +308,8 @@ class RenderEngineEx():
         fixed_canvas: pygame.Surface | None = None,  # kept for compatibility; unused
         rotating=0, 
         sprite_type='default',
-        scale=1
+        scale=1,
+        alpha=255
     ):
    
         slices = self.get_scaled_slices_cached(sprite_image, scale)
@@ -333,10 +347,22 @@ class RenderEngineEx():
         sw, sh = self.screen_rect.size
         # Main layer loop — direct blit
         step = self.get_slice_step(scale)
+        use_range_alpha = isinstance(alpha, tuple)
         for i in range(0, total_layers, step):
             layer = slices[i]
             if self.is_surface_empty(layer):
                 continue
+            if use_range_alpha:
+                alpha_min, alpha_max = alpha
+                t = 0.0
+                if total_layers > 1:
+                    t = i / (total_layers - 1)
+                layer_alpha = int(round(alpha_max + (alpha_min - alpha_max) * t))
+                layer = layer.copy()
+                layer.set_alpha(layer_alpha)
+            elif alpha != 255:
+                layer = layer.copy()
+                layer.set_alpha(alpha)
 
             # Per-layer perspective offset via cached scalars
             off_x = dir_unit.x * radial_base * i

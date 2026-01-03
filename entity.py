@@ -24,6 +24,7 @@ class Entity(pygame.sprite.Sprite):
         self.rect = pygame.Rect((0,0),(d,d))
         self.rect.center = pos
         self.hitbox = pygame.FRect(self.rect)
+        self.hitbox.inflate_ip(-4, -4)
         self.direction = pygame.math.Vector2()
         self.z = 0.0
         stack_layers = max(1, int(self.image.get_width() // d))
@@ -58,14 +59,38 @@ class Entity(pygame.sprite.Sprite):
             return None
         candidates = static_index.query_rect(self.hitbox)
         floor_z = None
+        z_unit = config['render']['Z_UNIT']
+        foot_x, foot_y = self.hitbox.center
         for spr in candidates:
-            if getattr(spr, "sprite_type", None) != "floor":
+            if getattr(spr, "sprite_type", None) not in ("floor", "floor_upper"):
                 continue
             if not spr.rect.colliderect(self.hitbox):
                 continue
-            z = getattr(spr, "z", 0.0)
-            if floor_z is None or z > floor_z:
-                floor_z = z
+            base_z = getattr(spr, "z", 0.0)
+            ramp_dir = getattr(spr, "ramp_dir", None)
+            if ramp_dir:
+                left = spr.rect.left
+                top = spr.rect.top
+                right = spr.rect.right
+                bottom = spr.rect.bottom
+                if ramp_dir == "left":
+                    t = (right - foot_x) / max(1.0, spr.rect.width)
+                elif ramp_dir == "right":
+                    t = (foot_x - left) / max(1.0, spr.rect.width)
+                elif ramp_dir == "up":
+                    t = (bottom - foot_y) / max(1.0, spr.rect.height)
+                elif ramp_dir == "down":
+                    t = (foot_y - top) / max(1.0, spr.rect.height)
+                else:
+                    t = 0.0
+                t = max(0.0, min(1.0, t))
+                z = base_z + (t * z_unit)
+            else:
+                z = base_z
+            is_ramp = ramp_dir is not None
+            if is_ramp or z <= (self.z + 0.1):
+                if floor_z is None or z > floor_z:
+                    floor_z = z
         self._ground_z_cached = floor_z
         return floor_z
 

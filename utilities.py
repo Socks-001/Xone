@@ -167,7 +167,7 @@ def z_ranges_overlap(a, b) -> bool:
     az1 = az0 + getattr(a, "z_height", 0.0)
     bz0 = getattr(b, "z", 0.0)
     bz1 = bz0 + getattr(b, "z_height", 0.0)
-    return not (az1 < bz0 or bz1 < az0)
+    return not (az1 <= bz0 or bz1 <= az0)
 
 
 def swept_rect(prev_pos, curr_pos, size) -> pygame.Rect:

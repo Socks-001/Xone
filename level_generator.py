@@ -16,6 +16,9 @@ FLOOR_PATH   = "2"   # corridor
 FLOOR_BOSS   = "3"   # boss arena
 
 WALL_NONE    = "-1"
+WALL2_EMPTY  = "-1"
+
+FLOOR2_EMPTY = "-1"
 VALID_BLOB_MASKS = set([
     0, 1, 4, 5, 7, 16, 17, 20, 21, 23, 28, 29, 31,
     64, 65, 68, 69, 71, 80, 81, 84, 85, 87, 92, 93, 95,
@@ -132,6 +135,18 @@ def carve_room_openings(floor: Grid, rects: List[Rect], min_openings: int = 2) -
             if 0 <= nx < W and 0 <= ny < H:
                 yield nx, ny
 
+    def open_door(rect: Rect, x: int, y: int):
+        floor[y][x] = FLOOR_PATH
+        # widen to 2 tiles along the border edge
+        if y == rect.y or y == rect.y + rect.h - 1:
+            nx = x + 1 if x + 1 < rect.x + rect.w else x - 1
+            if rect.x <= nx < rect.x + rect.w and in_bounds(W, H, nx, y):
+                floor[y][nx] = FLOOR_PATH
+        elif x == rect.x or x == rect.x + rect.w - 1:
+            ny = y + 1 if y + 1 < rect.y + rect.h else y - 1
+            if rect.y <= ny < rect.y + rect.h and in_bounds(W, H, x, ny):
+                floor[ny][x] = FLOOR_PATH
+
     for rect in rects:
         border = list(get_room_border_tiles(rect))
         room_doors: set[tuple[int,int]] = set()
@@ -139,7 +154,7 @@ def carve_room_openings(floor: Grid, rects: List[Rect], min_openings: int = 2) -
         # A) Prefer openings where corridors actually meet the room
         for x, y in border:
             if any(floor[ny][nx] == FLOOR_PATH for nx, ny in neighbors4(x, y)):
-                floor[y][x] = FLOOR_PATH  # carve doorway on border
+                open_door(rect, x, y)
                 room_doors.add((x, y))
                 if len(room_doors) >= min_openings:
                     break
@@ -155,7 +170,7 @@ def carve_room_openings(floor: Grid, rects: List[Rect], min_openings: int = 2) -
             # favor sides that don’t already have a door
             for x, y in candidates:
                 if (x, y) not in room_doors:
-                    floor[y][x] = FLOOR_PATH
+                    open_door(rect, x, y)
                     room_doors.add((x, y))
                     if len(room_doors) >= min_openings:
                         break
@@ -366,6 +381,23 @@ def derive_walls_from_border_tiles(floor: Grid, wall: Grid, border_tiles: set[tu
         wall[y][x] = str(m) if m in VALID_BLOB_MASKS else WALL_NONE
 
 
+def outline_map_with_walls(floor: Grid, wall: Grid):
+    """Place a wall ring around the outer map edge using blob masks."""
+    H = len(floor)
+    W = len(floor[0]) if H else 0
+    if W == 0:
+        return
+
+    border_tiles: set[tuple[int, int]] = set()
+    for x in range(W):
+        border_tiles.add((x, 0))
+        border_tiles.add((x, H - 1))
+    for y in range(1, H - 1):
+        border_tiles.add((0, y))
+        border_tiles.add((W - 1, y))
+
+    derive_walls_from_border_tiles(floor, wall, border_tiles)
+
 
 # --- dressing, hazards, items, enemies ---------------------------------------
 
@@ -398,6 +430,74 @@ def place_enemies(rng: random.Random, floor: Grid, ent: Grid, player_cell: Tuple
             if floor[y][x] in (FLOOR_SOLID, FLOOR_ROOM, FLOOR_PATH) and ent[y][x] == ENT_EMPTY:
                 if abs(x - px) + abs(y - py) > 20 and rng.random() < rate:
                     ent[y][x] = ENT_ENEMY
+
+def _rect_is_clear(floor: Grid, wall: Grid, floor2: Grid, rect: "Rect") -> bool:
+    for x, y in rect.cells():
+        if floor[y][x] != FLOOR_SOLID:
+            return False
+        if wall[y][x] != WALL_NONE:
+            return False
+        if floor2[y][x] != FLOOR2_EMPTY:
+            return False
+    return True
+
+def place_two_story_test(floor: Grid, floor2: Grid, wall: Grid, wall2: Grid, center_cell: Tuple[int, int]):
+    """Simple two-story test block with a 1-tile ramp stairs and landings."""
+    H = len(floor)
+    W = len(floor[0]) if H else 0
+    if W == 0:
+        return
+
+    px, py = center_cell
+    w, h = 10, 8
+    x0 = max(2, min(W - w - 2, px - w // 2))
+    y0 = max(2, min(H - h - 2, py - 4))
+
+    rect = Rect(x0, y0, w, h)
+    if not _rect_is_clear(floor, wall, floor2, rect):
+        return False
+
+    # Base floor footprint
+    for y in range(y0, y0 + h):
+        for x in range(x0, x0 + w):
+            floor[y][x] = FLOOR_ROOM
+
+    # Upper floor footprint (same size for now)
+    for y in range(y0, y0 + h):
+        for x in range(x0, x0 + w):
+            floor2[y][x] = FLOOR_SOLID
+
+    # Add wall rings for ground + upper floor
+    border_tiles = get_room_border_tiles(rect)
+
+    # Carve a 2-tile doorway on the bottom edge
+    door_x = x0 + w // 2
+    door_y = y0 + h - 1
+    for dx in (0, 1):
+        x = door_x + dx
+        if x0 <= x < x0 + w:
+            floor[door_y][x] = FLOOR_PATH
+            if (x, door_y) in border_tiles:
+                border_tiles.remove((x, door_y))
+
+    derive_walls_from_border_tiles(floor, wall, border_tiles)
+    derive_walls_from_border_tiles(floor2, wall2, border_tiles)
+
+    # Ensure doorway is open (in case neighbors re-mask it)
+    for dx in (0, 1):
+        x = door_x + dx
+        if x0 <= x < x0 + w:
+            wall[door_y][x] = WALL_NONE
+            wall2[door_y][x] = WALL_NONE
+
+    # Stairs: one-tile ramp, landing at top and bottom
+    stair_x = x0 + 1
+    stair_y = y0 + h - 2
+    floor[stair_y][stair_x] = "5"  # stairs up (high edge on top)
+    # Top landing should be upper floor
+    if stair_y - 1 >= 0:
+        floor2[stair_y - 1][stair_x] = FLOOR_SOLID
+    return True
 
 # --- boss arena ---------------------------------------------------------------
 
@@ -433,6 +533,8 @@ def build_level(seed: int,
     wall:  Grid = make_grid(grid_w, grid_h, WALL_NONE)
     ent:   Grid = make_grid(grid_w, grid_h, ENT_EMPTY)
     light: Grid = make_grid(grid_w, grid_h, ENT_EMPTY)  # keep as strings for CSV
+    floor2: Grid = make_grid(grid_w, grid_h, FLOOR2_EMPTY)
+    wall2: Grid = make_grid(grid_w, grid_h, WALL2_EMPTY)
     set_dressing: Grid = make_grid(grid_w, grid_h, set_dressing_EMPTY)
 
     # Player start: centered near bottom (your “center-bottom” spec)
@@ -483,6 +585,7 @@ def build_level(seed: int,
     derive_walls_from_border_tiles(floor, wall, border_tiles)
     '''for x in range(0, ):  # a noticeable band within your 128x128 test grid
         wall[50][x] = "254"'''
+    outline_map_with_walls(floor, wall)
 
     # Entities: player, items/hazards/enemies
     ent[player_cell[1]][player_cell[0]] = ENT_PLAYER
@@ -494,9 +597,29 @@ def build_level(seed: int,
      # NEW: Grass after floor is finalized
     fill_set_dressing_grass(rng, floor, set_dressing, p=0.02)
 
+    # Two-story test blocks (upper floor + ramp stairs)
+    px, py = player_cell
+    test_centers = [
+        (px - 20, py - 20),
+        (px + 20, py - 20),
+        (px, py - 35),
+    ]
+    for cx, cy in test_centers:
+        placed = place_two_story_test(floor, floor2, wall, wall2, (cx, cy))
+        if not placed:
+            for dy in range(-30, 31, 5):
+                for dx in range(-30, 31, 5):
+                    if place_two_story_test(floor, floor2, wall, wall2, (cx + dx, cy + dy)):
+                        break
+                else:
+                    continue
+                break
+
     return {
         "floor": floor,
+        "floor2": floor2,
         "wall": wall,
+        "wall2": wall2,
         "entities": ent,
         "lights": light,
         "player_cell": player_cell,
@@ -508,7 +631,9 @@ def build_level(seed: int,
 
 def write_level_csvs(level: Dict[str, object], out_dir: str):
     write_csv(f"{out_dir}/floor.csv", level["floor"])
+    write_csv(f"{out_dir}/floor2.csv", level["floor2"])
     write_csv(f"{out_dir}/wall.csv", level["wall"])
+    write_csv(f"{out_dir}/wall2.csv", level["wall2"])
     write_csv(f"{out_dir}/entities.csv", level["entities"])
     write_csv(f"{out_dir}/lights.csv", level["lights"])
     write_csv(f"{out_dir}/set_dressing.csv", level["set_dressing"])

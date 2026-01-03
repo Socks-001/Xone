@@ -17,8 +17,15 @@ def initialize():
     # Screen and Surface Setup
     screen_width = config['screen']['SCREEN_WIDTH']
     screen_height = config['screen']['SCREEN_HEIGHT']
-    screen = pygame.display.set_mode((screen_width, screen_height), pygame.SCALED)
-    game_surface = pygame.Surface((screen_width, screen_height))
+    tile = config['screen']['TILESIZE']
+    crop_x = config['screen'].get('VIEW_CROP_TILES_X', 0)
+    crop_y = config['screen'].get('VIEW_CROP_TILES_Y', 0)
+    render_width = max(tile, screen_width - (crop_x * 2 * tile))
+    render_height = max(tile, screen_height - (crop_y * 2 * tile))
+    config['screen']['SCREEN_WIDTH'] = render_width
+    config['screen']['SCREEN_HEIGHT'] = render_height
+    screen = pygame.display.set_mode((render_width, render_height), pygame.SCALED)
+    game_surface = pygame.Surface((render_width, render_height))
     
 
     # Update Config

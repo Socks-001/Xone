@@ -31,6 +31,8 @@ config = {
         'SCREEN_HEIGHT': 256,
         'LOGIC_FPS': 60,
         'TILESIZE': 16,
+        'VIEW_CROP_TILES_X': 4,
+        'VIEW_CROP_TILES_Y': 2,
         'screen': None,
         'fullscreen_trigger': False,
         'scaled_surface': None, 
@@ -147,10 +149,13 @@ config = {
         'Z_UNIT': 16,
         'CAMERA_Z_OFFSET': 160,
         'Z_SCALE_K': 0.2,
-        'Z_REL_STEP': 0.8,
+        'Z_REL_STEP': 0.25,
         'CAMERA_Z_SPEED_K': 0.1,
         'CAMERA_Z_MAX': 240,
-        'MAX_SCALED_CACHE': 512
+        'MAX_SCALED_CACHE': 512,
+        'UPPER_LAYER_ALPHA_MIN': 80,
+        'UPPER_LAYER_ALPHA_MAX': 180,
+        'UPPER_LAYER_FLOOR_ALPHA': 70
     }
 }
 

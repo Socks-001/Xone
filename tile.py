@@ -3,10 +3,12 @@ from config import config
 from utilities import search_dict
 
 class Tile(pygame.sprite.Sprite):
-    def __init__(self, pos, groups, sprite_type, surface):
+    def __init__(self, pos, groups, sprite_type, surface, tile_id=None, ramp_dir=None):
         super().__init__(groups)
 
         self.sprite_type = sprite_type
+        self.tile_id = tile_id
+        self.ramp_dir = ramp_dir
 
         self.image = surface
 

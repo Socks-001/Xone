@@ -2,6 +2,7 @@ import pygame
 from utilities import import_csv_layout, search_dict
 from config import config
 from tile import Tile
+from tile_defs import STAIR_TILES
 from level_data import level
 from enemy import Enemy
 from graphics_data import graphics
@@ -93,7 +94,9 @@ class Game:
         
         layouts = {
             'floor': level[self.current_level]['floor_layout'],
+            'floor2': level[self.current_level]['floor2_layout'],
             'wall':  level[self.current_level]['wall_layout'],
+            'wall2': level[self.current_level]['wall2_layout'],
             'set_dressing': level[self.current_level]['set_dressing_layout'],
             'entities':  level[self.current_level]['entity_layout'],
             'lights':  level[self.current_level]['lights_layout']
@@ -116,14 +119,42 @@ class Game:
 
 
                         if style == 'floor':
-                            surf = graphics['floor'][int(col)]
-                            Tile((x, y), [self.floor_sprites, self.visible_sprites], 'floor', surf)
+                            tile_id = int(col) if col.isdigit() else None
+                            surf = graphics['floor'][tile_id]
+                            ramp_dir = STAIR_TILES.get(tile_id)
+                            Tile(
+                                (x, y),
+                                [self.floor_sprites, self.visible_sprites],
+                                'floor',
+                                surf,
+                                tile_id=tile_id,
+                                ramp_dir=ramp_dir
+                            )
+                        elif style == 'floor2':
+                            tile_id = int(col) if col.isdigit() else None
+                            surf = graphics['floor'][tile_id]
+                            ramp_dir = STAIR_TILES.get(tile_id)
+                            t = Tile(
+                                (x, y),
+                                [self.floor_sprites, self.visible_sprites],
+                                'floor_upper',
+                                surf,
+                                tile_id=tile_id,
+                                ramp_dir=ramp_dir
+                            )
+                            t.z = config['render']['Z_UNIT']
+                            t.upper_layer = True
                         elif style == 'set_dressing':
                             surf = graphics['set_dressing'][int(col)]
                             Tile((x, y), [ self.set_dressing_sprites, self.visible_sprites], 'set_dressing', surf)
                         elif style == 'wall':
                             surf = graphics['wall'][int(col)]
                             Tile((x, y), [self.wall_sprites, self.visible_sprites, self.obstacle_sprites], 'wall', surf)
+                        elif style == 'wall2':
+                            surf = graphics['wall'][int(col)]
+                            t = Tile((x, y), [self.wall_sprites, self.visible_sprites, self.obstacle_sprites], 'wall_upper', surf)
+                            t.z = config['render']['Z_UNIT']
+                            t.upper_layer = True
 
         # Build a flat floor surface for fast rendering
         rows = len(layouts['floor'])
@@ -136,6 +167,9 @@ class Game:
             for col_index, col in enumerate(row):
                 if col == "-1":
                     continue
+                tile_id = int(col) if col.isdigit() else None
+                if tile_id in STAIR_TILES:
+                    continue
                 surf = graphics['floor'][int(col)]
                 x = col_index * self.tilesize
                 y = row_index * self.tilesize
@@ -143,13 +177,46 @@ class Game:
         level['current']['floor_surface'] = floor_surface
         level['current']['floor_surface_cache'] = {}
 
+        # Build a flat upper-floor surface for fast rendering
+        rows2 = len(layouts['floor2'])
+        cols2 = len(layouts['floor2'][0]) if rows2 else 0
+        floor2_surface = pygame.Surface(
+            (cols2 * self.tilesize, rows2 * self.tilesize),
+            pygame.SRCALPHA,
+        )
+        for row_index, row in enumerate(layouts['floor2']):
+            for col_index, col in enumerate(row):
+                if col == "-1":
+                    continue
+                tile_id = int(col) if col.isdigit() else None
+                if tile_id in STAIR_TILES:
+                    continue
+                surf = graphics['floor'][int(col)]
+                x = col_index * self.tilesize
+                y = row_index * self.tilesize
+                floor2_surface.blit(surf, (x, y))
+        level['current']['floor2_surface'] = floor2_surface
+        level['current']['floor2_surface_cache'] = {}
+
         level['current']['ground_z'] = 0.0
         make_grid()
         
-        # Second pass: Create the player FIRST
-        origin = pygame.Vector2(self.game_surface.get_size()) / 2
-        self.create_player((origin), [self.player_sprites, self.visible_sprites,  self.entity_sprites, self.dynamic_sprites], self.controls)
-        #print (x,y)
+        # Second pass: Find player spawn from entity layout (fallback to screen center)
+        player_pos = None
+        for row_index, row in enumerate(layouts['entities']):
+            for col_index, col in enumerate(row):
+                if col == '100':  # Player
+                    x = col_index * self.tilesize + self.tilesize // 2
+                    y = row_index * self.tilesize + self.tilesize // 2
+                    player_pos = pygame.Vector2(x, y)
+                    break
+            if player_pos is not None:
+                break
+
+        if player_pos is None:
+            player_pos = pygame.Vector2(self.game_surface.get_size()) / 2
+
+        self.create_player((player_pos), [self.player_sprites, self.visible_sprites,  self.entity_sprites, self.dynamic_sprites], self.controls)
         if self.wall_gfx and config['debug'].get('z_test'):
             wall_id = sorted(self.wall_gfx.keys())[0]
             wall_surf = self.wall_gfx[wall_id]

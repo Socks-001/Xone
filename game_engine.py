@@ -135,12 +135,15 @@ class GameEngine:
 
 
         # --- Partition static candidates (floor / foliage / other) ---
-        floors, foliage, static_other = [], [], []
+        floors, stairs, foliage, static_other = [], [], [], []
 
         for s in static_candidates:
             t = getattr(s, "sprite_type", None)
             if t == "floor":
-                floors.append(s)
+                if getattr(s, "ramp_dir", None):
+                    stairs.append(s)
+                else:
+                    floors.append(s)
             elif t == "set_dressing":
                 foliage.append(s)
             else:
@@ -148,9 +151,14 @@ class GameEngine:
 
         # --- Render order ---
         # 1) floor surface
-        # 2) foliage (current set_dressing/grass)
-        # 3) everything else together (walls + entities + projectiles + lights)
+        # 2) stairs (stacked)
+        # 3) upper floor surface
+        # 4) foliage (current set_dressing/grass)
+        # 5) everything else together (walls + entities + projectiles + lights)
         self.draw_floor_surface()
+        if stairs:
+            self.render_engine.visible(stairs)
+        self.draw_floor2_surface()
         self.render_engine.visible(foliage)
 
         combined = static_other + dynamic_candidates
@@ -250,6 +258,30 @@ class GameEngine:
             scaled = pygame.transform.scale(floor_surface, (w, h))
             cache[scale] = scaled
             level['current']['floor_surface_cache'] = cache
+        top_left = self.render_engine.world_to_screen_scaled((0, 0), scale)
+        self.game_surface.blit(scaled, top_left)
+
+    def draw_floor2_surface(self):
+        floor_surface = level['current'].get('floor2_surface')
+        if floor_surface is None:
+            return
+        z = config['render']['Z_UNIT']
+        scale = self.render_engine.get_scale_for_z(z)
+        alpha = 255
+        if getattr(self.render_engine.player, "z", 0.0) < z:
+            alpha = config['render'].get('UPPER_LAYER_FLOOR_ALPHA', 70)
+        cache = level['current'].get('floor2_surface_cache', {})
+        cache_key = (scale, alpha)
+        scaled = cache.get(cache_key)
+        if scaled is None:
+            w = max(1, int(round(floor_surface.get_width() * scale)))
+            h = max(1, int(round(floor_surface.get_height() * scale)))
+            scaled = pygame.transform.scale(floor_surface, (w, h))
+            if alpha != 255:
+                scaled = scaled.copy()
+                scaled.set_alpha(alpha)
+            cache[cache_key] = scaled
+            level['current']['floor2_surface_cache'] = cache
         top_left = self.render_engine.world_to_screen_scaled((0, 0), scale)
         self.game_surface.blit(scaled, top_left)
             
